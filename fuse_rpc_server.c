@@ -119,6 +119,97 @@ bb_opendir_6_svc(opendir_arg *argp, struct svc_req *rqstp) {
         return &ret;
     }
 
+    ret.fd = dirfd(dp);
     ret.ret = 0;
+    return &ret;
+}
+
+releasedir_ret *
+bb_releasedir_6_svc(releasedir_arg *argp, struct svc_req *rqstp) {
+    int fd = argp->fd;
+    fprintf(stderr, "Close directory with fd = %d\n", fd);
+
+    static releasedir_ret ret;
+    DIR* dir = fdopendir(fd);
+    if (dir == NULL) {
+        fprintf(stderr, "Open directory associated with fd %d error\n", fd);
+        ret.ret = -1;
+        return &ret;
+    }
+    int close_ret = closedir(dir);
+    if (close_ret == -1) {
+        fprintf(stderr, "Close directory error\n");
+        ret.ret = -1;
+        return &ret;
+    }
+
+    ret.ret = 0;
+    return &ret;
+}
+
+open_ret *
+bb_open_6_svc(open_arg *argp, struct svc_req *rqstp) {
+    char *path = argp->path;
+    int flags = argp->flags;
+    fprintf(stderr, "Open file for %s with flag %d\n", path, flags);
+
+    static open_ret ret;
+    ret.fd = open(path, flags);
+    if (ret.fd == -1) {
+        fprintf(stderr, "open file %s with flag %d error\n", path, flags);
+        ret.ret = -1;
+        return &ret;
+    }
+
+    fprintf(stderr, "fd for file %s is %d\n", path, ret.fd);
+
+    // char buf[MAX_SIZE];
+    // ssize_t read_ret = pread(fd, buf, 4096, 0);
+    // fprintf(stderr, "Try read file when open: %s\n", buf);
+
+    ret.ret = 0;
+    return &ret;
+}
+
+release_ret *
+bb_release_6_svc(release_arg *argp, struct svc_req *rqstp) {
+    int fd = argp->fd;
+    fprintf(stderr, "Close file with fd %d\n", fd);
+
+    static release_ret ret;
+    int close_ret = close(fd);
+    if (close_ret == -1) {
+        fprintf(stderr, "Close fd %d\n error\n", fd);
+        ret.ret = -1;
+        return &ret;
+    }
+
+    ret.ret = 0;
+    return &ret;
+}
+
+read_ret *
+bb_read_6_svc(read_arg *argp, struct svc_req *rqstp) {
+    int fd = argp->fd;
+    unsigned int size = argp->size;
+    unsigned int offset = argp->offset;
+    fprintf(stderr, "Read file with fd = %d, with size = %u, offset = %u\n", fd, size, offset);
+
+    static read_ret ret;
+    static char buf[MAX_SIZE];
+    memset(buf, '\0', MAX_SIZE);
+    ssize_t read_ret = pread(fd, buf, size, offset);
+
+    fprintf(stderr, "Raw buffer has content: %s\n", buf);
+
+    if (read_ret == -1) {
+        ret.ret = -1;
+        fprintf(stderr, "read file with fd = %d, with size = %u, offset = %u error\n", fd, size, offset);
+        return &ret;
+    }
+
+    ret.ret = 0;
+    memcpy(ret.buffer, buf, MAX_SIZE);
+    fprintf(stderr, "Read file buffer: %s\n", ret.buffer);
     return &ret;
 }

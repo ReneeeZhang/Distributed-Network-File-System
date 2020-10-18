@@ -359,6 +359,41 @@ int bb_utime(const char *path, struct utimbuf *ubuf)
  */
 int bb_open(const char *path, struct fuse_file_info *fi)
 {
+    log_msg("\nbb_open(path\"%s\", fi=0x%08x)\n",
+	    path, fi);
+
+    // Get attribute via RPC.
+    CLIENT *clnt = NULL;
+    open_ret *ret = NULL;
+    open_arg arg;
+    char fpath[PATH_MAX];
+    bb_fullpath(fpath, path);
+    arg.path = fpath;
+    arg.flags = fi->flags;
+    
+    clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
+    if (clnt == NULL) {
+        log_msg("Create RPC connection error\n");
+        clnt_pcreateerror (host);
+        exit (1);
+    }
+
+    ret = bb_open_6(&arg, clnt);
+    if (ret == (open_ret *) NULL) {
+        log_msg("RPC return value error\n");
+        clnt_perror (clnt, "call failed");
+    }
+    clnt_destroy (clnt);
+
+    if (ret->ret == -1) {
+        log_msg("Open file %s error\n", fpath);
+        return -1;
+    }
+
+    fi->fh = ret->fd;
+    return 0;
+
+    /*
     int retstat = 0;
     int fd;
     char fpath[PATH_MAX];
@@ -390,6 +425,7 @@ int bb_open(const char *path, struct fuse_file_info *fi)
     log_fi(fi);
     
     return retstat;
+    */
 }
 
 /** Read data from an open file
@@ -410,6 +446,44 @@ int bb_open(const char *path, struct fuse_file_info *fi)
 // returned by read.
 int bb_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi)
 {
+    log_msg("\nbb_read(path\"%s\", fi=0x%08x)\n",
+	    path, fi);
+
+    // Get attribute via RPC.
+    CLIENT *clnt = NULL;
+    read_ret *ret = NULL;
+    read_arg arg;
+    arg.fd = fi->fh;
+    arg.size = size;
+    arg.offset = offset;
+    
+    clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
+    if (clnt == NULL) {
+        log_msg("Create RPC connection error\n");
+        clnt_pcreateerror (host);
+        exit (1);
+    }
+
+    ret = bb_read_6(&arg, clnt);
+    if (ret == (read_ret *) NULL) {
+        log_msg("RPC return value error\n");
+        clnt_perror (clnt, "call failed");
+    }
+    clnt_destroy (clnt);
+
+    if (ret->ret == -1) {
+        log_msg("Read called error\n");
+        return -1;
+    }
+
+    // Assign read result to user space.
+
+    log_msg("receive buffer from server: %s\n", ret->buffer);
+    memcpy(buf, ret->buffer, MAX_SIZE);
+    log_msg("actual buffer: %s\n", buf);
+    return 0;
+
+    /*
     // If the request file is "buddy.txt", directly write content 
     if (is_buddy_file((char*)path)) {
         log_msg("Try to read buddy.txt, with offset = %d, size = %d\n", offset, size);
@@ -437,6 +511,7 @@ int bb_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
     log_fi(fi);
 
     return log_syscall("pread", pread(fi->fh, buf, size, offset), 0);
+    */
 }
 
 /** Write data to an open file
@@ -541,11 +616,33 @@ int bb_release(const char *path, struct fuse_file_info *fi)
 {
     log_msg("\nbb_release(path=\"%s\", fi=0x%08x)\n",
 	  path, fi);
-    log_fi(fi);
+    
+    // Get attribute via RPC.
+    CLIENT *clnt = NULL;
+    release_ret *ret = NULL;
+    release_arg arg;
+    arg.fd = fi->fh;
+    
+    clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
+    if (clnt == NULL) {
+        log_msg("Create RPC connection error\n");
+        clnt_pcreateerror (host);
+        exit (1);
+    }
 
-    // We need to close the file.  Had we allocated any resources
-    // (buffers etc) we'd need to free them here as well.
-    return log_syscall("close", close(fi->fh), 0);
+    ret = bb_release_6(&arg, clnt);
+    if (ret == (release_ret *) NULL) {
+        log_msg("RPC return value error\n");
+        clnt_perror (clnt, "call failed");
+    }
+    clnt_destroy (clnt);
+
+    if (ret->ret == -1) {
+        log_msg("Close file error\n");
+        return -1;
+    }
+
+    return 0;
 }
 
 /** Synchronize file contents
@@ -684,6 +781,8 @@ int bb_opendir(const char *path, struct fuse_file_info *fi)
         log_msg("Open directory error\n");
         return -1;
     }
+
+    fi->fh = ret->fd;
     return 0;
 
 //    if (dp == NULL) {
@@ -836,15 +935,35 @@ int bb_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset
  */
 int bb_releasedir(const char *path, struct fuse_file_info *fi)
 {
-    int retstat = 0;
-
     log_msg("\nbb_releasedir(path=\"%s\", fi=0x%08x)\n",
 	    path, fi);
-    log_fi(fi);
     
-    closedir((DIR *) (uintptr_t) fi->fh);
+    // Get attribute via RPC.
+    CLIENT *clnt = NULL;
+    releasedir_ret *ret = NULL;
+    releasedir_arg arg;
+    arg.fd = fi->fh;
     
-    return retstat;
+    clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
+    if (clnt == NULL) {
+        log_msg("Create RPC connection error\n");
+        clnt_pcreateerror (host);
+        exit (1);
+    }
+
+    ret = bb_releasedir_6(&arg, clnt);
+    if (ret == (releasedir_ret *) NULL) {
+        log_msg("RPC return value error\n");
+        clnt_perror (clnt, "call failed");
+    }
+    clnt_destroy (clnt);
+
+    // releasedir() error
+    if (ret->ret == -1) {
+        log_msg("Close directory error\n");
+        return -1;
+    }
+    return 0;
 }
 
 /** Synchronize directory contents

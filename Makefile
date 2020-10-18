@@ -12,6 +12,9 @@ create:
 	touch rootdir/secret.txt
 	touch rootdir/secret_file.txt
 	touch rootdir/bogus.txt
+	echo "hello world" > rootdir/bogus.txt
+	echo "secret" > rootdir/secret.txt
+	echo "secret_file" > rootdir/secret_file.txt
 
 header:
 	rpcgen fuse_rpc.x

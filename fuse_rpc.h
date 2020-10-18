@@ -67,9 +67,55 @@ struct opendir_arg {
 typedef struct opendir_arg opendir_arg;
 
 struct opendir_ret {
+	int fd;
 	int ret;
 };
 typedef struct opendir_ret opendir_ret;
+
+struct releasedir_arg {
+	int fd;
+};
+typedef struct releasedir_arg releasedir_arg;
+
+struct releasedir_ret {
+	int ret;
+};
+typedef struct releasedir_ret releasedir_ret;
+
+struct open_arg {
+	char *path;
+	int flags;
+};
+typedef struct open_arg open_arg;
+
+struct open_ret {
+	int fd;
+	int ret;
+};
+typedef struct open_ret open_ret;
+
+struct release_arg {
+	int fd;
+};
+typedef struct release_arg release_arg;
+
+struct release_ret {
+	int ret;
+};
+typedef struct release_ret release_ret;
+
+struct read_arg {
+	int fd;
+	u_int size;
+	u_int offset;
+};
+typedef struct read_arg read_arg;
+
+struct read_ret {
+	char buffer[MAX_SIZE];
+	int ret;
+};
+typedef struct read_ret read_ret;
 
 #define COMPUTE 456123789
 #define COMPUTE_VERS 6
@@ -87,6 +133,18 @@ extern  readdir_ret * bb_readdir_6_svc(readdir_arg *, struct svc_req *);
 #define BB_OPENDIR 4
 extern  opendir_ret * bb_opendir_6(opendir_arg *, CLIENT *);
 extern  opendir_ret * bb_opendir_6_svc(opendir_arg *, struct svc_req *);
+#define BB_RELEASEDIR 5
+extern  releasedir_ret * bb_releasedir_6(releasedir_arg *, CLIENT *);
+extern  releasedir_ret * bb_releasedir_6_svc(releasedir_arg *, struct svc_req *);
+#define BB_OPEN 6
+extern  open_ret * bb_open_6(open_arg *, CLIENT *);
+extern  open_ret * bb_open_6_svc(open_arg *, struct svc_req *);
+#define BB_RELEASE 7
+extern  release_ret * bb_release_6(release_arg *, CLIENT *);
+extern  release_ret * bb_release_6_svc(release_arg *, struct svc_req *);
+#define BB_READ 8
+extern  read_ret * bb_read_6(read_arg *, CLIENT *);
+extern  read_ret * bb_read_6_svc(read_arg *, struct svc_req *);
 extern int compute_6_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
 #else /* K&R C */
@@ -102,6 +160,18 @@ extern  readdir_ret * bb_readdir_6_svc();
 #define BB_OPENDIR 4
 extern  opendir_ret * bb_opendir_6();
 extern  opendir_ret * bb_opendir_6_svc();
+#define BB_RELEASEDIR 5
+extern  releasedir_ret * bb_releasedir_6();
+extern  releasedir_ret * bb_releasedir_6_svc();
+#define BB_OPEN 6
+extern  open_ret * bb_open_6();
+extern  open_ret * bb_open_6_svc();
+#define BB_RELEASE 7
+extern  release_ret * bb_release_6();
+extern  release_ret * bb_release_6_svc();
+#define BB_READ 8
+extern  read_ret * bb_read_6();
+extern  read_ret * bb_read_6_svc();
 extern int compute_6_freeresult ();
 #endif /* K&R C */
 
@@ -116,6 +186,14 @@ extern  bool_t xdr_readdir_arg (XDR *, readdir_arg*);
 extern  bool_t xdr_readdir_ret (XDR *, readdir_ret*);
 extern  bool_t xdr_opendir_arg (XDR *, opendir_arg*);
 extern  bool_t xdr_opendir_ret (XDR *, opendir_ret*);
+extern  bool_t xdr_releasedir_arg (XDR *, releasedir_arg*);
+extern  bool_t xdr_releasedir_ret (XDR *, releasedir_ret*);
+extern  bool_t xdr_open_arg (XDR *, open_arg*);
+extern  bool_t xdr_open_ret (XDR *, open_ret*);
+extern  bool_t xdr_release_arg (XDR *, release_arg*);
+extern  bool_t xdr_release_ret (XDR *, release_ret*);
+extern  bool_t xdr_read_arg (XDR *, read_arg*);
+extern  bool_t xdr_read_ret (XDR *, read_ret*);
 
 #else /* K&R C */
 extern bool_t xdr_getattr_arg ();
@@ -126,6 +204,14 @@ extern bool_t xdr_readdir_arg ();
 extern bool_t xdr_readdir_ret ();
 extern bool_t xdr_opendir_arg ();
 extern bool_t xdr_opendir_ret ();
+extern bool_t xdr_releasedir_arg ();
+extern bool_t xdr_releasedir_ret ();
+extern bool_t xdr_open_arg ();
+extern bool_t xdr_open_ret ();
+extern bool_t xdr_release_arg ();
+extern bool_t xdr_release_ret ();
+extern bool_t xdr_read_arg ();
+extern bool_t xdr_read_ret ();
 
 #endif /* K&R C */
 

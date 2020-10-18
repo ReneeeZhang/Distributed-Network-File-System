@@ -212,6 +212,99 @@ xdr_opendir_ret (XDR *xdrs, opendir_ret *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_int (xdrs, &objp->fd))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_releasedir_arg (XDR *xdrs, releasedir_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->fd))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_releasedir_ret (XDR *xdrs, releasedir_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_open_arg (XDR *xdrs, open_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->flags))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_open_ret (XDR *xdrs, open_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->fd))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_release_arg (XDR *xdrs, release_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->fd))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_release_ret (XDR *xdrs, release_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_read_arg (XDR *xdrs, read_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->fd))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->size))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->offset))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_read_ret (XDR *xdrs, read_ret *objp)
+{
+	register int32_t *buf;
+
+	int i;
+	 if (!xdr_opaque (xdrs, objp->buffer, MAX_SIZE))
+		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->ret))
 		 return FALSE;
 	return TRUE;

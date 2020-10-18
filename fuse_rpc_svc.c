@@ -24,6 +24,10 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		access_arg bb_access_6_arg;
 		readdir_arg bb_readdir_6_arg;
 		opendir_arg bb_opendir_6_arg;
+		releasedir_arg bb_releasedir_6_arg;
+		open_arg bb_open_6_arg;
+		release_arg bb_release_6_arg;
+		read_arg bb_read_6_arg;
 	} argument;
 	char *result;
 	xdrproc_t _xdr_argument, _xdr_result;
@@ -56,6 +60,30 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		_xdr_argument = (xdrproc_t) xdr_opendir_arg;
 		_xdr_result = (xdrproc_t) xdr_opendir_ret;
 		local = (char *(*)(char *, struct svc_req *)) bb_opendir_6_svc;
+		break;
+
+	case BB_RELEASEDIR:
+		_xdr_argument = (xdrproc_t) xdr_releasedir_arg;
+		_xdr_result = (xdrproc_t) xdr_releasedir_ret;
+		local = (char *(*)(char *, struct svc_req *)) bb_releasedir_6_svc;
+		break;
+
+	case BB_OPEN:
+		_xdr_argument = (xdrproc_t) xdr_open_arg;
+		_xdr_result = (xdrproc_t) xdr_open_ret;
+		local = (char *(*)(char *, struct svc_req *)) bb_open_6_svc;
+		break;
+
+	case BB_RELEASE:
+		_xdr_argument = (xdrproc_t) xdr_release_arg;
+		_xdr_result = (xdrproc_t) xdr_release_ret;
+		local = (char *(*)(char *, struct svc_req *)) bb_release_6_svc;
+		break;
+
+	case BB_READ:
+		_xdr_argument = (xdrproc_t) xdr_read_arg;
+		_xdr_result = (xdrproc_t) xdr_read_ret;
+		local = (char *(*)(char *, struct svc_req *)) bb_read_6_svc;
 		break;
 
 	default:

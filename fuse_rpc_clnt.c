@@ -68,3 +68,63 @@ bb_opendir_6(opendir_arg *argp, CLIENT *clnt)
 	}
 	return (&clnt_res);
 }
+
+releasedir_ret *
+bb_releasedir_6(releasedir_arg *argp, CLIENT *clnt)
+{
+	static releasedir_ret clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, BB_RELEASEDIR,
+		(xdrproc_t) xdr_releasedir_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_releasedir_ret, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+open_ret *
+bb_open_6(open_arg *argp, CLIENT *clnt)
+{
+	static open_ret clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, BB_OPEN,
+		(xdrproc_t) xdr_open_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_open_ret, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+release_ret *
+bb_release_6(release_arg *argp, CLIENT *clnt)
+{
+	static release_ret clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, BB_RELEASE,
+		(xdrproc_t) xdr_release_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_release_ret, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+read_ret *
+bb_read_6(read_arg *argp, CLIENT *clnt)
+{
+	static read_ret clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, BB_READ,
+		(xdrproc_t) xdr_read_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_read_ret, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}

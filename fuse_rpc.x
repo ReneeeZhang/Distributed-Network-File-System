@@ -45,6 +45,44 @@ struct opendir_arg {
 };
 
 struct opendir_ret {
+    int fd; /* file descriptor of the directory */
+    int ret; /* status of RPC */
+};
+
+struct releasedir_arg {
+    int fd;
+};
+
+struct releasedir_ret {
+    int ret; /* status of RPC */
+};
+
+struct open_arg {
+    string path<>;
+    int flags;
+};
+
+struct open_ret {
+    int fd; /* file descriptor of file */
+    int ret; /* status of RPC */
+};
+
+struct release_arg {
+    int fd;
+};
+
+struct release_ret {
+    int ret; /* status of RPC */
+};
+
+struct read_arg {
+    int fd;
+    unsigned int size;
+    unsigned int offset;
+};
+
+struct read_ret {
+    opaque buffer[MAX_SIZE]; /* file content */
     int ret; /* status of RPC */
 };
 
@@ -54,5 +92,9 @@ program COMPUTE{
         access_ret BB_ACCESS(access_arg) = 2;
         readdir_ret BB_READDIR(readdir_arg) = 3;
         opendir_ret BB_OPENDIR(opendir_arg) = 4;
+        releasedir_ret BB_RELEASEDIR(releasedir_arg) = 5;
+        open_ret BB_OPEN(open_arg) = 6;
+        release_ret BB_RELEASE(release_arg) = 7;
+        read_ret BB_READ(read_arg) = 8;
     } = 6;
 } = 456123789;
