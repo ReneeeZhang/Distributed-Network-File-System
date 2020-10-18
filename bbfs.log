@@ -20,33 +20,18 @@ bb_init()
     rootdir = /home/hj110/FUSE/rootdir
     umask = 00000
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_opendir(path="/", fi=0xfefffbf0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_readdir(path="/", buf=0x058e4030, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-Ready to fill in dirent .
-Ready to fill in dirent ..
-Ready to fill in dirent secret.txt
-Ready to fill in dirent secret_file.txt
-Ready to fill in dirent bogus.txt
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_releasedir(path="/", fi=0xfefffc00)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_opendir(path="/", fi=0xfefffbf0)
+bb_opendir(path="/", fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_readdir(path="/", buf=0x05915d40, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
+bb_readdir(path="/", buf=0x058fcd80, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 Ready to fill in dirent .
 Ready to fill in dirent ..
@@ -58,15 +43,30 @@ Ready to fill in dirent bogus.txt
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
 
-bb_releasedir(path="/", fi=0xfefffc00)
+bb_releasedir(path="/", fi=0xfefffbe0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_opendir(path="/", fi=0xfefffbf0)
+bb_opendir(path="/", fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_readdir(path="/", buf=0x05947710, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
+bb_readdir(path="/", buf=0x0592e750, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x059514b0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 Ready to fill in dirent .
 Ready to fill in dirent ..
@@ -74,36 +74,17 @@ Ready to fill in dirent secret.txt
 Ready to fill in dirent secret_file.txt
 Ready to fill in dirent bogus.txt
 
-bb_releasedir(path="/", fi=0xfefffc00)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_opendir(path="/", fi=0xfefffbf0)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_readdir(path="/", buf=0x0596a470, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-Ready to fill in dirent .
-Ready to fill in dirent ..
-Ready to fill in dirent secret.txt
-Ready to fill in dirent secret_file.txt
-Ready to fill in dirent bogus.txt
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_releasedir(path="/", fi=0xfefffc00)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_open(path"/bogus.txt", fi=0xfefffcb0)
+bb_open(path"/bogus.txt", fi=0xfefffc90)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
 
-bb_read(path"/bogus.txt", fi=0xfefffcb0)
-receive buffer from server: hello world
-
-actual buffer: hello world
-
+bb_read(path"/bogus.txt", fi=0xfefffc90)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
 
-bb_flush(path="/bogus.txt", fi=0xfefffcb0)
+bb_flush(path="/bogus.txt", fi=0xfefffc90)
     fi:
     flags = 0x00000000
     fh_old = 0x00000006
@@ -111,16 +92,18 @@ bb_flush(path="/bogus.txt", fi=0xfefffcb0)
     direct_io = 0
     keep_cache = 0
     fh = 0x0000000000000006
-    lock_owner = 0x68a6d1e31d278394
+    lock_owner = 0xae807d6bbc397608
 
-bb_release(path="/bogus.txt", fi=0xfefffcb0)
+bb_release(path="/bogus.txt", fi=0xfefffc90)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/hello.txt", fpath = "/home/hj110/FUSE/rootdir/hello.txt"
+Get attribute error
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_opendir(path="/", fi=0xfefffbf0)
+bb_opendir(path="/", fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_readdir(path="/", buf=0x059a1fd0, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
+bb_readdir(path="/", buf=0x0598dee0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 Ready to fill in dirent .
 Ready to fill in dirent ..
@@ -128,16 +111,16 @@ Ready to fill in dirent secret.txt
 Ready to fill in dirent secret_file.txt
 Ready to fill in dirent bogus.txt
 
-bb_releasedir(path="/", fi=0xfefffc00)
+bb_releasedir(path="/", fi=0xfefffbe0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_opendir(path="/", fi=0xfefffbf0)
+bb_opendir(path="/", fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_readdir(path="/", buf=0x059c4d30, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
+bb_readdir(path="/", buf=0x059b0c40, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 Ready to fill in dirent .
 Ready to fill in dirent ..
@@ -145,13 +128,14 @@ Ready to fill in dirent secret.txt
 Ready to fill in dirent secret_file.txt
 Ready to fill in dirent bogus.txt
 
-bb_releasedir(path="/", fi=0xfefffc00)
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_opendir(path="/", fi=0xfefffbf0)
+bb_opendir(path="/", fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_readdir(path="/", buf=0x059d8e20, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
+bb_readdir(path="/", buf=0x059c9c00, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 Ready to fill in dirent .
 Ready to fill in dirent ..
@@ -159,34 +143,16 @@ Ready to fill in dirent secret.txt
 Ready to fill in dirent secret_file.txt
 Ready to fill in dirent bogus.txt
 
-bb_releasedir(path="/", fi=0xfefffc00)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_opendir(path="/", fi=0xfefffbf0)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_readdir(path="/", buf=0x059f6cb0, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-Ready to fill in dirent .
-Ready to fill in dirent ..
-Ready to fill in dirent secret.txt
-Ready to fill in dirent secret_file.txt
-Ready to fill in dirent bogus.txt
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_releasedir(path="/", fi=0xfefffc00)
+bb_releasedir(path="/", fi=0xfefffbe0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_opendir(path="/", fi=0xfefffbf0)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_readdir(path="/", buf=0x05a237b0, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
+bb_readdir(path="/", buf=0x059ec960, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 Ready to fill in dirent .
 Ready to fill in dirent ..
@@ -194,22 +160,65 @@ Ready to fill in dirent secret.txt
 Ready to fill in dirent secret_file.txt
 Ready to fill in dirent bogus.txt
 
-bb_releasedir(path="/", fi=0xfefffc00)
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05a0a7f0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05a2d550, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05a4b3e0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_opendir(path="/", fi=0xfefffbf0)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_readdir(path="/", buf=0x05a5a050, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
+bb_readdir(path="/", buf=0x05a6e140, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 Ready to fill in dirent .
 Ready to fill in dirent ..
@@ -218,28 +227,31 @@ Ready to fill in dirent secret_file.txt
 Ready to fill in dirent bogus.txt
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_releasedir(path="/", fi=0xfefffc00)
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05a8bfd0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
-
-bb_opendir(path="/", fi=0xfefffbf0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_readdir(path="/", buf=0x05a81c80, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-Ready to fill in dirent .
-Ready to fill in dirent ..
-Ready to fill in dirent secret.txt
-Ready to fill in dirent secret_file.txt
-Ready to fill in dirent bogus.txt
-
-bb_releasedir(path="/", fi=0xfefffc00)
+bb_opendir(path="/", fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_opendir(path="/", fi=0xfefffbf0)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_readdir(path="/", buf=0x05a95d70, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
+bb_readdir(path="/", buf=0x05aaed30, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 Ready to fill in dirent .
 Ready to fill in dirent ..
@@ -247,13 +259,13 @@ Ready to fill in dirent secret.txt
 Ready to fill in dirent secret_file.txt
 Ready to fill in dirent bogus.txt
 
-bb_releasedir(path="/", fi=0xfefffc00)
+bb_releasedir(path="/", fi=0xfefffbe0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_opendir(path="/", fi=0xfefffbf0)
+bb_opendir(path="/", fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_readdir(path="/", buf=0x05aa9e60, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
+bb_readdir(path="/", buf=0x05ac2e20, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 Ready to fill in dirent .
 Ready to fill in dirent ..
@@ -261,21 +273,51 @@ Ready to fill in dirent secret.txt
 Ready to fill in dirent secret_file.txt
 Ready to fill in dirent bogus.txt
 
-bb_releasedir(path="/", fi=0xfefffc00)
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_open(path"/secret.txt", fi=0xfefffcb0)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
+bb_readdir(path="/", buf=0x05ad6f10, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_read(path"/secret.txt", fi=0xfefffcb0)
-receive buffer from server: secret
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
 
-actual buffer: secret
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
+bb_readdir(path="/", buf=0x05af9c70, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
 
-bb_flush(path="/secret.txt", fi=0xfefffcb0)
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_open(path"/bogus.txt", fi=0xfefffc90)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+
+bb_truncate(path="/bogus.txt", newsize=0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+    truncate returned 0
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+
+bb_flush(path="/bogus.txt", fi=0xfefffc90)
     fi:
     flags = 0x00000000
     fh_old = 0x00000006
@@ -283,16 +325,77 @@ bb_flush(path="/secret.txt", fi=0xfefffcb0)
     direct_io = 0
     keep_cache = 0
     fh = 0x0000000000000006
-    lock_owner = 0x7549214648ecfc7f
+    lock_owner = 0x2d4024d09dbace46
 
-bb_release(path="/secret.txt", fi=0xfefffcb0)
+bb_write(path="/bogus.txt", buf=0x058b6770, size=4, offset=0, fi=0xfefffd00)
+
+bb_flush(path="/bogus.txt", fi=0xfefffc90)
+    fi:
+    flags = 0x00000000
+    fh_old = 0x00000006
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x0000000000000006
+    lock_owner = 0x2d4024d09dbace46
+
+bb_release(path="/bogus.txt", fi=0xfefffc90)
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05b2ba40, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05b4e7a0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_opendir(path="/", fi=0xfefffbf0)
+bb_open(path"/bogus.txt", fi=0xfefffc90)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+
+bb_read(path"/bogus.txt", fi=0xfefffc90)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+
+bb_flush(path="/bogus.txt", fi=0xfefffc90)
+    fi:
+    flags = 0x00000000
+    fh_old = 0x00000006
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x0000000000000006
+    lock_owner = 0x16f9d2dea4323164
+
+bb_release(path="/bogus.txt", fi=0xfefffc90)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_readdir(path="/", buf=0x05ae19c0, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05b81430, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 Ready to fill in dirent .
 Ready to fill in dirent ..
@@ -301,15 +404,15 @@ Ready to fill in dirent secret_file.txt
 Ready to fill in dirent bogus.txt
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_releasedir(path="/", fi=0xfefffc00)
+bb_releasedir(path="/", fi=0xfefffbe0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
 
-bb_opendir(path="/", fi=0xfefffbf0)
+bb_opendir(path="/", fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_readdir(path="/", buf=0x05b04720, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
+bb_readdir(path="/", buf=0x05ba4190, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 Ready to fill in dirent .
 Ready to fill in dirent ..
@@ -317,13 +420,31 @@ Ready to fill in dirent secret.txt
 Ready to fill in dirent secret_file.txt
 Ready to fill in dirent bogus.txt
 
-bb_releasedir(path="/", fi=0xfefffc00)
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_opendir(path="/", fi=0xfefffbf0)
+bb_opendir(path="/", fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_readdir(path="/", buf=0x05b18810, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
+bb_readdir(path="/", buf=0x05bbd150, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05bdfeb0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 Ready to fill in dirent .
 Ready to fill in dirent ..
@@ -332,17 +453,247 @@ Ready to fill in dirent secret_file.txt
 Ready to fill in dirent bogus.txt
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_releasedir(path="/", fi=0xfefffc00)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/rootdir", fpath = "/home/hj110/FUSE/rootdir/rootdir"
+bb_releasedir(path="/", fi=0xfefffbe0)
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05bf3fa0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05c08090, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05c2adf0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_open(path"/bogus.txt", fi=0xfefffc90)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+
+bb_flush(path="/bogus.txt", fi=0xfefffc90)
+    fi:
+    flags = 0x00000000
+    fh_old = 0x00000006
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x0000000000000006
+    lock_owner = 0x2d4024d09dbace46
+
+bb_write(path="/bogus.txt", buf=0x058b6770, size=4, offset=4, fi=0xfefffd00)
+
+bb_flush(path="/bogus.txt", fi=0xfefffc90)
+    fi:
+    flags = 0x00000000
+    fh_old = 0x00000006
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x0000000000000006
+    lock_owner = 0x2d4024d09dbace46
+
+bb_release(path="/bogus.txt", fi=0xfefffc90)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_open(path"/bogus.txt", fi=0xfefffc90)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+
+bb_read(path"/bogus.txt", fi=0xfefffc90)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+
+bb_flush(path="/bogus.txt", fi=0xfefffc90)
+    fi:
+    flags = 0x00000000
+    fh_old = 0x00000006
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x0000000000000006
+    lock_owner = 0x914a30bfaaf2c16d
+
+bb_release(path="/bogus.txt", fi=0xfefffc90)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05c7b760, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05eb0510, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05ece3a0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05ef1100, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05f051f0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05f192e0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05f2d3d0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05f414c0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05f555b0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/hao.txt", fpath = "/home/hj110/FUSE/rootdir/hao.txt"
+Get attribute error
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/hao.txt", fpath = "/home/hj110/FUSE/rootdir/hao.txt"
 Get attribute error
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/rootdir", fpath = "/home/hj110/FUSE/rootdir/rootdir"
-Get attribute error
-
-bb_opendir(path="/", fi=0xfefffbf0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_readdir(path="/", buf=0x05b3b570, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05f7d1e0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 Ready to fill in dirent .
 Ready to fill in dirent ..
@@ -350,16 +701,227 @@ Ready to fill in dirent secret.txt
 Ready to fill in dirent secret_file.txt
 Ready to fill in dirent bogus.txt
 
-bb_releasedir(path="/", fi=0xfefffc00)
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05fa4e10, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05fc7b70, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05fdbc60, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x05ff9af0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+
+bb_readdir(path="/", buf=0x05ffea70, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x06035810, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x06049900, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x0605d9f0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x06071ae0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x0608f970, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_opendir(path="/", fi=0xfefffbf0)
+bb_opendir(path="/", fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_readdir(path="/", buf=0x05b5e2d0, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
+bb_readdir(path="/", buf=0x060b26d0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x060c67c0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x060da8b0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x060ee9a0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x06102a90, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 Ready to fill in dirent .
 Ready to fill in dirent ..
@@ -368,73 +930,15 @@ Ready to fill in dirent secret_file.txt
 Ready to fill in dirent bogus.txt
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_releasedir(path="/", fi=0xfefffc00)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_opendir(path="/", fi=0xfefffbf0)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_readdir(path="/", buf=0x05b7c160, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-Ready to fill in dirent .
-Ready to fill in dirent ..
-Ready to fill in dirent secret.txt
-Ready to fill in dirent secret_file.txt
-Ready to fill in dirent bogus.txt
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_releasedir(path="/", fi=0xfefffc00)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
+bb_releasedir(path="/", fi=0xfefffbe0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
 
-bb_opendir(path="/", fi=0xfefffbf0)
+bb_opendir(path="/", fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_readdir(path="/", buf=0x05b9eec0, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-Ready to fill in dirent .
-Ready to fill in dirent ..
-Ready to fill in dirent secret.txt
-Ready to fill in dirent secret_file.txt
-Ready to fill in dirent bogus.txt
-
-bb_releasedir(path="/", fi=0xfefffc00)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_opendir(path="/", fi=0xfefffbf0)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_readdir(path="/", buf=0x05bb2fb0, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-Ready to fill in dirent .
-Ready to fill in dirent ..
-Ready to fill in dirent secret.txt
-Ready to fill in dirent secret_file.txt
-Ready to fill in dirent bogus.txt
-
-bb_releasedir(path="/", fi=0xfefffc00)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_opendir(path="/", fi=0xfefffbf0)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_readdir(path="/", buf=0x05bc70a0, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-Ready to fill in dirent .
-Ready to fill in dirent ..
-Ready to fill in dirent secret.txt
-Ready to fill in dirent secret_file.txt
-Ready to fill in dirent bogus.txt
-
-bb_releasedir(path="/", fi=0xfefffc00)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_opendir(path="/", fi=0xfefffbf0)
-    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
-
-bb_readdir(path="/", buf=0x05bdb190, filler=0x04e43d00, offset=0, fi=0xfefffbf0)
+bb_readdir(path="/", buf=0x061257f0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 Ready to fill in dirent .
 Ready to fill in dirent ..
@@ -443,6 +947,99 @@ Ready to fill in dirent secret_file.txt
 Ready to fill in dirent bogus.txt
     bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
-bb_releasedir(path="/", fi=0xfefffc00)
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x06143680, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x0616b2b0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x0617f3a0, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+
+bb_readdir(path="/", buf=0x06184320, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x061a7580, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_opendir(path="/", fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+
+bb_readdir(path="/", buf=0x061bb670, filler=0x04e43d00, offset=0, fi=0xfefffbd0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent secret.txt
+Ready to fill in dirent secret_file.txt
+Ready to fill in dirent bogus.txt
+
+bb_releasedir(path="/", fi=0xfefffbe0)
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/bogus.txt", fpath = "/home/hj110/FUSE/rootdir/bogus.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret.txt", fpath = "/home/hj110/FUSE/rootdir/secret.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/secret_file.txt", fpath = "/home/hj110/FUSE/rootdir/secret_file.txt"
+    bb_fullpath:  rootdir = "/home/hj110/FUSE/rootdir", path = "/", fpath = "/home/hj110/FUSE/rootdir/"
 
 bb_destroy(userdata=0x0588c040)

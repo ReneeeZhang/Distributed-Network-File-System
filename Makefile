@@ -2,6 +2,9 @@ all: server tweakfs
 
 clean:
 #	make -f Makefile.fuse_rpc clean
+	rm *.o
+	rm -f fuse_rpc_client
+	rm -f fuse_rpc_server
 	rm -f tweakfs
 	rm -rf mountdir
 	rm -rf rootdir

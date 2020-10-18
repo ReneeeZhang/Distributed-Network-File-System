@@ -305,6 +305,76 @@ xdr_read_ret (XDR *xdrs, read_ret *objp)
 	int i;
 	 if (!xdr_opaque (xdrs, objp->buffer, MAX_SIZE))
 		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->len))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_write_arg (XDR *xdrs, write_arg *objp)
+{
+	register int32_t *buf;
+
+	int i;
+
+	if (xdrs->x_op == XDR_ENCODE) {
+		buf = XDR_INLINE (xdrs, 3 * BYTES_PER_XDR_UNIT);
+		if (buf == NULL) {
+			 if (!xdr_int (xdrs, &objp->fd))
+				 return FALSE;
+			 if (!xdr_u_int (xdrs, &objp->size))
+				 return FALSE;
+			 if (!xdr_u_int (xdrs, &objp->offset))
+				 return FALSE;
+
+		} else {
+		IXDR_PUT_LONG(buf, objp->fd);
+		IXDR_PUT_U_LONG(buf, objp->size);
+		IXDR_PUT_U_LONG(buf, objp->offset);
+		}
+		 if (!xdr_opaque (xdrs, objp->buffer, MAX_SIZE))
+			 return FALSE;
+		return TRUE;
+	} else if (xdrs->x_op == XDR_DECODE) {
+		buf = XDR_INLINE (xdrs, 3 * BYTES_PER_XDR_UNIT);
+		if (buf == NULL) {
+			 if (!xdr_int (xdrs, &objp->fd))
+				 return FALSE;
+			 if (!xdr_u_int (xdrs, &objp->size))
+				 return FALSE;
+			 if (!xdr_u_int (xdrs, &objp->offset))
+				 return FALSE;
+
+		} else {
+		objp->fd = IXDR_GET_LONG(buf);
+		objp->size = IXDR_GET_U_LONG(buf);
+		objp->offset = IXDR_GET_U_LONG(buf);
+		}
+		 if (!xdr_opaque (xdrs, objp->buffer, MAX_SIZE))
+			 return FALSE;
+	 return TRUE;
+	}
+
+	 if (!xdr_int (xdrs, &objp->fd))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->size))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->offset))
+		 return FALSE;
+	 if (!xdr_opaque (xdrs, objp->buffer, MAX_SIZE))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_write_ret (XDR *xdrs, write_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->len))
+		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->ret))
 		 return FALSE;
 	return TRUE;

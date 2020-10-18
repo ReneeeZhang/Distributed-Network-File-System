@@ -200,16 +200,36 @@ bb_read_6_svc(read_arg *argp, struct svc_req *rqstp) {
     memset(buf, '\0', MAX_SIZE);
     ssize_t read_ret = pread(fd, buf, size, offset);
 
-    fprintf(stderr, "Raw buffer has content: %s\n", buf);
-
     if (read_ret == -1) {
         ret.ret = -1;
         fprintf(stderr, "read file with fd = %d, with size = %u, offset = %u error\n", fd, size, offset);
         return &ret;
     }
 
+    ret.len = read_ret;
     ret.ret = 0;
     memcpy(ret.buffer, buf, MAX_SIZE);
-    fprintf(stderr, "Read file buffer: %s\n", ret.buffer);
+    return &ret;
+}
+
+write_ret *
+bb_write_6_svc(write_arg *argp, struct svc_req *rqstp) {
+    int fd = argp->fd;
+    unsigned int size = argp->size;
+    unsigned int offset = argp->offset;
+    char *buf = argp->buffer;
+    fprintf(stderr, "Write file with fd = %d, with size = %u, offset = %u\n", fd, size, offset);
+
+    static write_ret ret;
+    ssize_t write_ret = pwrite(fd, buf, size, offset);
+
+    if (write_ret == -1) {
+        ret.ret = -1;
+        fprintf(stderr, "write file with fd = %d, with size = %u, offset = %u error\n", fd, size, offset);
+        return &ret;    
+    }
+
+    ret.len = write_ret;
+    ret.ret = 0;
     return &ret;
 }

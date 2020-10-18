@@ -113,9 +113,24 @@ typedef struct read_arg read_arg;
 
 struct read_ret {
 	char buffer[MAX_SIZE];
+	int len;
 	int ret;
 };
 typedef struct read_ret read_ret;
+
+struct write_arg {
+	int fd;
+	u_int size;
+	u_int offset;
+	char buffer[MAX_SIZE];
+};
+typedef struct write_arg write_arg;
+
+struct write_ret {
+	int len;
+	int ret;
+};
+typedef struct write_ret write_ret;
 
 #define COMPUTE 456123789
 #define COMPUTE_VERS 6
@@ -145,6 +160,9 @@ extern  release_ret * bb_release_6_svc(release_arg *, struct svc_req *);
 #define BB_READ 8
 extern  read_ret * bb_read_6(read_arg *, CLIENT *);
 extern  read_ret * bb_read_6_svc(read_arg *, struct svc_req *);
+#define BB_WRITE 9
+extern  write_ret * bb_write_6(write_arg *, CLIENT *);
+extern  write_ret * bb_write_6_svc(write_arg *, struct svc_req *);
 extern int compute_6_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
 #else /* K&R C */
@@ -172,6 +190,9 @@ extern  release_ret * bb_release_6_svc();
 #define BB_READ 8
 extern  read_ret * bb_read_6();
 extern  read_ret * bb_read_6_svc();
+#define BB_WRITE 9
+extern  write_ret * bb_write_6();
+extern  write_ret * bb_write_6_svc();
 extern int compute_6_freeresult ();
 #endif /* K&R C */
 
@@ -194,6 +215,8 @@ extern  bool_t xdr_release_arg (XDR *, release_arg*);
 extern  bool_t xdr_release_ret (XDR *, release_ret*);
 extern  bool_t xdr_read_arg (XDR *, read_arg*);
 extern  bool_t xdr_read_ret (XDR *, read_ret*);
+extern  bool_t xdr_write_arg (XDR *, write_arg*);
+extern  bool_t xdr_write_ret (XDR *, write_ret*);
 
 #else /* K&R C */
 extern bool_t xdr_getattr_arg ();
@@ -212,6 +235,8 @@ extern bool_t xdr_release_arg ();
 extern bool_t xdr_release_ret ();
 extern bool_t xdr_read_arg ();
 extern bool_t xdr_read_ret ();
+extern bool_t xdr_write_arg ();
+extern bool_t xdr_write_ret ();
 
 #endif /* K&R C */
 

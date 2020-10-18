@@ -128,3 +128,18 @@ bb_read_6(read_arg *argp, CLIENT *clnt)
 	}
 	return (&clnt_res);
 }
+
+write_ret *
+bb_write_6(write_arg *argp, CLIENT *clnt)
+{
+	static write_ret clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, BB_WRITE,
+		(xdrproc_t) xdr_write_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_write_ret, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}

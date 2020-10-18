@@ -83,6 +83,19 @@ struct read_arg {
 
 struct read_ret {
     opaque buffer[MAX_SIZE]; /* file content */
+    int len; /* length of the content */
+    int ret; /* status of RPC */
+};
+
+struct write_arg {
+    int fd;
+    unsigned int size;
+    unsigned int offset;
+    opaque buffer[MAX_SIZE]; /* write-in content */
+};
+
+struct write_ret {
+    int len; /* length of the content */
     int ret; /* status of RPC */
 };
 
@@ -96,5 +109,6 @@ program COMPUTE{
         open_ret BB_OPEN(open_arg) = 6;
         release_ret BB_RELEASE(release_arg) = 7;
         read_ret BB_READ(read_arg) = 8;
+        write_ret BB_WRITE(write_arg) = 9;
     } = 6;
 } = 456123789;

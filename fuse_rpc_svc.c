@@ -28,6 +28,7 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		open_arg bb_open_6_arg;
 		release_arg bb_release_6_arg;
 		read_arg bb_read_6_arg;
+		write_arg bb_write_6_arg;
 	} argument;
 	char *result;
 	xdrproc_t _xdr_argument, _xdr_result;
@@ -84,6 +85,12 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		_xdr_argument = (xdrproc_t) xdr_read_arg;
 		_xdr_result = (xdrproc_t) xdr_read_ret;
 		local = (char *(*)(char *, struct svc_req *)) bb_read_6_svc;
+		break;
+
+	case BB_WRITE:
+		_xdr_argument = (xdrproc_t) xdr_write_arg;
+		_xdr_result = (xdrproc_t) xdr_write_ret;
+		local = (char *(*)(char *, struct svc_req *)) bb_write_6_svc;
 		break;
 
 	default:

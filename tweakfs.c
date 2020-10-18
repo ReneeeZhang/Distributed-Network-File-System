@@ -477,11 +477,8 @@ int bb_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
     }
 
     // Assign read result to user space.
-
-    log_msg("receive buffer from server: %s\n", ret->buffer);
-    memcpy(buf, ret->buffer, MAX_SIZE);
-    log_msg("actual buffer: %s\n", buf);
-    return 0;
+    memmove(buf, ret->buffer, MAX_SIZE);
+    return ret->len;
 
     /*
     // If the request file is "buddy.txt", directly write content 
@@ -530,15 +527,37 @@ int bb_write(const char *path, const char *buf, size_t size, off_t offset,
     log_msg("\nbb_write(path=\"%s\", buf=0x%08x, size=%d, offset=%lld, fi=0x%08x)\n",
 	    path, buf, size, offset, fi
 	    );
-    // no need to get fpath on this one, since I work from fi->fh not the path
-    log_fi(fi);
-
-    // Don't write to buddy.txt or scret files.
-    if (is_buddy_file((char*)path) || starts_with((char*)path, "secret")) {
-        return 0;
+    
+    // Get attribute via RPC.
+    CLIENT *clnt = NULL;
+    write_ret *ret = NULL;
+    write_arg arg;
+    arg.fd = fi->fh;
+    arg.size = size;
+    arg.offset = offset;
+    memset(arg.buffer, '\0', MAX_SIZE);
+    memcpy(arg.buffer, buf, MAX_SIZE);
+    
+    clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
+    if (clnt == NULL) {
+        log_msg("Create RPC connection error\n");
+        clnt_pcreateerror (host);
+        exit (1);
     }
 
-    return log_syscall("pwrite", pwrite(fi->fh, buf, size, offset), 0);
+    ret = bb_write_6(&arg, clnt);
+    if (ret == (write_ret *) NULL) {
+        log_msg("RPC return value error\n");
+        clnt_perror (clnt, "call failed");
+    }
+    clnt_destroy (clnt);
+
+    if (ret->ret == -1) {
+        log_msg("Read called error\n");
+        return -1;
+    }
+
+    return ret->len;
 }
 
 /** Get file system statistics
