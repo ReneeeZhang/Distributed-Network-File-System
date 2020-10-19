@@ -18,6 +18,7 @@ create:
 	echo "hello world" > rootdir/bogus.txt
 	echo "secret" > rootdir/secret.txt
 	echo "secret_file" > rootdir/secret_file.txt
+	mkdir rootdir/testdir
 
 header:
 	rpcgen fuse_rpc.x

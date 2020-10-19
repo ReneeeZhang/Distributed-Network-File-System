@@ -282,7 +282,7 @@ int bb_unlink(const char *path)
     clnt_destroy (clnt);
 
     if (ret->ret == -1) {
-        log_msg("unlink error for %s\n", path);
+        log_msg("unlink error for %s\n", fpath);
     }
     return ret->ret;
 }
@@ -290,13 +290,35 @@ int bb_unlink(const char *path)
 /** Remove a directory */
 int bb_rmdir(const char *path)
 {
-    char fpath[PATH_MAX];
-    
     log_msg("bb_rmdir(path=\"%s\")\n",
 	    path);
+    
+    // Get attribute via RPC.
+    CLIENT *clnt = NULL;
+    rmdir_ret *ret = NULL;
+    rmdir_arg arg;
+    char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.path = fpath;
+    
+    clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
+    if (clnt == NULL) {
+        log_msg("Create RPC connection error\n");
+        clnt_pcreateerror (host);
+        exit (1);
+    }
 
-    return log_syscall("rmdir", rmdir(fpath), 0);
+    ret = bb_rmdir_6(&arg, clnt);
+    if (ret == (rmdir_ret *) NULL) {
+        log_msg("RPC return value error\n");
+        clnt_perror (clnt, "call failed");
+    }
+    clnt_destroy (clnt);
+
+    if (ret->ret == -1) {
+        log_msg("rmdir error for %s\n", fpath);
+    }
+    return ret->ret;
 }
 
 /** Create a symbolic link */
@@ -344,15 +366,38 @@ int bb_symlink(const char *path, const char *link)
 // both path and newpath are fs-relative
 int bb_rename(const char *path, const char *newpath)
 {
-    char fpath[PATH_MAX];
-    char fnewpath[PATH_MAX];
-    
     log_msg("\nbb_rename(fpath=\"%s\", newpath=\"%s\")\n",
 	    path, newpath);
-    bb_fullpath(fpath, path);
-    bb_fullpath(fnewpath, newpath);
 
-    return log_syscall("rename", rename(fpath, fnewpath), 0);
+    // Get attribute via RPC.
+    CLIENT *clnt = NULL;
+    rename_ret *ret = NULL;
+    rename_arg arg;
+    char fpath[PATH_MAX];
+    bb_fullpath(fpath, path);
+    char fnewpath[PATH_MAX];
+    bb_fullpath(fnewpath, newpath);
+    arg.path = fpath;
+    arg.newpath = fnewpath;
+    
+    clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
+    if (clnt == NULL) {
+        log_msg("Create RPC connection error\n");
+        clnt_pcreateerror (host);
+        exit (1);
+    }
+
+    ret = bb_rename_6(&arg, clnt);
+    if (ret == (rename_ret *) NULL) {
+        log_msg("RPC return value error\n");
+        clnt_perror (clnt, "call failed");
+    }
+    clnt_destroy (clnt);
+
+    if (ret->ret == -1) {
+        log_msg("rename error from %s to %s\n", fpath, fnewpath);
+    }
+    return ret->ret;
 }
 
 /** Create a hard link to a file */

@@ -195,6 +195,26 @@ xdr_mkdir_ret (XDR *xdrs, mkdir_ret *objp)
 }
 
 bool_t
+xdr_rmdir_arg (XDR *xdrs, rmdir_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_rmdir_ret (XDR *xdrs, rmdir_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_readdir_arg (XDR *xdrs, readdir_arg *objp)
 {
 	register int32_t *buf;
@@ -253,6 +273,28 @@ xdr_releasedir_arg (XDR *xdrs, releasedir_arg *objp)
 
 bool_t
 xdr_releasedir_ret (XDR *xdrs, releasedir_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_rename_arg (XDR *xdrs, rename_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->newpath, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_rename_ret (XDR *xdrs, rename_ret *objp)
 {
 	register int32_t *buf;
 

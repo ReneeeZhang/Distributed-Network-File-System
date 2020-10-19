@@ -39,6 +39,14 @@ struct mkdir_ret {
     int ret; /* status of RPC */
 };
 
+struct rmdir_arg {
+    string path<>;
+};
+
+struct rmdir_ret {
+    int ret; /* status of RPC */
+};
+
 struct readdir_arg {
     string path<>;
 };
@@ -63,6 +71,15 @@ struct releasedir_arg {
 };
 
 struct releasedir_ret {
+    int ret; /* status of RPC */
+};
+
+struct rename_arg {
+    string path<>;
+    string newpath<>;
+};
+
+struct rename_ret {
     int ret; /* status of RPC */
 };
 
@@ -130,15 +147,17 @@ program COMPUTE{
         getattr_ret BB_GETATTR(getattr_arg) = 1;
         access_ret BB_ACCESS(access_arg) = 2;
         mkdir_ret BB_MKDIR(mkdir_arg) = 3;
-        readdir_ret BB_READDIR(readdir_arg) = 4;
-        opendir_ret BB_OPENDIR(opendir_arg) = 5;
-        releasedir_ret BB_RELEASEDIR(releasedir_arg) = 6;
-        symlink_ret BB_SYMLINK(symlink_arg) = 7;
-        unlink_ret BB_UNLINK(unlink_arg) = 8;
-        open_ret BB_OPEN(open_arg) = 9;
-        release_ret BB_RELEASE(release_arg) = 10;
-        read_ret BB_READ(read_arg) = 11;
-        write_ret BB_WRITE(write_arg) = 12;
+        rmdir_ret BB_RMDIR(rmdir_arg) = 4;
+        readdir_ret BB_READDIR(readdir_arg) = 5;
+        opendir_ret BB_OPENDIR(opendir_arg) = 6;
+        releasedir_ret BB_RELEASEDIR(releasedir_arg) = 7;
+        rename_ret BB_RENAME(rename_arg) = 8;
+        symlink_ret BB_SYMLINK(symlink_arg) = 9;
+        unlink_ret BB_UNLINK(unlink_arg) = 10;
+        open_ret BB_OPEN(open_arg) = 11;
+        release_ret BB_RELEASE(release_arg) = 12;
+        read_ret BB_READ(read_arg) = 13;
+        write_ret BB_WRITE(write_arg) = 14;
     } = 6;
 } = 456123789;
 
@@ -146,4 +165,5 @@ program COMPUTE{
 (1) mkdir getattr error
 (2) write when creating non-existing file error
 (3) create soft link with symlink() error
+(4) rename by mv command
 */

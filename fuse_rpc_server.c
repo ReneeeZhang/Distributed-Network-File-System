@@ -85,6 +85,16 @@ bb_mkdir_6_svc(mkdir_arg *argp, struct svc_req *rqstp) {
     return &ret;
 }
 
+rmdir_ret *
+bb_rmdir_6_svc(rmdir_arg *argp, struct svc_req *rqstp) {
+    char *path = argp->path;
+    fprintf(stderr, "Remove directory for %s\n", path);
+
+    static rmdir_ret ret;
+    ret.ret = rmdir(path);
+    return &ret;
+}
+
 readdir_ret *
 bb_readdir_6_svc(readdir_arg *argp, struct svc_req *rqstp) {
     char *path = argp->path;
@@ -155,6 +165,17 @@ bb_releasedir_6_svc(releasedir_arg *argp, struct svc_req *rqstp) {
     }
 
     ret.ret = 0;
+    return &ret;
+}
+
+rename_ret *
+bb_rename_6_svc(rename_arg *argp, struct svc_req *rqstp) {
+    char *path = argp->path;
+    char *newpath = argp->newpath;
+    fprintf(stderr, "Rename file from %s to %s\n", path, newpath);
+
+    static rename_ret ret;
+    ret.ret = rename(path, newpath);
     return &ret;
 }
 

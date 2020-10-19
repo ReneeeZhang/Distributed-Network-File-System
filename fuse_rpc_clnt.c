@@ -54,6 +54,21 @@ bb_mkdir_6(mkdir_arg *argp, CLIENT *clnt)
 	return (&clnt_res);
 }
 
+rmdir_ret *
+bb_rmdir_6(rmdir_arg *argp, CLIENT *clnt)
+{
+	static rmdir_ret clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, BB_RMDIR,
+		(xdrproc_t) xdr_rmdir_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_rmdir_ret, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
 readdir_ret *
 bb_readdir_6(readdir_arg *argp, CLIENT *clnt)
 {
@@ -93,6 +108,21 @@ bb_releasedir_6(releasedir_arg *argp, CLIENT *clnt)
 	if (clnt_call (clnt, BB_RELEASEDIR,
 		(xdrproc_t) xdr_releasedir_arg, (caddr_t) argp,
 		(xdrproc_t) xdr_releasedir_ret, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+rename_ret *
+bb_rename_6(rename_arg *argp, CLIENT *clnt)
+{
+	static rename_ret clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, BB_RENAME,
+		(xdrproc_t) xdr_rename_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_rename_ret, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
 	}
