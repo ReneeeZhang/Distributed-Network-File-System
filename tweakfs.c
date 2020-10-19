@@ -108,6 +108,8 @@ static void bb_fullpath(char fpath[PATH_MAX], const char *path)
  */
 int bb_getattr(const char *path, struct stat *statbuf)
 {
+    log_msg("\nbb_getattr(path=\"%s\")\n", path);
+
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
     getattr_ret *ret = NULL;
@@ -221,25 +223,68 @@ int bb_mknod(const char *path, mode_t mode, dev_t dev)
 /** Create a directory */
 int bb_mkdir(const char *path, mode_t mode)
 {
-    char fpath[PATH_MAX];
-    
-    log_msg("\nbb_mkdir(path=\"%s\", mode=0%3o)\n",
-	    path, mode);
-    bb_fullpath(fpath, path);
+    log_msg("\nbb_mkdir(path=\"%s\", mode=0%3o)\n", path, mode);
 
-    return log_syscall("mkdir", mkdir(fpath, mode), 0);
+    // Get attribute via RPC.
+    CLIENT *clnt = NULL;
+    mkdir_ret *ret = NULL;
+    mkdir_arg arg;
+    char fpath[PATH_MAX];
+    bb_fullpath(fpath, path);
+    arg.path = fpath;
+    arg.mode = mode;
+    
+    clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
+    if (clnt == NULL) {
+        log_msg("Create RPC connection error\n");
+        clnt_pcreateerror (host);
+        exit (1);
+    }
+
+    ret = bb_mkdir_6(&arg, clnt);
+    if (ret == (mkdir_ret *) NULL) {
+        log_msg("RPC return value error\n");
+        clnt_perror (clnt, "call failed");
+    }
+    clnt_destroy (clnt);
+    
+    if (ret->ret == -1) {
+        log_msg("mkdir error for %s\n", fpath);
+    }
+    return ret->ret;
 }
 
 /** Remove a file */
 int bb_unlink(const char *path)
 {
-    char fpath[PATH_MAX];
-    
-    log_msg("bb_unlink(path=\"%s\")\n",
-	    path);
-    bb_fullpath(fpath, path);
+    log_msg("bb_unlink(path=\"%s\")\n", path);
 
-    return log_syscall("unlink", unlink(fpath), 0);
+    // Get attribute via RPC.
+    CLIENT *clnt = NULL;
+    unlink_ret *ret = NULL;
+    unlink_arg arg;
+    char fpath[PATH_MAX];
+    bb_fullpath(fpath, path);
+    arg.path = fpath;
+    
+    clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
+    if (clnt == NULL) {
+        log_msg("Create RPC connection error\n");
+        clnt_pcreateerror (host);
+        exit (1);
+    }
+
+    ret = bb_unlink_6(&arg, clnt);
+    if (ret == (unlink_ret *) NULL) {
+        log_msg("RPC return value error\n");
+        clnt_perror (clnt, "call failed");
+    }
+    clnt_destroy (clnt);
+
+    if (ret->ret == -1) {
+        log_msg("unlink error for %s\n", path);
+    }
+    return ret->ret;
 }
 
 /** Remove a directory */
@@ -261,13 +306,38 @@ int bb_rmdir(const char *path)
 // unaltered, but insert the link into the mounted directory.
 int bb_symlink(const char *path, const char *link)
 {
-    char flink[PATH_MAX];
-    
     log_msg("\nbb_symlink(path=\"%s\", link=\"%s\")\n",
 	    path, link);
-    bb_fullpath(flink, link);
 
-    return log_syscall("symlink", symlink(path, flink), 0);
+    // Get attribute via RPC.
+    CLIENT *clnt = NULL;
+    symlink_ret *ret = NULL;
+    symlink_arg arg;
+    char fpath[PATH_MAX];
+    bb_fullpath(fpath, path);
+    char flink[PATH_MAX];
+    bb_fullpath(flink, link);
+    arg.path = fpath;
+    arg.link = flink;
+    
+    clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
+    if (clnt == NULL) {
+        log_msg("Create RPC connection error\n");
+        clnt_pcreateerror (host);
+        exit (1);
+    }
+
+    ret = bb_symlink_6(&arg, clnt);
+    if (ret == (symlink_ret *) NULL) {
+        log_msg("RPC return value error\n");
+        clnt_perror (clnt, "call failed");
+    }
+    clnt_destroy (clnt);
+
+    if (ret->ret == -1) {
+        log_msg("symlink error to create %s for %s\n", flink, fpath);
+    }
+    return ret->ret;
 }
 
 /** Rename a file */

@@ -39,6 +39,21 @@ bb_access_6(access_arg *argp, CLIENT *clnt)
 	return (&clnt_res);
 }
 
+mkdir_ret *
+bb_mkdir_6(mkdir_arg *argp, CLIENT *clnt)
+{
+	static mkdir_ret clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, BB_MKDIR,
+		(xdrproc_t) xdr_mkdir_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_mkdir_ret, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
 readdir_ret *
 bb_readdir_6(readdir_arg *argp, CLIENT *clnt)
 {
@@ -78,6 +93,36 @@ bb_releasedir_6(releasedir_arg *argp, CLIENT *clnt)
 	if (clnt_call (clnt, BB_RELEASEDIR,
 		(xdrproc_t) xdr_releasedir_arg, (caddr_t) argp,
 		(xdrproc_t) xdr_releasedir_ret, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+symlink_ret *
+bb_symlink_6(symlink_arg *argp, CLIENT *clnt)
+{
+	static symlink_ret clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, BB_SYMLINK,
+		(xdrproc_t) xdr_symlink_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_symlink_ret, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+unlink_ret *
+bb_unlink_6(unlink_arg *argp, CLIENT *clnt)
+{
+	static unlink_ret clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, BB_UNLINK,
+		(xdrproc_t) xdr_unlink_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_unlink_ret, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
 	}

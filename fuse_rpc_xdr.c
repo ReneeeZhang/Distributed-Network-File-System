@@ -173,6 +173,28 @@ xdr_access_ret (XDR *xdrs, access_ret *objp)
 }
 
 bool_t
+xdr_mkdir_arg (XDR *xdrs, mkdir_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->mode))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_mkdir_ret (XDR *xdrs, mkdir_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_readdir_arg (XDR *xdrs, readdir_arg *objp)
 {
 	register int32_t *buf;
@@ -231,6 +253,48 @@ xdr_releasedir_arg (XDR *xdrs, releasedir_arg *objp)
 
 bool_t
 xdr_releasedir_ret (XDR *xdrs, releasedir_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_symlink_arg (XDR *xdrs, symlink_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_pointer (xdrs, (char **)&objp->path, sizeof (char), (xdrproc_t) xdr_char))
+		 return FALSE;
+	 if (!xdr_pointer (xdrs, (char **)&objp->link, sizeof (char), (xdrproc_t) xdr_char))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_symlink_ret (XDR *xdrs, symlink_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_unlink_arg (XDR *xdrs, unlink_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_unlink_ret (XDR *xdrs, unlink_ret *objp)
 {
 	register int32_t *buf;
 

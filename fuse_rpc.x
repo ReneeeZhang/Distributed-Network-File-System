@@ -30,6 +30,15 @@ struct access_ret {
     int ret; /* whether process can access file */
 };
 
+struct mkdir_arg {
+    string path<>;
+    int mode;
+};
+
+struct mkdir_ret {
+    int ret; /* status of RPC */
+};
+
 struct readdir_arg {
     string path<>;
 };
@@ -54,6 +63,23 @@ struct releasedir_arg {
 };
 
 struct releasedir_ret {
+    int ret; /* status of RPC */
+};
+
+struct symlink_arg {
+    char *path;
+    char *link;
+};
+
+struct symlink_ret {
+    int ret; /* status of RPC */
+};
+
+struct unlink_arg {
+    string path<>;
+};
+
+struct unlink_ret {
     int ret; /* status of RPC */
 };
 
@@ -103,12 +129,21 @@ program COMPUTE{
     version COMPUTE_VERS {
         getattr_ret BB_GETATTR(getattr_arg) = 1;
         access_ret BB_ACCESS(access_arg) = 2;
-        readdir_ret BB_READDIR(readdir_arg) = 3;
-        opendir_ret BB_OPENDIR(opendir_arg) = 4;
-        releasedir_ret BB_RELEASEDIR(releasedir_arg) = 5;
-        open_ret BB_OPEN(open_arg) = 6;
-        release_ret BB_RELEASE(release_arg) = 7;
-        read_ret BB_READ(read_arg) = 8;
-        write_ret BB_WRITE(write_arg) = 9;
+        mkdir_ret BB_MKDIR(mkdir_arg) = 3;
+        readdir_ret BB_READDIR(readdir_arg) = 4;
+        opendir_ret BB_OPENDIR(opendir_arg) = 5;
+        releasedir_ret BB_RELEASEDIR(releasedir_arg) = 6;
+        symlink_ret BB_SYMLINK(symlink_arg) = 7;
+        unlink_ret BB_UNLINK(unlink_arg) = 8;
+        open_ret BB_OPEN(open_arg) = 9;
+        release_ret BB_RELEASE(release_arg) = 10;
+        read_ret BB_READ(read_arg) = 11;
+        write_ret BB_WRITE(write_arg) = 12;
     } = 6;
 } = 456123789;
+
+/* TODO:
+(1) mkdir getattr error
+(2) write when creating non-existing file error
+(3) create soft link with symlink() error
+*/

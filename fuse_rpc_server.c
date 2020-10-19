@@ -74,6 +74,17 @@ bb_access_6_svc(access_arg *argp, struct svc_req *rqstp) {
     return &result;
 }
 
+mkdir_ret *
+bb_mkdir_6_svc(mkdir_arg *argp, struct svc_req *rqstp) {
+    char *path = argp->path;
+    int mode = argp->mode;
+    fprintf(stderr, "Make directory for %s with mode %d\n", path, mode);
+
+    static mkdir_ret ret;
+    ret.ret = mkdir(path, mode);
+    return &ret;
+}
+
 readdir_ret *
 bb_readdir_6_svc(readdir_arg *argp, struct svc_req *rqstp) {
     char *path = argp->path;
@@ -144,6 +155,27 @@ bb_releasedir_6_svc(releasedir_arg *argp, struct svc_req *rqstp) {
     }
 
     ret.ret = 0;
+    return &ret;
+}
+
+symlink_ret *
+bb_symlink_6_svc(symlink_arg *argp, struct svc_req *rqstp) {
+    char *path = argp->path;
+    char *link = argp->link;
+    fprintf(stderr, "Create symlink target = %s, original path = %s\n", link, path);
+
+    static symlink_ret ret;
+    ret.ret = symlink(path, link);
+    return &ret;
+}
+
+unlink_ret *
+bb_unlink_6_svc(unlink_arg *argp, struct svc_req *rqstp) {
+    char *path = argp->path;
+    fprintf(stderr, "Unlink file for %s\n", path);
+
+    static unlink_ret ret;
+    ret.ret = unlink(path);
     return &ret;
 }
 

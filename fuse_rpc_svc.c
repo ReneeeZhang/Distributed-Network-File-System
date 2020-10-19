@@ -22,9 +22,12 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 	union {
 		getattr_arg bb_getattr_6_arg;
 		access_arg bb_access_6_arg;
+		mkdir_arg bb_mkdir_6_arg;
 		readdir_arg bb_readdir_6_arg;
 		opendir_arg bb_opendir_6_arg;
 		releasedir_arg bb_releasedir_6_arg;
+		symlink_arg bb_symlink_6_arg;
+		unlink_arg bb_unlink_6_arg;
 		open_arg bb_open_6_arg;
 		release_arg bb_release_6_arg;
 		read_arg bb_read_6_arg;
@@ -51,6 +54,12 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		local = (char *(*)(char *, struct svc_req *)) bb_access_6_svc;
 		break;
 
+	case BB_MKDIR:
+		_xdr_argument = (xdrproc_t) xdr_mkdir_arg;
+		_xdr_result = (xdrproc_t) xdr_mkdir_ret;
+		local = (char *(*)(char *, struct svc_req *)) bb_mkdir_6_svc;
+		break;
+
 	case BB_READDIR:
 		_xdr_argument = (xdrproc_t) xdr_readdir_arg;
 		_xdr_result = (xdrproc_t) xdr_readdir_ret;
@@ -67,6 +76,18 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		_xdr_argument = (xdrproc_t) xdr_releasedir_arg;
 		_xdr_result = (xdrproc_t) xdr_releasedir_ret;
 		local = (char *(*)(char *, struct svc_req *)) bb_releasedir_6_svc;
+		break;
+
+	case BB_SYMLINK:
+		_xdr_argument = (xdrproc_t) xdr_symlink_arg;
+		_xdr_result = (xdrproc_t) xdr_symlink_ret;
+		local = (char *(*)(char *, struct svc_req *)) bb_symlink_6_svc;
+		break;
+
+	case BB_UNLINK:
+		_xdr_argument = (xdrproc_t) xdr_unlink_arg;
+		_xdr_result = (xdrproc_t) xdr_unlink_ret;
+		local = (char *(*)(char *, struct svc_req *)) bb_unlink_6_svc;
 		break;
 
 	case BB_OPEN:
