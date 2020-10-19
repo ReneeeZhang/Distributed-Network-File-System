@@ -173,6 +173,29 @@ struct truncate_ret {
 };
 typedef struct truncate_ret truncate_ret;
 
+struct chmod_arg {
+	char *path;
+	int mode;
+};
+typedef struct chmod_arg chmod_arg;
+
+struct chmod_ret {
+	int ret;
+};
+typedef struct chmod_ret chmod_ret;
+
+struct chown_arg {
+	char *path;
+	u_int uid;
+	u_int gid;
+};
+typedef struct chown_arg chown_arg;
+
+struct chown_ret {
+	int ret;
+};
+typedef struct chown_ret chown_ret;
+
 struct unlink_arg {
 	char *path;
 };
@@ -279,16 +302,22 @@ extern  unlink_ret * bb_unlink_6_svc(unlink_arg *, struct svc_req *);
 #define BB_UTIME 14
 extern  utime_ret * bb_utime_6(utime_arg *, CLIENT *);
 extern  utime_ret * bb_utime_6_svc(utime_arg *, struct svc_req *);
-#define BB_OPEN 15
+#define BB_CHMOD 15
+extern  chmod_ret * bb_chmod_6(chmod_arg *, CLIENT *);
+extern  chmod_ret * bb_chmod_6_svc(chmod_arg *, struct svc_req *);
+#define BB_CHOWN 16
+extern  chown_ret * bb_chown_6(chown_arg *, CLIENT *);
+extern  chown_ret * bb_chown_6_svc(chown_arg *, struct svc_req *);
+#define BB_OPEN 17
 extern  open_ret * bb_open_6(open_arg *, CLIENT *);
 extern  open_ret * bb_open_6_svc(open_arg *, struct svc_req *);
-#define BB_RELEASE 16
+#define BB_RELEASE 18
 extern  release_ret * bb_release_6(release_arg *, CLIENT *);
 extern  release_ret * bb_release_6_svc(release_arg *, struct svc_req *);
-#define BB_READ 17
+#define BB_READ 19
 extern  read_ret * bb_read_6(read_arg *, CLIENT *);
 extern  read_ret * bb_read_6_svc(read_arg *, struct svc_req *);
-#define BB_WRITE 18
+#define BB_WRITE 20
 extern  write_ret * bb_write_6(write_arg *, CLIENT *);
 extern  write_ret * bb_write_6_svc(write_arg *, struct svc_req *);
 extern int compute_6_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
@@ -336,16 +365,22 @@ extern  unlink_ret * bb_unlink_6_svc();
 #define BB_UTIME 14
 extern  utime_ret * bb_utime_6();
 extern  utime_ret * bb_utime_6_svc();
-#define BB_OPEN 15
+#define BB_CHMOD 15
+extern  chmod_ret * bb_chmod_6();
+extern  chmod_ret * bb_chmod_6_svc();
+#define BB_CHOWN 16
+extern  chown_ret * bb_chown_6();
+extern  chown_ret * bb_chown_6_svc();
+#define BB_OPEN 17
 extern  open_ret * bb_open_6();
 extern  open_ret * bb_open_6_svc();
-#define BB_RELEASE 16
+#define BB_RELEASE 18
 extern  release_ret * bb_release_6();
 extern  release_ret * bb_release_6_svc();
-#define BB_READ 17
+#define BB_READ 19
 extern  read_ret * bb_read_6();
 extern  read_ret * bb_read_6_svc();
-#define BB_WRITE 18
+#define BB_WRITE 20
 extern  write_ret * bb_write_6();
 extern  write_ret * bb_write_6_svc();
 extern int compute_6_freeresult ();
@@ -380,6 +415,10 @@ extern  bool_t xdr_utime_arg (XDR *, utime_arg*);
 extern  bool_t xdr_utime_ret (XDR *, utime_ret*);
 extern  bool_t xdr_truncate_arg (XDR *, truncate_arg*);
 extern  bool_t xdr_truncate_ret (XDR *, truncate_ret*);
+extern  bool_t xdr_chmod_arg (XDR *, chmod_arg*);
+extern  bool_t xdr_chmod_ret (XDR *, chmod_ret*);
+extern  bool_t xdr_chown_arg (XDR *, chown_arg*);
+extern  bool_t xdr_chown_ret (XDR *, chown_ret*);
 extern  bool_t xdr_unlink_arg (XDR *, unlink_arg*);
 extern  bool_t xdr_unlink_ret (XDR *, unlink_ret*);
 extern  bool_t xdr_open_arg (XDR *, open_arg*);
@@ -418,6 +457,10 @@ extern bool_t xdr_utime_arg ();
 extern bool_t xdr_utime_ret ();
 extern bool_t xdr_truncate_arg ();
 extern bool_t xdr_truncate_ret ();
+extern bool_t xdr_chmod_arg ();
+extern bool_t xdr_chmod_ret ();
+extern bool_t xdr_chown_arg ();
+extern bool_t xdr_chown_ret ();
 extern bool_t xdr_unlink_arg ();
 extern bool_t xdr_unlink_ret ();
 extern bool_t xdr_open_arg ();

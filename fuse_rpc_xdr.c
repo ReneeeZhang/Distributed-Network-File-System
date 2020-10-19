@@ -423,6 +423,52 @@ xdr_truncate_ret (XDR *xdrs, truncate_ret *objp)
 }
 
 bool_t
+xdr_chmod_arg (XDR *xdrs, chmod_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->mode))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_chmod_ret (XDR *xdrs, chmod_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_chown_arg (XDR *xdrs, chown_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->uid))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->gid))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_chown_ret (XDR *xdrs, chown_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_unlink_arg (XDR *xdrs, unlink_arg *objp)
 {
 	register int32_t *buf;

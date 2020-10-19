@@ -34,6 +34,8 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		truncate_arg bb_truncate_6_arg;
 		unlink_arg bb_unlink_6_arg;
 		utime_arg bb_utime_6_arg;
+		chmod_arg bb_chmod_6_arg;
+		chown_arg bb_chown_6_arg;
 		open_arg bb_open_6_arg;
 		release_arg bb_release_6_arg;
 		read_arg bb_read_6_arg;
@@ -130,6 +132,18 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		_xdr_argument = (xdrproc_t) xdr_utime_arg;
 		_xdr_result = (xdrproc_t) xdr_utime_ret;
 		local = (char *(*)(char *, struct svc_req *)) bb_utime_6_svc;
+		break;
+
+	case BB_CHMOD:
+		_xdr_argument = (xdrproc_t) xdr_chmod_arg;
+		_xdr_result = (xdrproc_t) xdr_chmod_ret;
+		local = (char *(*)(char *, struct svc_req *)) bb_chmod_6_svc;
+		break;
+
+	case BB_CHOWN:
+		_xdr_argument = (xdrproc_t) xdr_chown_arg;
+		_xdr_result = (xdrproc_t) xdr_chown_ret;
+		local = (char *(*)(char *, struct svc_req *)) bb_chown_6_svc;
 		break;
 
 	case BB_OPEN:

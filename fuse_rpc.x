@@ -142,6 +142,25 @@ struct truncate_ret {
     int ret; /* status of RPC */
 };
 
+struct chmod_arg {
+    string path<>;
+    int mode;
+};
+
+struct chmod_ret {
+    int ret; /* status of RPC */
+};
+
+struct chown_arg {
+    string path<>;
+    unsigned int uid;
+    unsigned int gid;
+};
+
+struct chown_ret {
+    int ret; /* status of RPC */
+};
+
 struct unlink_arg {
     string path<>;
 };
@@ -208,10 +227,12 @@ program COMPUTE{
         truncate_ret BB_TRUNCATE(truncate_arg) = 12;
         unlink_ret BB_UNLINK(unlink_arg) = 13;
         utime_ret BB_UTIME(utime_arg) = 14;
-        open_ret BB_OPEN(open_arg) = 15;
-        release_ret BB_RELEASE(release_arg) = 16;
-        read_ret BB_READ(read_arg) = 17;
-        write_ret BB_WRITE(write_arg) = 18;
+        chmod_ret BB_CHMOD(chmod_arg) = 15;
+        chown_ret BB_CHOWN(chown_arg) = 16;
+        open_ret BB_OPEN(open_arg) = 17;
+        release_ret BB_RELEASE(release_arg) = 18;
+        read_ret BB_READ(read_arg) = 19;
+        write_ret BB_WRITE(write_arg) = 20;
     } = 6;
 } = 456123789;
 

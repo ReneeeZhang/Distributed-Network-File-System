@@ -316,6 +316,43 @@ bb_unlink_6_svc(unlink_arg *argp, struct svc_req *rqstp) {
     return &ret;
 }
 
+chmod_ret *
+bb_chmod_6_svc(chmod_arg *argp, struct svc_req *rqstp) {
+    char *path = argp->path;
+    int mode = argp->mode;
+    fprintf(stderr, "Change file %s to mode %d\n", path, mode);
+
+    static chmod_ret ret;
+    int syscall_ret = chmod(path, mode);
+    if (syscall_ret < 0) {
+        fprintf(stderr, "change file to %s mode %d error with errno %d\n", path, mode, errno);
+        ret.ret = -errno;
+        return &ret;
+    }
+
+    ret.ret = 0;
+    return &ret;
+}
+
+chown_ret *
+bb_chown_6_svc(chown_arg *argp, struct svc_req *rqstp) {
+    char *path = argp->path;
+    unsigned int uid = argp->uid;
+    unsigned int gid = argp->gid;
+    fprintf(stderr, "Change file %s to uid %u, gid %u\n", path, uid, gid);
+
+    static chown_ret ret;
+    int syscall_ret = chown(path, uid, gid);
+    if (syscall_ret < 0) {
+        fprintf(stderr, "change file to %s to uid %u, gid %u with errno %d\n", path, uid, gid, errno);
+        ret.ret = -errno;
+        return &ret;
+    }
+
+    ret.ret = 0;
+    return &ret;
+}
+
 open_ret *
 bb_open_6_svc(open_arg *argp, struct svc_req *rqstp) {
     char *path = argp->path;

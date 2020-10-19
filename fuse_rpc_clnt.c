@@ -219,6 +219,36 @@ bb_utime_6(utime_arg *argp, CLIENT *clnt)
 	return (&clnt_res);
 }
 
+chmod_ret *
+bb_chmod_6(chmod_arg *argp, CLIENT *clnt)
+{
+	static chmod_ret clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, BB_CHMOD,
+		(xdrproc_t) xdr_chmod_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_chmod_ret, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+chown_ret *
+bb_chown_6(chown_arg *argp, CLIENT *clnt)
+{
+	static chown_ret clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, BB_CHOWN,
+		(xdrproc_t) xdr_chown_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_chown_ret, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
 open_ret *
 bb_open_6(open_arg *argp, CLIENT *clnt)
 {
