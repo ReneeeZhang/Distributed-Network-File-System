@@ -29,6 +29,7 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		releasedir_arg bb_releasedir_6_arg;
 		rename_arg bb_rename_6_arg;
 		symlink_arg bb_symlink_6_arg;
+		readlink_arg bb_readlink_6_arg;
 		mknod_arg bb_mknod_6_arg;
 		truncate_arg bb_truncate_6_arg;
 		unlink_arg bb_unlink_6_arg;
@@ -99,6 +100,12 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		_xdr_argument = (xdrproc_t) xdr_symlink_arg;
 		_xdr_result = (xdrproc_t) xdr_symlink_ret;
 		local = (char *(*)(char *, struct svc_req *)) bb_symlink_6_svc;
+		break;
+
+	case BB_READLINK:
+		_xdr_argument = (xdrproc_t) xdr_readlink_arg;
+		_xdr_result = (xdrproc_t) xdr_readlink_ret;
+		local = (char *(*)(char *, struct svc_req *)) bb_readlink_6_svc;
 		break;
 
 	case BB_MKNOD:

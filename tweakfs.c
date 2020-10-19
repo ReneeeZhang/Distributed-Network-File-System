@@ -56,6 +56,9 @@ static int buddy_len = 12; // plus '\0'
 // RPC-related variables.
 char *host = NULL;
 
+// Store the length of root directory, in order to transform to fullpath.
+size_t rootdir_len = 0;
+
 // Util function: to decide whether str1 starts with str2(secret).
 static int starts_with(char* path, char *prefix) {
     char *ptr1 = path;
@@ -87,9 +90,13 @@ static int is_buddy_file(char *path) {
 //  it.
 static void bb_fullpath(char fpath[PATH_MAX], const char *path)
 {
+    // For some functions, say symlink, argument path may not begin with '/',
+    // so have to prepend purposefully.
     strcpy(fpath, BB_DATA->rootdir);
-    strncat(fpath, path, PATH_MAX); // ridiculously long paths will
-				    // break here
+    if (path != NULL && strlen(path) > 0 && path[0] != '/') {
+        fpath[rootdir_len] = '/';
+    }
+    strncat(fpath, path, PATH_MAX);
 
     log_msg("    bb_fullpath:  rootdir = \"%s\", path = \"%s\", fpath = \"%s\"\n",
 	    BB_DATA->rootdir, path, fpath);
@@ -167,23 +174,41 @@ int bb_getattr(const char *path, struct stat *statbuf)
 // null.  So, the size passed to to the system readlink() must be one
 // less than the size passed to bb_readlink()
 // bb_readlink() code by Bernardo F Costa (thanks!)
-int bb_readlink(const char *path, char *link, size_t size)
+int bb_readlink(const char *path, char *buf, size_t size)
 {
-    int retstat;
-    char fpath[PATH_MAX];
-    
     log_msg("\nbb_readlink(path=\"%s\", link=\"%s\", size=%d)\n",
 	  path, link, size);
-    bb_fullpath(fpath, path);
 
-    retstat = log_syscall("readlink", readlink(fpath, link, size - 1), 0);
-    if (retstat >= 0) {
-	link[retstat] = '\0';
-	retstat = 0;
-	log_msg("    link=\"%s\"\n", link);
-    }
+    // Get attribute via RPC.
+    CLIENT *clnt = NULL;
+    readlink_ret *ret = NULL;
+    readlink_arg arg;
+    char fpath[PATH_MAX];
+    bb_fullpath(fpath, path);
+    arg.path = fpath;
+    arg.size = size - 1;
     
-    return retstat;
+    clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
+    if (clnt == NULL) {
+        log_msg("Create RPC connection error\n");
+        clnt_pcreateerror (host);
+        exit (1);
+    }
+
+    ret = bb_readlink_6(&arg, clnt);
+    if (ret == (readlink_ret *) NULL) {
+        log_msg("RPC return value error\n");
+        clnt_perror (clnt, "call failed");
+    }
+    clnt_destroy (clnt);
+
+    if (ret->ret == -1) {
+        log_msg("readlink %s with size %zu error\n", fpath, size - 1);
+        return ret->ret;
+    }
+
+    buf[ret->len] = '\0';
+    return 0;
 }
 
 /** Create a file node
@@ -348,6 +373,9 @@ int bb_symlink(const char *path, const char *link)
     bb_fullpath(flink, link);
     arg.path = fpath;
     arg.link = flink;
+
+    log_msg("path = %s, full path = %s\n", path, fpath);
+    log_msg("link path = %s, full link path = %s\n", link, flink);
     
     clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
     if (clnt == NULL) {
@@ -1301,6 +1329,7 @@ int main(int argc, char *argv[])
     // Pull the rootdir out of the argument list and save it in my
     // internal data
     bb_data->rootdir = realpath(argv[argc-2], NULL);
+    rootdir_len = strlen(bb_data->rootdir);
     argv[argc-2] = argv[argc-1];
     argv[argc-1] = NULL;
     argc--;

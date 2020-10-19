@@ -94,11 +94,22 @@ struct rename_ret {
 };
 
 struct symlink_arg {
-    char *path;
-    char *link;
+    string path<>;
+    string link<>;
 };
 
 struct symlink_ret {
+    int ret; /* status of RPC */
+};
+
+struct readlink_arg {
+    string path<>;
+    unsigned int size;
+};
+
+struct readlink_ret {
+    opaque buffer[MAX_SIZE]; /* file content */
+    int len; /* length of the content */
     int ret; /* status of RPC */
 };
 
@@ -192,13 +203,37 @@ program COMPUTE{
         releasedir_ret BB_RELEASEDIR(releasedir_arg) = 7;
         rename_ret BB_RENAME(rename_arg) = 8;
         symlink_ret BB_SYMLINK(symlink_arg) = 9;
-        mknod_ret BB_MKNOD(mknod_arg) = 10;
-        truncate_ret BB_TRUNCATE(truncate_arg) = 11;
-        unlink_ret BB_UNLINK(unlink_arg) = 12;
-        utime_ret BB_UTIME(utime_arg) = 13;
-        open_ret BB_OPEN(open_arg) = 14;
-        release_ret BB_RELEASE(release_arg) = 15;
-        read_ret BB_READ(read_arg) = 16;
-        write_ret BB_WRITE(write_arg) = 17;
+        readlink_ret BB_READLINK(readlink_arg) = 10;
+        mknod_ret BB_MKNOD(mknod_arg) = 11;
+        truncate_ret BB_TRUNCATE(truncate_arg) = 12;
+        unlink_ret BB_UNLINK(unlink_arg) = 13;
+        utime_ret BB_UTIME(utime_arg) = 14;
+        open_ret BB_OPEN(open_arg) = 15;
+        release_ret BB_RELEASE(release_arg) = 16;
+        read_ret BB_READ(read_arg) = 17;
+        write_ret BB_WRITE(write_arg) = 18;
     } = 6;
 } = 456123789;
+
+/*
+Error message:
+Create symlink target = /home/hj110/FUSE/rootdir/link1, original path = /home/hj110/FUSE/rootdir/bogus.txt
+Get attribute for path = /home/hj110/FUSE/rootdir/link1
+Get attribute for path = /home/hj110/FUSE/rootdir/
+Open directory for /home/hj110/FUSE/rootdir/
+Read directory for /home/hj110/FUSE/rootdir/
+Close directory with fd = 6
+Get attribute for path = /home/hj110/FUSE/rootdir/bogus.txt
+Get attribute for path = /home/hj110/FUSE/rootdir/link1
+Get attribute for path = /home/hj110/FUSE/rootdir/secret.txt
+Get attribute for path = /home/hj110/FUSE/rootdir/secret_file.txt
+Get attribute for path = /home/hj110/FUSE/rootdir/testdir
+Read link /home/hj110/FUSE/rootdir/link1 with size 4096
+Get attribute for path = /home/hj110/FUSE/rootdir/ ���
+lstat /home/hj110/FUSE/rootdir/ ��� error
+*/
+
+/*
+ * TODO:
+ * symlink still needs debugging, getattr cannot identify it.
+*/

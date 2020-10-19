@@ -144,6 +144,21 @@ bb_symlink_6(symlink_arg *argp, CLIENT *clnt)
 	return (&clnt_res);
 }
 
+readlink_ret *
+bb_readlink_6(readlink_arg *argp, CLIENT *clnt)
+{
+	static readlink_ret clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, BB_READLINK,
+		(xdrproc_t) xdr_readlink_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_readlink_ret, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
 mknod_ret *
 bb_mknod_6(mknod_arg *argp, CLIENT *clnt)
 {

@@ -308,9 +308,9 @@ xdr_symlink_arg (XDR *xdrs, symlink_arg *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_pointer (xdrs, (char **)&objp->path, sizeof (char), (xdrproc_t) xdr_char))
+	 if (!xdr_string (xdrs, &objp->path, ~0))
 		 return FALSE;
-	 if (!xdr_pointer (xdrs, (char **)&objp->link, sizeof (char), (xdrproc_t) xdr_char))
+	 if (!xdr_string (xdrs, &objp->link, ~0))
 		 return FALSE;
 	return TRUE;
 }
@@ -320,6 +320,33 @@ xdr_symlink_ret (XDR *xdrs, symlink_ret *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_readlink_arg (XDR *xdrs, readlink_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->size))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_readlink_ret (XDR *xdrs, readlink_ret *objp)
+{
+	register int32_t *buf;
+
+	int i;
+	 if (!xdr_opaque (xdrs, objp->buffer, MAX_SIZE))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->len))
+		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->ret))
 		 return FALSE;
 	return TRUE;

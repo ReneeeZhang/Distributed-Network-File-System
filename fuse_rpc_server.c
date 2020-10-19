@@ -187,7 +187,36 @@ bb_symlink_6_svc(symlink_arg *argp, struct svc_req *rqstp) {
     fprintf(stderr, "Create symlink target = %s, original path = %s\n", link, path);
 
     static symlink_ret ret;
-    ret.ret = symlink(path, link);
+    int syscall_ret = symlink(path, link);
+    if (syscall_ret == -1) {
+        fprintf(stderr, "symlink error for creating link %s to file %s\n", link, path);
+        ret.ret = -errno;
+        return &ret;
+    }
+    ret.ret = 0;
+    return &ret;
+}
+
+readlink_ret *
+bb_readlink_6_svc(readlink_arg *argp, struct svc_req *rqstp) {
+    char *path = argp->path;
+    unsigned int size = argp->size;
+    fprintf(stderr, "Read link %s with size %u\n", path, size);
+
+    static readlink_ret ret;
+    static char buffer[MAX_SIZE];
+    memset(buffer, '\0', MAX_SIZE);
+    ssize_t read_len = readlink(path, buffer, size);
+
+    if (read_len == -1) {
+        fprintf(stderr, "read link %s, with size = %u error with errno %d\n", path, size, errno);
+        ret.ret = -errno;
+        return &ret;
+    }
+
+    ret.len = read_len;
+    ret.ret = 0;
+    memcpy(ret.buffer, buffer, MAX_SIZE);
     return &ret;
 }
 
@@ -332,16 +361,16 @@ bb_read_6_svc(read_arg *argp, struct svc_req *rqstp) {
     static read_ret ret;
     static char buf[MAX_SIZE];
     memset(buf, '\0', MAX_SIZE);
-    ssize_t read_ret = pread(fd, buf, size, offset);
+    ssize_t read_len = pread(fd, buf, size, offset);
 
-    if (read_ret == -1) {
+    if (read_len == -1) {
         fprintf(stderr, "read file with fd = %d, with size = %u, offset = %u error with errno %d\n", fd, size, offset, errno);
         ret.ret = -errno;
         return &ret;
     }
 
-    // read_ret could be 0, which means server has reached EOF.
-    ret.len = read_ret;
+    // read_len could be 0, which means server has reached EOF.
+    ret.len = read_len;
     ret.ret = 0;
     memcpy(ret.buffer, buf, MAX_SIZE);
     return &ret;
