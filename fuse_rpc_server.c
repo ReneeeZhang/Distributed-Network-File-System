@@ -259,6 +259,7 @@ bb_read_6_svc(read_arg *argp, struct svc_req *rqstp) {
         return &ret;
     }
 
+    // read_ret could be 0, which means server has reached EOF.
     ret.len = read_ret;
     ret.ret = 0;
     memcpy(ret.buffer, buf, MAX_SIZE);

@@ -33,6 +33,9 @@ mount:
 	./tweakfs -d -s rootdir/ mountdir/ localhost
 #	./tweakfs rootdir/ mountdir/ localhost
 
+debug:
+	valgrind ./tweakfs -d -s rootdir/ mountdir localhost	
+
 unmount:
 	fusermount -u mountdir
 	rm bbfs.log

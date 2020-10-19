@@ -579,21 +579,36 @@ int bb_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
         exit (1);
     }
 
-    ret = bb_read_6(&arg, clnt);
-    if (ret == (read_ret *) NULL) {
-        log_msg("RPC return value error\n");
-        clnt_perror (clnt, "call failed");
+    // Keep RPC until requsted size is already read.
+    int total_len = 0;
+    while (total_len < size) {
+        ret = bb_read_6(&arg, clnt);
+        if (ret == (read_ret *) NULL) {
+            log_msg("RPC return value error\n");
+            clnt_perror (clnt, "call failed");
+        }
+        if (ret->ret == -1) {
+            log_msg("Read called error\n");
+            clnt_destroy (clnt);
+            return -1;
+        }
+
+        // If server has reached EOF.
+        int len = ret->len;
+        if (len == 0) {
+            log_msg("Read for fd %d has finished\n", arg.fd);
+            break;
+        }
+
+        // Assign read result to user space.
+        memmove(buf + total_len, ret->buffer, MAX_SIZE);
+        total_len += len;
+        arg.size -= len;
+        arg.offset += len;
     }
+    
     clnt_destroy (clnt);
-
-    if (ret->ret == -1) {
-        log_msg("Read called error\n");
-        return -1;
-    }
-
-    // Assign read result to user space.
-    memmove(buf, ret->buffer, MAX_SIZE);
-    return ret->len;
+    return total_len;
 
     /*
     // If the request file is "buddy.txt", directly write content 
@@ -660,19 +675,37 @@ int bb_write(const char *path, const char *buf, size_t size, off_t offset,
         exit (1);
     }
 
-    ret = bb_write_6(&arg, clnt);
-    if (ret == (write_ret *) NULL) {
-        log_msg("RPC return value error\n");
-        clnt_perror (clnt, "call failed");
-    }
-    clnt_destroy (clnt);
+    // Keep RPC until all bytes has been writen to file.
+    int total_len = 0;
+    while (true) {
+        ret = bb_write_6(&arg, clnt);
+        if (ret == (write_ret *) NULL) {
+            log_msg("RPC return value error\n");
+            clnt_perror (clnt, "call failed");
+        }
 
-    if (ret->ret == -1) {
-        log_msg("Read called error\n");
-        return -1;
-    }
+        // RPC write issue error.
+        if (ret->ret == -1) {
+            log_msg("Read called error\n");
+            clnt_destroy (clnt);
+            return -1;
+        }
 
-    return ret->len;
+        // Check whether all requested bytes have been written.
+        int len = ret->len;
+        total_len += len;
+        if (total_len == size) {
+            log_msg("Write for fd %d has finished\n", arg.fd);
+            break;
+        }
+
+        // Copy left parts to sent buffer, and continue RPC.
+        arg.size = size - len;
+        arg.offset = offset + len;
+        memset(arg.buffer, '\0', MAX_SIZE);
+        memcpy(arg.buffer, buf + total_len, MAX_SIZE);
+    }
+    return total_len;
 }
 
 /** Get file system statistics
