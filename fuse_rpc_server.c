@@ -11,13 +11,14 @@
 #include <fcntl.h>
 #include <libgen.h>
 #include <limits.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
+#include <unistd.h>
+#include <utime.h>
 
 #ifdef HAVE_SYS_XATTR_H
 #include <sys/xattr.h>
@@ -41,7 +42,7 @@ bb_getattr_6_svc(getattr_arg *argp, struct svc_req *rqstp)
     struct stat statbuf;
     if (lstat(path, &statbuf) == -1) {
         fprintf(stderr, "lstat %s error\n", path);
-        result.ret = -1;
+        result.ret = -errno;
         return &result;
     }
 
@@ -105,7 +106,7 @@ bb_readdir_6_svc(readdir_arg *argp, struct svc_req *rqstp) {
     DIR *dp = opendir(path);
     if (dp == NULL) {
         fprintf(stderr, "opendir %s error\n", path);
-        ret.ret = -1;
+        ret.ret = -errno;
         return &ret;
     }
 
@@ -136,7 +137,7 @@ bb_opendir_6_svc(opendir_arg *argp, struct svc_req *rqstp) {
     DIR *dp = opendir(path);
     if (dp == NULL) {
         fprintf(stderr, "opendir %s error\n", path);
-        ret.ret = -1;
+        ret.ret = -errno;
         return &ret;
     }
 
@@ -154,13 +155,13 @@ bb_releasedir_6_svc(releasedir_arg *argp, struct svc_req *rqstp) {
     DIR* dir = fdopendir(fd);
     if (dir == NULL) {
         fprintf(stderr, "Open directory associated with fd %d error\n", fd);
-        ret.ret = -1;
+        ret.ret = -errno;
         return &ret;
     }
     int close_ret = closedir(dir);
     if (close_ret == -1) {
         fprintf(stderr, "Close directory error\n");
-        ret.ret = -1;
+        ret.ret = -errno;
         return &ret;
     }
 
@@ -190,6 +191,92 @@ bb_symlink_6_svc(symlink_arg *argp, struct svc_req *rqstp) {
     return &ret;
 }
 
+mknod_ret *
+bb_mknod_6_svc(mknod_arg *argp, struct svc_req *rqstp) {
+    char *path = argp->path;
+    int mode = argp->mode;
+    int dev = argp->dev;
+    fprintf(stderr, "Mknod for file %s with mode %d and dev %d\n", path, mode, dev);
+
+    static mknod_ret ret;
+    int func_ret = -1;
+
+    // Create file, close it if succeeds.
+    if (S_ISREG(mode)) {
+        func_ret = open(path, O_CREAT | O_EXCL | O_WRONLY, mode);
+        if (func_ret < 0) {
+            fprintf(stderr, "mknod for regular file %s with mode %d with errno %d\n", path, mode, -errno);
+            ret.ret = -errno;
+            return &ret;
+        } else {
+            close(func_ret);
+        }
+    }
+
+    // Create fifo.
+    else if (S_ISFIFO(mode)) {
+        func_ret = mkfifo(path, mode);
+        if (func_ret < 0) {
+            fprintf(stderr, "mknod for fifo file %s with mode %d with errno %d\n", path, mode, -errno);
+            ret.ret = -errno;
+            return &ret;
+        }
+    }
+
+    // Create device files.
+    else {
+        func_ret = mknod(path, mode, dev);
+        if (func_ret < 0) {
+            fprintf(stderr, "mknod for device file %s with mode %d device id %d with errno %d\n", path, mode, dev, -errno);
+            ret.ret = -errno;
+            return &ret;
+        }
+    }
+
+    ret.ret = 0;
+    return &ret;
+}
+
+utime_ret *
+bb_utime_6_svc(utime_arg *argp, struct svc_req *rqstp) {
+    char *path = argp->path;
+    long actime = argp->actime;
+    long modtime = argp->modtime;
+    fprintf(stderr, "Utime %s with access time %ld and modification time %ld\n", path, actime, modtime);
+
+    static utime_ret ret;
+    struct utimbuf ubuf;
+    ubuf.actime = actime;
+    ubuf.modtime = modtime;
+    int syscall_ret = utime(path, &ubuf);
+    if (syscall_ret < 0) {
+        fprintf(stderr, "utime %s with access time %ld and modification time %ld error with errno %d\n", path, actime, modtime, errno);
+        ret.ret = -errno;
+        return &ret;
+    }
+    
+    ret.ret = 0;
+    return &ret;
+}
+
+truncate_ret *
+bb_truncate_6_svc(truncate_arg *argp, struct svc_req *rqstp) {
+    char *path = argp->path;
+    int newsize = argp->newsize;
+    fprintf(stderr, "Truncate file %s to new size %d\n", path, newsize);
+
+    static truncate_ret ret;
+    int syscall_ret = truncate(path, newsize);
+    if (syscall_ret < 0) {
+        fprintf(stderr, "truncate file %s to new size %d fail with errno %d\n", path, newsize, errno);
+        ret.ret = -errno;
+        return &ret;
+    }
+    
+    ret.ret = 0;
+    return &ret;
+}
+
 unlink_ret *
 bb_unlink_6_svc(unlink_arg *argp, struct svc_req *rqstp) {
     char *path = argp->path;
@@ -209,16 +296,10 @@ bb_open_6_svc(open_arg *argp, struct svc_req *rqstp) {
     static open_ret ret;
     ret.fd = open(path, flags);
     if (ret.fd == -1) {
-        fprintf(stderr, "open file %s with flag %d error\n", path, flags);
-        ret.ret = -1;
+        fprintf(stderr, "open file %s with flag %d error with errno %d\n", path, flags, errno);
+        ret.ret = -errno;
         return &ret;
     }
-
-    fprintf(stderr, "fd for file %s is %d\n", path, ret.fd);
-
-    // char buf[MAX_SIZE];
-    // ssize_t read_ret = pread(fd, buf, 4096, 0);
-    // fprintf(stderr, "Try read file when open: %s\n", buf);
 
     ret.ret = 0;
     return &ret;
@@ -254,8 +335,8 @@ bb_read_6_svc(read_arg *argp, struct svc_req *rqstp) {
     ssize_t read_ret = pread(fd, buf, size, offset);
 
     if (read_ret == -1) {
-        ret.ret = -1;
-        fprintf(stderr, "read file with fd = %d, with size = %u, offset = %u error\n", fd, size, offset);
+        fprintf(stderr, "read file with fd = %d, with size = %u, offset = %u error with errno %d\n", fd, size, offset, errno);
+        ret.ret = -errno;
         return &ret;
     }
 
@@ -278,8 +359,8 @@ bb_write_6_svc(write_arg *argp, struct svc_req *rqstp) {
     ssize_t write_ret = pwrite(fd, buf, size, offset);
 
     if (write_ret == -1) {
-        ret.ret = -1;
         fprintf(stderr, "write file with fd = %d, with size = %u, offset = %u error\n", fd, size, offset);
+        ret.ret = -errno;
         return &ret;    
     }
 

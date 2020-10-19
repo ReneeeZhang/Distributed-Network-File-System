@@ -133,9 +133,9 @@ int bb_getattr(const char *path, struct stat *statbuf)
     clnt_destroy (clnt);
     
     // lstat() error.
-    if (ret->ret == -1) {
-        log_msg("Get attribute error\n");
-        return -1;
+    if (ret->ret < 0) {
+        log_msg("Get attribute error with errno %d\n", -ret->ret);
+        return ret->ret;
     }
 
     // Assign RPC return value to stat buf.
@@ -152,7 +152,6 @@ int bb_getattr(const char *path, struct stat *statbuf)
     statbuf->st_atimensec = ret->st_atimensec;
     statbuf->st_mtimensec = ret->st_mtimensec;
     statbuf->st_ctimensec = ret->st_ctimensec;
-
     return 0;
 }
 
@@ -195,29 +194,37 @@ int bb_readlink(const char *path, char *link, size_t size)
 // shouldn't that comment be "if" there is no.... ?
 int bb_mknod(const char *path, mode_t mode, dev_t dev)
 {
-    int retstat;
-    char fpath[PATH_MAX];
-    
     log_msg("\nbb_mknod(path=\"%s\", mode=0%3o, dev=%lld)\n",
 	  path, mode, dev);
+
+    // Get attribute via RPC.
+    CLIENT *clnt = NULL;
+    mknod_ret *ret = NULL;
+    mknod_arg arg;
+    char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.path = fpath;
+    arg.mode = mode;
+    arg.dev = dev;
     
-    // On Linux this could just be 'mknod(path, mode, dev)' but this
-    // tries to be be more portable by honoring the quote in the Linux
-    // mknod man page stating the only portable use of mknod() is to
-    // make a fifo, but saying it should never actually be used for
-    // that.
-    if (S_ISREG(mode)) {
-	retstat = log_syscall("open", open(fpath, O_CREAT | O_EXCL | O_WRONLY, mode), 0);
-	if (retstat >= 0)
-	    retstat = log_syscall("close", close(retstat), 0);
-    } else
-	if (S_ISFIFO(mode))
-	    retstat = log_syscall("mkfifo", mkfifo(fpath, mode), 0);
-	else
-	    retstat = log_syscall("mknod", mknod(fpath, mode, dev), 0);
-    
-    return retstat;
+    clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
+    if (clnt == NULL) {
+        log_msg("Create RPC connection error\n");
+        clnt_pcreateerror (host);
+        exit (1);
+    }
+
+    ret = bb_mknod_6(&arg, clnt);
+    if (ret == (mknod_ret *) NULL) {
+        log_msg("RPC return value error\n");
+        clnt_perror (clnt, "call failed");
+    }
+    clnt_destroy (clnt);
+
+    if (ret->ret < 0) {
+        log_msg("mknod for %s with mode %s and dev id %d error\n", fpath, mode, dev);
+    }
+    return ret->ret;
 }
 
 /** Create a directory */
@@ -248,7 +255,7 @@ int bb_mkdir(const char *path, mode_t mode)
     }
     clnt_destroy (clnt);
     
-    if (ret->ret == -1) {
+    if (ret->ret < 0) {
         log_msg("mkdir error for %s\n", fpath);
     }
     return ret->ret;
@@ -281,8 +288,8 @@ int bb_unlink(const char *path)
     }
     clnt_destroy (clnt);
 
-    if (ret->ret == -1) {
-        log_msg("unlink error for %s\n", fpath);
+    if (ret->ret < 0) {
+        log_msg("unlink error for %s with errno %d\n", fpath, -ret->ret);
     }
     return ret->ret;
 }
@@ -315,8 +322,8 @@ int bb_rmdir(const char *path)
     }
     clnt_destroy (clnt);
 
-    if (ret->ret == -1) {
-        log_msg("rmdir error for %s\n", fpath);
+    if (ret->ret < 0) {
+        log_msg("rmdir error for %s with errno %d\n", fpath, -ret->ret);
     }
     return ret->ret;
 }
@@ -356,8 +363,8 @@ int bb_symlink(const char *path, const char *link)
     }
     clnt_destroy (clnt);
 
-    if (ret->ret == -1) {
-        log_msg("symlink error to create %s for %s\n", flink, fpath);
+    if (ret->ret < 0) {
+        log_msg("symlink error to create %s for %s with errno %d\n", flink, fpath, -ret->ret);
     }
     return ret->ret;
 }
@@ -394,8 +401,8 @@ int bb_rename(const char *path, const char *newpath)
     }
     clnt_destroy (clnt);
 
-    if (ret->ret == -1) {
-        log_msg("rename error from %s to %s\n", fpath, fnewpath);
+    if (ret->ret < 0) {
+        log_msg("rename error from %s to %s with errno %d\n", fpath, fnewpath, -ret->ret);
     }
     return ret->ret;
 }
@@ -440,26 +447,73 @@ int bb_chown(const char *path, uid_t uid, gid_t gid)
 /** Change the size of a file */
 int bb_truncate(const char *path, off_t newsize)
 {
-    char fpath[PATH_MAX];
-    
     log_msg("\nbb_truncate(path=\"%s\", newsize=%lld)\n",
 	    path, newsize);
+    
+    // Get attribute via RPC.
+    CLIENT *clnt = NULL;
+    truncate_ret *ret = NULL;
+    truncate_arg arg;
+    char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.path = fpath;
+    arg.newsize = newsize;
+    
+    clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
+    if (clnt == NULL) {
+        log_msg("Create RPC connection error\n");
+        clnt_pcreateerror (host);
+        exit (1);
+    }
 
-    return log_syscall("truncate", truncate(fpath, newsize), 0);
+    ret = bb_truncate_6(&arg, clnt);
+    if (ret == (truncate_ret *) NULL) {
+        log_msg("RPC return value error\n");
+        clnt_perror (clnt, "call failed");
+    }
+    clnt_destroy (clnt);
+
+    if (ret->ret < 0) {
+        log_msg("truncate with path %s and new size %d error\n", fpath, newsize);
+    }
+    return ret->ret;
 }
 
 /** Change the access and/or modification times of a file */
 /* note -- I'll want to change this as soon as 2.6 is in debian testing */
 int bb_utime(const char *path, struct utimbuf *ubuf)
 {
-    char fpath[PATH_MAX];
-    
     log_msg("\nbb_utime(path=\"%s\", ubuf=0x%08x)\n",
 	    path, ubuf);
-    bb_fullpath(fpath, path);
 
-    return log_syscall("utime", utime(fpath, ubuf), 0);
+    // Get attribute via RPC.
+    CLIENT *clnt = NULL;
+    utime_ret *ret = NULL;
+    utime_arg arg;
+    char fpath[PATH_MAX];
+    bb_fullpath(fpath, path);
+    arg.path = fpath;
+    arg.actime = ubuf->actime;
+    arg.modtime = ubuf->modtime;
+    
+    clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
+    if (clnt == NULL) {
+        log_msg("Create RPC connection error\n");
+        clnt_pcreateerror (host);
+        exit (1);
+    }
+
+    ret = bb_utime_6(&arg, clnt);
+    if (ret == (utime_ret *) NULL) {
+        log_msg("RPC return value error\n");
+        clnt_perror (clnt, "call failed");
+    }
+    clnt_destroy (clnt);
+
+    if (ret->ret < 0) {
+        log_msg("utime with path %s and access time %ld and modification time %ld error\n", fpath, arg.actime, arg.modtime);
+    }
+    return ret->ret;
 }
 
 /** File open operation
@@ -500,47 +554,13 @@ int bb_open(const char *path, struct fuse_file_info *fi)
     }
     clnt_destroy (clnt);
 
-    if (ret->ret == -1) {
-        log_msg("Open file %s error\n", fpath);
+    if (ret->ret < 0) {
+        log_msg("Open file %s error with errno %d\n", fpath, -ret->ret);
         return -1;
     }
 
     fi->fh = ret->fd;
     return 0;
-
-    /*
-    int retstat = 0;
-    int fd;
-    char fpath[PATH_MAX];
-    
-    log_msg("\nbb_open(path\"%s\", fi=0x%08x)\n",
-	    path, fi);
-    bb_fullpath(fpath, path);
-
-    // Secret files.
-    if (starts_with((char*)path, "/secret")) {
-        retstat = log_error("open");
-        return retstat;
-    }
-
-    // buddy file.
-    else if (is_buddy_file((char*)path)) {
-        return retstat;
-    }
-
-    // if the open call succeeds, my retstat is the file descriptor,
-    // else it's -errno.  I'm making sure that in that case the saved
-    // file descriptor is exactly -1.
-    fd = log_syscall("open", open(fpath, fi->flags), 0);
-    if (fd < 0)
-        retstat = log_error("open");
-	
-    fi->fh = fd;
-
-    log_fi(fi);
-    
-    return retstat;
-    */
 }
 
 /** Read data from an open file
@@ -587,8 +607,8 @@ int bb_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
             log_msg("RPC return value error\n");
             clnt_perror (clnt, "call failed");
         }
-        if (ret->ret == -1) {
-            log_msg("Read called error\n");
+        if (ret->ret < 0) {
+            log_msg("Read called error with errno %d\n", -ret->ret);
             clnt_destroy (clnt);
             return -1;
         }
@@ -609,36 +629,6 @@ int bb_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
     
     clnt_destroy (clnt);
     return total_len;
-
-    /*
-    // If the request file is "buddy.txt", directly write content 
-    if (is_buddy_file((char*)path)) {
-        log_msg("Try to read buddy.txt, with offset = %d, size = %d\n", offset, size);
-        
-        // Decide whether there's still content to be read.
-        int left_len = buddy_len - offset;
-        int read_len = left_len > size ? size : left_len;
-
-        // Return value of read() is the actual bytes read.
-        if (read_len <= 0) {
-            log_msg("Not enough content to read.\n");
-            return 0;
-        } else {
-            memmove(buf, buddy_content + offset, read_len);
-            return read_len;
-        }
-
-        assert(0);
-        return 0;
-    }
-    
-    log_msg("\nbb_read(path=\"%s\", buf=0x%08x, size=%d, offset=%lld, fi=0x%08x)\n",
-	    path, buf, size, offset, fi);
-    // no need to get fpath on this one, since I work from fi->fh not the path
-    log_fi(fi);
-
-    return log_syscall("pread", pread(fi->fh, buf, size, offset), 0);
-    */
 }
 
 /** Write data to an open file
@@ -685,8 +675,8 @@ int bb_write(const char *path, const char *buf, size_t size, off_t offset,
         }
 
         // RPC write issue error.
-        if (ret->ret == -1) {
-            log_msg("Read called error\n");
+        if (ret->ret < 0) {
+            log_msg("Read called error with errno %d\n", -ret->ret);
             clnt_destroy (clnt);
             return -1;
         }
@@ -804,8 +794,8 @@ int bb_release(const char *path, struct fuse_file_info *fi)
     }
     clnt_destroy (clnt);
 
-    if (ret->ret == -1) {
-        log_msg("Close file error\n");
+    if (ret->ret < 0) {
+        log_msg("Close file error with errno %d\n", -ret->ret);
         return -1;
     }
 
@@ -833,81 +823,6 @@ int bb_fsync(const char *path, int datasync, struct fuse_file_info *fi)
 #endif	
 	return log_syscall("fsync", fsync(fi->fh), 0);
 }
-
-#ifdef HAVE_SYS_XATTR_H
-/** Note that my implementations of the various xattr functions use
-    the 'l-' versions of the functions (eg bb_setxattr() calls
-    lsetxattr() not setxattr(), etc).  This is because it appears any
-    symbolic links are resolved before the actual call takes place, so
-    I only need to use the system-provided calls that don't follow
-    them */
-
-/** Set extended attributes */
-int bb_setxattr(const char *path, const char *name, const char *value, size_t size, int flags)
-{
-    char fpath[PATH_MAX];
-    
-    log_msg("\nbb_setxattr(path=\"%s\", name=\"%s\", value=\"%s\", size=%d, flags=0x%08x)\n",
-	    path, name, value, size, flags);
-    bb_fullpath(fpath, path);
-
-    return log_syscall("lsetxattr", lsetxattr(fpath, name, value, size, flags), 0);
-}
-
-/** Get extended attributes */
-int bb_getxattr(const char *path, const char *name, char *value, size_t size)
-{
-    int retstat = 0;
-    char fpath[PATH_MAX];
-    
-    log_msg("\nbb_getxattr(path = \"%s\", name = \"%s\", value = 0x%08x, size = %d)\n",
-	    path, name, value, size);
-    bb_fullpath(fpath, path);
-
-    retstat = log_syscall("lgetxattr", lgetxattr(fpath, name, value, size), 0);
-    if (retstat >= 0)
-	log_msg("    value = \"%s\"\n", value);
-    
-    return retstat;
-}
-
-/** List extended attributes */
-int bb_listxattr(const char *path, char *list, size_t size)
-{
-    int retstat = 0;
-    char fpath[PATH_MAX];
-    char *ptr;
-    
-    log_msg("\nbb_listxattr(path=\"%s\", list=0x%08x, size=%d)\n",
-	    path, list, size
-	    );
-    bb_fullpath(fpath, path);
-
-    retstat = log_syscall("llistxattr", llistxattr(fpath, list, size), 0);
-    if (retstat >= 0) {
-	log_msg("    returned attributes (length %d):\n", retstat);
-	if (list != NULL)
-	    for (ptr = list; ptr < list + retstat; ptr += strlen(ptr)+1)
-		log_msg("    \"%s\"\n", ptr);
-	else
-	    log_msg("    (null)\n");
-    }
-    
-    return retstat;
-}
-
-/** Remove extended attributes */
-int bb_removexattr(const char *path, const char *name)
-{
-    char fpath[PATH_MAX];
-    
-    log_msg("\nbb_removexattr(path=\"%s\", name=\"%s\")\n",
-	    path, name);
-    bb_fullpath(fpath, path);
-
-    return log_syscall("lremovexattr", lremovexattr(fpath, name), 0);
-}
-#endif
 
 /** Open directory
  *
@@ -1126,8 +1041,8 @@ int bb_releasedir(const char *path, struct fuse_file_info *fi)
     clnt_destroy (clnt);
 
     // releasedir() error
-    if (ret->ret == -1) {
-        log_msg("Close directory error\n");
+    if (ret->ret < 0) {
+        log_msg("Close directory error with errno %d\n", -ret->ret);
         return -1;
     }
     return 0;
@@ -1317,10 +1232,10 @@ struct fuse_operations bb_oper = {
   .fsync = bb_fsync,
   
 #ifdef HAVE_SYS_XATTR_H
-  .setxattr = bb_setxattr,
-  .getxattr = bb_getxattr,
-  .listxattr = bb_listxattr,
-  .removexattr = bb_removexattr,
+  .setxattr = NULL,
+  .getxattr = NULL,
+  .listxattr = NULL,
+  .removexattr = NULL,
 #endif
   
   .opendir = bb_opendir,

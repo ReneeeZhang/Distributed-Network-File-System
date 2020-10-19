@@ -326,6 +326,76 @@ xdr_symlink_ret (XDR *xdrs, symlink_ret *objp)
 }
 
 bool_t
+xdr_mknod_arg (XDR *xdrs, mknod_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->mode))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->dev))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_mknod_ret (XDR *xdrs, mknod_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_utime_arg (XDR *xdrs, utime_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	 if (!xdr_long (xdrs, &objp->actime))
+		 return FALSE;
+	 if (!xdr_long (xdrs, &objp->modtime))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_utime_ret (XDR *xdrs, utime_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_truncate_arg (XDR *xdrs, truncate_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->newsize))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_truncate_ret (XDR *xdrs, truncate_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_unlink_arg (XDR *xdrs, unlink_arg *objp)
 {
 	register int32_t *buf;

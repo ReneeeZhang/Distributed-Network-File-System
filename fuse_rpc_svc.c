@@ -29,7 +29,10 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		releasedir_arg bb_releasedir_6_arg;
 		rename_arg bb_rename_6_arg;
 		symlink_arg bb_symlink_6_arg;
+		mknod_arg bb_mknod_6_arg;
+		truncate_arg bb_truncate_6_arg;
 		unlink_arg bb_unlink_6_arg;
+		utime_arg bb_utime_6_arg;
 		open_arg bb_open_6_arg;
 		release_arg bb_release_6_arg;
 		read_arg bb_read_6_arg;
@@ -98,10 +101,28 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		local = (char *(*)(char *, struct svc_req *)) bb_symlink_6_svc;
 		break;
 
+	case BB_MKNOD:
+		_xdr_argument = (xdrproc_t) xdr_mknod_arg;
+		_xdr_result = (xdrproc_t) xdr_mknod_ret;
+		local = (char *(*)(char *, struct svc_req *)) bb_mknod_6_svc;
+		break;
+
+	case BB_TRUNCATE:
+		_xdr_argument = (xdrproc_t) xdr_truncate_arg;
+		_xdr_result = (xdrproc_t) xdr_truncate_ret;
+		local = (char *(*)(char *, struct svc_req *)) bb_truncate_6_svc;
+		break;
+
 	case BB_UNLINK:
 		_xdr_argument = (xdrproc_t) xdr_unlink_arg;
 		_xdr_result = (xdrproc_t) xdr_unlink_ret;
 		local = (char *(*)(char *, struct svc_req *)) bb_unlink_6_svc;
+		break;
+
+	case BB_UTIME:
+		_xdr_argument = (xdrproc_t) xdr_utime_arg;
+		_xdr_result = (xdrproc_t) xdr_utime_ret;
+		local = (char *(*)(char *, struct svc_req *)) bb_utime_6_svc;
 		break;
 
 	case BB_OPEN:

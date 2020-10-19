@@ -1,3 +1,13 @@
+/*
+ * Naming pattern:
+ * (1) client-to-server message structs are named as <function>_arg,
+ * server-to-client message structs are named as <function>_ret.
+ * (2) Every server-to-client response includes a data member ret,
+ * it returns 0 if RPC succeeds, otherwise it'd be assigned -errno.
+ * (3) For r/w requests, a len member is included, which indicates the 
+ * actual bytes completes.
+ */
+
 const MAX_SIZE = 4096;
 
 struct getattr_arg {
@@ -92,6 +102,35 @@ struct symlink_ret {
     int ret; /* status of RPC */
 };
 
+struct mknod_arg {
+    string path<>;
+    int mode; /* protection */
+    int dev; /* ID of device containing file */
+};
+
+struct mknod_ret {
+    int ret; /* status of RPC */
+};
+
+struct utime_arg {
+    string path<>;
+    long actime; /* access time */
+    long modtime; /* modification time */
+};
+
+struct utime_ret {
+    int ret; /* status of RPC */
+};
+
+struct truncate_arg {
+    string path<>;
+    int newsize;
+};
+
+struct truncate_ret {
+    int ret; /* status of RPC */
+};
+
 struct unlink_arg {
     string path<>;
 };
@@ -153,17 +192,13 @@ program COMPUTE{
         releasedir_ret BB_RELEASEDIR(releasedir_arg) = 7;
         rename_ret BB_RENAME(rename_arg) = 8;
         symlink_ret BB_SYMLINK(symlink_arg) = 9;
-        unlink_ret BB_UNLINK(unlink_arg) = 10;
-        open_ret BB_OPEN(open_arg) = 11;
-        release_ret BB_RELEASE(release_arg) = 12;
-        read_ret BB_READ(read_arg) = 13;
-        write_ret BB_WRITE(write_arg) = 14;
+        mknod_ret BB_MKNOD(mknod_arg) = 10;
+        truncate_ret BB_TRUNCATE(truncate_arg) = 11;
+        unlink_ret BB_UNLINK(unlink_arg) = 12;
+        utime_ret BB_UTIME(utime_arg) = 13;
+        open_ret BB_OPEN(open_arg) = 14;
+        release_ret BB_RELEASE(release_arg) = 15;
+        read_ret BB_READ(read_arg) = 16;
+        write_ret BB_WRITE(write_arg) = 17;
     } = 6;
 } = 456123789;
-
-/* TODO:
-(1) mkdir getattr error
-(2) write when creating non-existing file error
-(3) create soft link with symlink() error
-(4) rename by mv command
-*/

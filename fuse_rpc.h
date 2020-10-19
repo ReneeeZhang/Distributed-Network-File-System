@@ -125,6 +125,41 @@ struct symlink_ret {
 };
 typedef struct symlink_ret symlink_ret;
 
+struct mknod_arg {
+	char *path;
+	int mode;
+	int dev;
+};
+typedef struct mknod_arg mknod_arg;
+
+struct mknod_ret {
+	int ret;
+};
+typedef struct mknod_ret mknod_ret;
+
+struct utime_arg {
+	char *path;
+	long actime;
+	long modtime;
+};
+typedef struct utime_arg utime_arg;
+
+struct utime_ret {
+	int ret;
+};
+typedef struct utime_ret utime_ret;
+
+struct truncate_arg {
+	char *path;
+	int newsize;
+};
+typedef struct truncate_arg truncate_arg;
+
+struct truncate_ret {
+	int ret;
+};
+typedef struct truncate_ret truncate_ret;
+
 struct unlink_arg {
 	char *path;
 };
@@ -216,19 +251,28 @@ extern  rename_ret * bb_rename_6_svc(rename_arg *, struct svc_req *);
 #define BB_SYMLINK 9
 extern  symlink_ret * bb_symlink_6(symlink_arg *, CLIENT *);
 extern  symlink_ret * bb_symlink_6_svc(symlink_arg *, struct svc_req *);
-#define BB_UNLINK 10
+#define BB_MKNOD 10
+extern  mknod_ret * bb_mknod_6(mknod_arg *, CLIENT *);
+extern  mknod_ret * bb_mknod_6_svc(mknod_arg *, struct svc_req *);
+#define BB_TRUNCATE 11
+extern  truncate_ret * bb_truncate_6(truncate_arg *, CLIENT *);
+extern  truncate_ret * bb_truncate_6_svc(truncate_arg *, struct svc_req *);
+#define BB_UNLINK 12
 extern  unlink_ret * bb_unlink_6(unlink_arg *, CLIENT *);
 extern  unlink_ret * bb_unlink_6_svc(unlink_arg *, struct svc_req *);
-#define BB_OPEN 11
+#define BB_UTIME 13
+extern  utime_ret * bb_utime_6(utime_arg *, CLIENT *);
+extern  utime_ret * bb_utime_6_svc(utime_arg *, struct svc_req *);
+#define BB_OPEN 14
 extern  open_ret * bb_open_6(open_arg *, CLIENT *);
 extern  open_ret * bb_open_6_svc(open_arg *, struct svc_req *);
-#define BB_RELEASE 12
+#define BB_RELEASE 15
 extern  release_ret * bb_release_6(release_arg *, CLIENT *);
 extern  release_ret * bb_release_6_svc(release_arg *, struct svc_req *);
-#define BB_READ 13
+#define BB_READ 16
 extern  read_ret * bb_read_6(read_arg *, CLIENT *);
 extern  read_ret * bb_read_6_svc(read_arg *, struct svc_req *);
-#define BB_WRITE 14
+#define BB_WRITE 17
 extern  write_ret * bb_write_6(write_arg *, CLIENT *);
 extern  write_ret * bb_write_6_svc(write_arg *, struct svc_req *);
 extern int compute_6_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
@@ -261,19 +305,28 @@ extern  rename_ret * bb_rename_6_svc();
 #define BB_SYMLINK 9
 extern  symlink_ret * bb_symlink_6();
 extern  symlink_ret * bb_symlink_6_svc();
-#define BB_UNLINK 10
+#define BB_MKNOD 10
+extern  mknod_ret * bb_mknod_6();
+extern  mknod_ret * bb_mknod_6_svc();
+#define BB_TRUNCATE 11
+extern  truncate_ret * bb_truncate_6();
+extern  truncate_ret * bb_truncate_6_svc();
+#define BB_UNLINK 12
 extern  unlink_ret * bb_unlink_6();
 extern  unlink_ret * bb_unlink_6_svc();
-#define BB_OPEN 11
+#define BB_UTIME 13
+extern  utime_ret * bb_utime_6();
+extern  utime_ret * bb_utime_6_svc();
+#define BB_OPEN 14
 extern  open_ret * bb_open_6();
 extern  open_ret * bb_open_6_svc();
-#define BB_RELEASE 12
+#define BB_RELEASE 15
 extern  release_ret * bb_release_6();
 extern  release_ret * bb_release_6_svc();
-#define BB_READ 13
+#define BB_READ 16
 extern  read_ret * bb_read_6();
 extern  read_ret * bb_read_6_svc();
-#define BB_WRITE 14
+#define BB_WRITE 17
 extern  write_ret * bb_write_6();
 extern  write_ret * bb_write_6_svc();
 extern int compute_6_freeresult ();
@@ -300,6 +353,12 @@ extern  bool_t xdr_rename_arg (XDR *, rename_arg*);
 extern  bool_t xdr_rename_ret (XDR *, rename_ret*);
 extern  bool_t xdr_symlink_arg (XDR *, symlink_arg*);
 extern  bool_t xdr_symlink_ret (XDR *, symlink_ret*);
+extern  bool_t xdr_mknod_arg (XDR *, mknod_arg*);
+extern  bool_t xdr_mknod_ret (XDR *, mknod_ret*);
+extern  bool_t xdr_utime_arg (XDR *, utime_arg*);
+extern  bool_t xdr_utime_ret (XDR *, utime_ret*);
+extern  bool_t xdr_truncate_arg (XDR *, truncate_arg*);
+extern  bool_t xdr_truncate_ret (XDR *, truncate_ret*);
 extern  bool_t xdr_unlink_arg (XDR *, unlink_arg*);
 extern  bool_t xdr_unlink_ret (XDR *, unlink_ret*);
 extern  bool_t xdr_open_arg (XDR *, open_arg*);
@@ -330,6 +389,12 @@ extern bool_t xdr_rename_arg ();
 extern bool_t xdr_rename_ret ();
 extern bool_t xdr_symlink_arg ();
 extern bool_t xdr_symlink_ret ();
+extern bool_t xdr_mknod_arg ();
+extern bool_t xdr_mknod_ret ();
+extern bool_t xdr_utime_arg ();
+extern bool_t xdr_utime_ret ();
+extern bool_t xdr_truncate_arg ();
+extern bool_t xdr_truncate_ret ();
 extern bool_t xdr_unlink_arg ();
 extern bool_t xdr_unlink_ret ();
 extern bool_t xdr_open_arg ();

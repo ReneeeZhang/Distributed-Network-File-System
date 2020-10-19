@@ -20,7 +20,7 @@ create:
 	echo "secret_file" > rootdir/secret_file.txt
 	mkdir rootdir/testdir
 
-header:
+header: fuse_rpc.x
 	rpcgen fuse_rpc.x
 
 server: fuse_rpc.h fuse_rpc_svc.c fuse_rpc_server.c fuse_rpc_xdr.c

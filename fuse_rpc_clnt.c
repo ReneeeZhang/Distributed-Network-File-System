@@ -144,6 +144,36 @@ bb_symlink_6(symlink_arg *argp, CLIENT *clnt)
 	return (&clnt_res);
 }
 
+mknod_ret *
+bb_mknod_6(mknod_arg *argp, CLIENT *clnt)
+{
+	static mknod_ret clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, BB_MKNOD,
+		(xdrproc_t) xdr_mknod_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_mknod_ret, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+truncate_ret *
+bb_truncate_6(truncate_arg *argp, CLIENT *clnt)
+{
+	static truncate_ret clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, BB_TRUNCATE,
+		(xdrproc_t) xdr_truncate_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_truncate_ret, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
 unlink_ret *
 bb_unlink_6(unlink_arg *argp, CLIENT *clnt)
 {
@@ -153,6 +183,21 @@ bb_unlink_6(unlink_arg *argp, CLIENT *clnt)
 	if (clnt_call (clnt, BB_UNLINK,
 		(xdrproc_t) xdr_unlink_arg, (caddr_t) argp,
 		(xdrproc_t) xdr_unlink_ret, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+utime_ret *
+bb_utime_6(utime_arg *argp, CLIENT *clnt)
+{
+	static utime_ret clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, BB_UTIME,
+		(xdrproc_t) xdr_utime_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_utime_ret, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
 	}
