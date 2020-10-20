@@ -215,31 +215,6 @@ xdr_rmdir_ret (XDR *xdrs, rmdir_ret *objp)
 }
 
 bool_t
-xdr_readdir_arg (XDR *xdrs, readdir_arg *objp)
-{
-	register int32_t *buf;
-
-	 if (!xdr_string (xdrs, &objp->path, ~0))
-		 return FALSE;
-	return TRUE;
-}
-
-bool_t
-xdr_readdir_ret (XDR *xdrs, readdir_ret *objp)
-{
-	register int32_t *buf;
-
-	int i;
-	 if (!xdr_int (xdrs, &objp->count))
-		 return FALSE;
-	 if (!xdr_opaque (xdrs, objp->entries, MAX_SIZE))
-		 return FALSE;
-	 if (!xdr_int (xdrs, &objp->ret))
-		 return FALSE;
-	return TRUE;
-}
-
-bool_t
 xdr_opendir_arg (XDR *xdrs, opendir_arg *objp)
 {
 	register int32_t *buf;
@@ -255,6 +230,31 @@ xdr_opendir_ret (XDR *xdrs, opendir_ret *objp)
 	register int32_t *buf;
 
 	 if (!xdr_int (xdrs, &objp->fd))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_readdir_arg (XDR *xdrs, readdir_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->fd))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_readdir_ret (XDR *xdrs, readdir_ret *objp)
+{
+	register int32_t *buf;
+
+	int i;
+	 if (!xdr_int (xdrs, &objp->count))
+		 return FALSE;
+	 if (!xdr_opaque (xdrs, objp->entries, MAX_SIZE))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->ret))
 		 return FALSE;

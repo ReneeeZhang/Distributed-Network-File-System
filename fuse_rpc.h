@@ -70,18 +70,6 @@ struct rmdir_ret {
 };
 typedef struct rmdir_ret rmdir_ret;
 
-struct readdir_arg {
-	char *path;
-};
-typedef struct readdir_arg readdir_arg;
-
-struct readdir_ret {
-	int count;
-	char entries[MAX_SIZE];
-	int ret;
-};
-typedef struct readdir_ret readdir_ret;
-
 struct opendir_arg {
 	char *path;
 };
@@ -92,6 +80,18 @@ struct opendir_ret {
 	int ret;
 };
 typedef struct opendir_ret opendir_ret;
+
+struct readdir_arg {
+	int fd;
+};
+typedef struct readdir_arg readdir_arg;
+
+struct readdir_ret {
+	int count;
+	char entries[MAX_SIZE];
+	int ret;
+};
+typedef struct readdir_ret readdir_ret;
 
 struct releasedir_arg {
 	int fd;
@@ -272,12 +272,12 @@ extern  mkdir_ret * bb_mkdir_6_svc(mkdir_arg *, struct svc_req *);
 #define BB_RMDIR 4
 extern  rmdir_ret * bb_rmdir_6(rmdir_arg *, CLIENT *);
 extern  rmdir_ret * bb_rmdir_6_svc(rmdir_arg *, struct svc_req *);
-#define BB_READDIR 5
-extern  readdir_ret * bb_readdir_6(readdir_arg *, CLIENT *);
-extern  readdir_ret * bb_readdir_6_svc(readdir_arg *, struct svc_req *);
-#define BB_OPENDIR 6
+#define BB_OPENDIR 5
 extern  opendir_ret * bb_opendir_6(opendir_arg *, CLIENT *);
 extern  opendir_ret * bb_opendir_6_svc(opendir_arg *, struct svc_req *);
+#define BB_READDIR 6
+extern  readdir_ret * bb_readdir_6(readdir_arg *, CLIENT *);
+extern  readdir_ret * bb_readdir_6_svc(readdir_arg *, struct svc_req *);
 #define BB_RELEASEDIR 7
 extern  releasedir_ret * bb_releasedir_6(releasedir_arg *, CLIENT *);
 extern  releasedir_ret * bb_releasedir_6_svc(releasedir_arg *, struct svc_req *);
@@ -335,12 +335,12 @@ extern  mkdir_ret * bb_mkdir_6_svc();
 #define BB_RMDIR 4
 extern  rmdir_ret * bb_rmdir_6();
 extern  rmdir_ret * bb_rmdir_6_svc();
-#define BB_READDIR 5
-extern  readdir_ret * bb_readdir_6();
-extern  readdir_ret * bb_readdir_6_svc();
-#define BB_OPENDIR 6
+#define BB_OPENDIR 5
 extern  opendir_ret * bb_opendir_6();
 extern  opendir_ret * bb_opendir_6_svc();
+#define BB_READDIR 6
+extern  readdir_ret * bb_readdir_6();
+extern  readdir_ret * bb_readdir_6_svc();
 #define BB_RELEASEDIR 7
 extern  releasedir_ret * bb_releasedir_6();
 extern  releasedir_ret * bb_releasedir_6_svc();
@@ -397,10 +397,10 @@ extern  bool_t xdr_mkdir_arg (XDR *, mkdir_arg*);
 extern  bool_t xdr_mkdir_ret (XDR *, mkdir_ret*);
 extern  bool_t xdr_rmdir_arg (XDR *, rmdir_arg*);
 extern  bool_t xdr_rmdir_ret (XDR *, rmdir_ret*);
-extern  bool_t xdr_readdir_arg (XDR *, readdir_arg*);
-extern  bool_t xdr_readdir_ret (XDR *, readdir_ret*);
 extern  bool_t xdr_opendir_arg (XDR *, opendir_arg*);
 extern  bool_t xdr_opendir_ret (XDR *, opendir_ret*);
+extern  bool_t xdr_readdir_arg (XDR *, readdir_arg*);
+extern  bool_t xdr_readdir_ret (XDR *, readdir_ret*);
 extern  bool_t xdr_releasedir_arg (XDR *, releasedir_arg*);
 extern  bool_t xdr_releasedir_ret (XDR *, releasedir_ret*);
 extern  bool_t xdr_rename_arg (XDR *, rename_arg*);
@@ -439,10 +439,10 @@ extern bool_t xdr_mkdir_arg ();
 extern bool_t xdr_mkdir_ret ();
 extern bool_t xdr_rmdir_arg ();
 extern bool_t xdr_rmdir_ret ();
-extern bool_t xdr_readdir_arg ();
-extern bool_t xdr_readdir_ret ();
 extern bool_t xdr_opendir_arg ();
 extern bool_t xdr_opendir_ret ();
+extern bool_t xdr_readdir_arg ();
+extern bool_t xdr_readdir_ret ();
 extern bool_t xdr_releasedir_arg ();
 extern bool_t xdr_releasedir_ret ();
 extern bool_t xdr_rename_arg ();

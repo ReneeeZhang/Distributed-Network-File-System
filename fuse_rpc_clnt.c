@@ -69,21 +69,6 @@ bb_rmdir_6(rmdir_arg *argp, CLIENT *clnt)
 	return (&clnt_res);
 }
 
-readdir_ret *
-bb_readdir_6(readdir_arg *argp, CLIENT *clnt)
-{
-	static readdir_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_READDIR,
-		(xdrproc_t) xdr_readdir_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_readdir_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
-}
-
 opendir_ret *
 bb_opendir_6(opendir_arg *argp, CLIENT *clnt)
 {
@@ -93,6 +78,21 @@ bb_opendir_6(opendir_arg *argp, CLIENT *clnt)
 	if (clnt_call (clnt, BB_OPENDIR,
 		(xdrproc_t) xdr_opendir_arg, (caddr_t) argp,
 		(xdrproc_t) xdr_opendir_ret, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+readdir_ret *
+bb_readdir_6(readdir_arg *argp, CLIENT *clnt)
+{
+	static readdir_ret clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, BB_READDIR,
+		(xdrproc_t) xdr_readdir_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_readdir_ret, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
 	}

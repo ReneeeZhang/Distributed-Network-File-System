@@ -26,11 +26,6 @@
 
 #include "fuse_rpc.h"
 
-typedef enum {
-    false,
-    true
-} bool;
-
 getattr_ret *
 bb_getattr_6_svc(getattr_arg *argp, struct svc_req *rqstp)
 {
@@ -60,7 +55,6 @@ bb_getattr_6_svc(getattr_arg *argp, struct svc_req *rqstp)
     result.st_mtimensec = statbuf.st_mtim.tv_nsec;
     result.st_ctimensec = statbuf.st_ctim.tv_nsec;
     result.ret = 0;
-
 	return &result;
 }
 
@@ -98,14 +92,14 @@ bb_rmdir_6_svc(rmdir_arg *argp, struct svc_req *rqstp) {
 
 readdir_ret *
 bb_readdir_6_svc(readdir_arg *argp, struct svc_req *rqstp) {
-    char *path = argp->path;
-    fprintf(stderr, "Read directory for %s\n", path);
+    int fd = argp->fd;
+    fprintf(stderr, "Read directory for fd %d\n", fd);
 
     static readdir_ret ret; 
     ret.count = 0;
-    DIR *dp = opendir(path);
+    DIR *dp = fdopendir(fd);
     if (dp == NULL) {
-        fprintf(stderr, "opendir %s error\n", path);
+        fprintf(stderr, "opendir of fd %d error\n", fd);
         ret.ret = -errno;
         return &ret;
     }

@@ -834,9 +834,7 @@ int bb_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset
     // Get attribute via RPC.
     readdir_ret *ret = NULL;
     readdir_arg arg;
-    char fpath[PATH_MAX];
-    bb_fullpath(fpath, path);
-    arg.path = fpath;
+    arg.fd = fi->fh;
     
     CLIENT *clnt = connect_server();
     ret = bb_readdir_6(&arg, clnt);

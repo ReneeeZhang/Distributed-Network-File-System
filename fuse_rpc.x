@@ -57,22 +57,22 @@ struct rmdir_ret {
     int ret; /* status of RPC */
 };
 
-struct readdir_arg {
-    string path<>;
-};
-
-struct readdir_ret {
-    int count; /* number of struct dirent */
-    opaque entries[MAX_SIZE]; /* dirent entry name */
-    int ret; /* status of RPC */
-};
-
 struct opendir_arg {
     string path<>;
 };
 
 struct opendir_ret {
     int fd; /* file descriptor of the directory */
+    int ret; /* status of RPC */
+};
+
+struct readdir_arg {
+    int fd;
+};
+
+struct readdir_ret {
+    int count; /* number of struct dirent */
+    opaque entries[MAX_SIZE]; /* dirent entry name */
     int ret; /* status of RPC */
 };
 
@@ -217,8 +217,8 @@ program COMPUTE{
         access_ret BB_ACCESS(access_arg) = 2;
         mkdir_ret BB_MKDIR(mkdir_arg) = 3;
         rmdir_ret BB_RMDIR(rmdir_arg) = 4;
-        readdir_ret BB_READDIR(readdir_arg) = 5;
-        opendir_ret BB_OPENDIR(opendir_arg) = 6;
+        opendir_ret BB_OPENDIR(opendir_arg) = 5;
+        readdir_ret BB_READDIR(readdir_arg) = 6;
         releasedir_ret BB_RELEASEDIR(releasedir_arg) = 7;
         rename_ret BB_RENAME(rename_arg) = 8;
         symlink_ret BB_SYMLINK(symlink_arg) = 9;
