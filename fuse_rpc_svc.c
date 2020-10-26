@@ -41,9 +41,31 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		read_arg bb_read_6_arg;
 		write_arg bb_write_6_arg;
 	} argument;
-	char *result;
+	union {
+		getattr_ret bb_getattr_6_res;
+		access_ret bb_access_6_res;
+		mkdir_ret bb_mkdir_6_res;
+		rmdir_ret bb_rmdir_6_res;
+		opendir_ret bb_opendir_6_res;
+		readdir_ret bb_readdir_6_res;
+		releasedir_ret bb_releasedir_6_res;
+		rename_ret bb_rename_6_res;
+		symlink_ret bb_symlink_6_res;
+		readlink_ret bb_readlink_6_res;
+		mknod_ret bb_mknod_6_res;
+		truncate_ret bb_truncate_6_res;
+		unlink_ret bb_unlink_6_res;
+		utime_ret bb_utime_6_res;
+		chmod_ret bb_chmod_6_res;
+		chown_ret bb_chown_6_res;
+		open_ret bb_open_6_res;
+		release_ret bb_release_6_res;
+		read_ret bb_read_6_res;
+		write_ret bb_write_6_res;
+	} result;
+	bool_t retval;
 	xdrproc_t _xdr_argument, _xdr_result;
-	char *(*local)(char *, struct svc_req *);
+	bool_t (*local)(char *, void *, struct svc_req *);
 
 	switch (rqstp->rq_proc) {
 	case NULLPROC:
@@ -53,121 +75,121 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 	case BB_GETATTR:
 		_xdr_argument = (xdrproc_t) xdr_getattr_arg;
 		_xdr_result = (xdrproc_t) xdr_getattr_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_getattr_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_getattr_6_svc;
 		break;
 
 	case BB_ACCESS:
 		_xdr_argument = (xdrproc_t) xdr_access_arg;
 		_xdr_result = (xdrproc_t) xdr_access_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_access_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_access_6_svc;
 		break;
 
 	case BB_MKDIR:
 		_xdr_argument = (xdrproc_t) xdr_mkdir_arg;
 		_xdr_result = (xdrproc_t) xdr_mkdir_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_mkdir_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_mkdir_6_svc;
 		break;
 
 	case BB_RMDIR:
 		_xdr_argument = (xdrproc_t) xdr_rmdir_arg;
 		_xdr_result = (xdrproc_t) xdr_rmdir_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_rmdir_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_rmdir_6_svc;
 		break;
 
 	case BB_OPENDIR:
 		_xdr_argument = (xdrproc_t) xdr_opendir_arg;
 		_xdr_result = (xdrproc_t) xdr_opendir_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_opendir_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_opendir_6_svc;
 		break;
 
 	case BB_READDIR:
 		_xdr_argument = (xdrproc_t) xdr_readdir_arg;
 		_xdr_result = (xdrproc_t) xdr_readdir_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_readdir_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_readdir_6_svc;
 		break;
 
 	case BB_RELEASEDIR:
 		_xdr_argument = (xdrproc_t) xdr_releasedir_arg;
 		_xdr_result = (xdrproc_t) xdr_releasedir_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_releasedir_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_releasedir_6_svc;
 		break;
 
 	case BB_RENAME:
 		_xdr_argument = (xdrproc_t) xdr_rename_arg;
 		_xdr_result = (xdrproc_t) xdr_rename_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_rename_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_rename_6_svc;
 		break;
 
 	case BB_SYMLINK:
 		_xdr_argument = (xdrproc_t) xdr_symlink_arg;
 		_xdr_result = (xdrproc_t) xdr_symlink_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_symlink_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_symlink_6_svc;
 		break;
 
 	case BB_READLINK:
 		_xdr_argument = (xdrproc_t) xdr_readlink_arg;
 		_xdr_result = (xdrproc_t) xdr_readlink_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_readlink_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_readlink_6_svc;
 		break;
 
 	case BB_MKNOD:
 		_xdr_argument = (xdrproc_t) xdr_mknod_arg;
 		_xdr_result = (xdrproc_t) xdr_mknod_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_mknod_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_mknod_6_svc;
 		break;
 
 	case BB_TRUNCATE:
 		_xdr_argument = (xdrproc_t) xdr_truncate_arg;
 		_xdr_result = (xdrproc_t) xdr_truncate_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_truncate_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_truncate_6_svc;
 		break;
 
 	case BB_UNLINK:
 		_xdr_argument = (xdrproc_t) xdr_unlink_arg;
 		_xdr_result = (xdrproc_t) xdr_unlink_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_unlink_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_unlink_6_svc;
 		break;
 
 	case BB_UTIME:
 		_xdr_argument = (xdrproc_t) xdr_utime_arg;
 		_xdr_result = (xdrproc_t) xdr_utime_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_utime_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_utime_6_svc;
 		break;
 
 	case BB_CHMOD:
 		_xdr_argument = (xdrproc_t) xdr_chmod_arg;
 		_xdr_result = (xdrproc_t) xdr_chmod_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_chmod_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_chmod_6_svc;
 		break;
 
 	case BB_CHOWN:
 		_xdr_argument = (xdrproc_t) xdr_chown_arg;
 		_xdr_result = (xdrproc_t) xdr_chown_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_chown_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_chown_6_svc;
 		break;
 
 	case BB_OPEN:
 		_xdr_argument = (xdrproc_t) xdr_open_arg;
 		_xdr_result = (xdrproc_t) xdr_open_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_open_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_open_6_svc;
 		break;
 
 	case BB_RELEASE:
 		_xdr_argument = (xdrproc_t) xdr_release_arg;
 		_xdr_result = (xdrproc_t) xdr_release_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_release_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_release_6_svc;
 		break;
 
 	case BB_READ:
 		_xdr_argument = (xdrproc_t) xdr_read_arg;
 		_xdr_result = (xdrproc_t) xdr_read_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_read_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_read_6_svc;
 		break;
 
 	case BB_WRITE:
 		_xdr_argument = (xdrproc_t) xdr_write_arg;
 		_xdr_result = (xdrproc_t) xdr_write_ret;
-		local = (char *(*)(char *, struct svc_req *)) bb_write_6_svc;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_write_6_svc;
 		break;
 
 	default:
@@ -179,14 +201,17 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		svcerr_decode (transp);
 		return;
 	}
-	result = (*local)((char *)&argument, rqstp);
-	if (result != NULL && !svc_sendreply(transp, (xdrproc_t) _xdr_result, result)) {
+	retval = (bool_t) (*local)((char *)&argument, (void *)&result, rqstp);
+	if (retval > 0 && !svc_sendreply(transp, (xdrproc_t) _xdr_result, (char *)&result)) {
 		svcerr_systemerr (transp);
 	}
 	if (!svc_freeargs (transp, (xdrproc_t) _xdr_argument, (caddr_t) &argument)) {
 		fprintf (stderr, "%s", "unable to free arguments");
 		exit (1);
 	}
+	if (!compute_6_freeresult (transp, _xdr_result, (caddr_t) &result))
+		fprintf (stderr, "%s", "unable to free results");
+
 	return;
 }
 

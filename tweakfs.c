@@ -44,6 +44,9 @@
 #include "log.h"
 #include "fuse_rpc.h"
 
+// Using alias for RPC return type.
+typedef enum clnt_stat rpc_ret_t;
+
 // RPC-related variables.
 char *host = NULL;
 
@@ -71,14 +74,19 @@ static void bb_fullpath(char fpath[PATH_MAX], const char *path)
 {
     // For some functions, say symlink, argument path may not begin with '/',
     // so have to prepend purposefully.
+    memset(fpath, '\0', PATH_MAX);
     strcpy(fpath, BB_DATA->rootdir);
     if (path != NULL && strlen(path) > 0 && path[0] != '/') {
         fpath[rootdir_len] = '/';
     }
     strncat(fpath, path, PATH_MAX);
 
-    log_msg("    bb_fullpath:  rootdir = \"%s\", path = \"%s\", fpath = \"%s\"\n",
-	    BB_DATA->rootdir, path, fpath);
+    // Debug
+    log_msg("path = %s\n", path);
+    log_msg("full path = %s\n", fpath);
+
+    // log_msg("    bb_fullpath:  rootdir = \"%s\", path = \"%s\", fpath = \"%s\"\n",
+	//    BB_DATA->rootdir, path, fpath);
 }
 
 ///////////////////////////////////////////////////////////
@@ -97,40 +105,41 @@ int bb_getattr(const char *path, struct stat *statbuf)
     log_msg("\nbb_getattr(path=\"%s\")\n", path);
 
     // Get attribute via RPC.
-    getattr_ret *ret = NULL;
+    getattr_ret ret;
     getattr_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
     arg.path = fpath;
     
     CLIENT *clnt = connect_server();
-    ret = bb_getattr_6(&arg, clnt);
-    if (ret == (getattr_ret *) NULL) {
+    rpc_ret_t retval = bb_getattr_6(&arg, &ret, clnt);
+
+    if (retval != RPC_SUCCESS) {
         log_msg("RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
     
     // lstat() error.
-    if (ret->ret < 0) {
-        log_msg("Get attribute error with errno %d\n", -ret->ret);
-        return ret->ret;
+    if (ret.ret < 0) {
+        log_msg("Get attribute error with errno %d\n", -ret.ret);
+        return ret.ret;
     }
 
     // Assign RPC return value to stat buf.
-    statbuf->st_dev = ret->st_dev;
-    statbuf->st_ino = ret->st_ino;
-    statbuf->st_mode = ret->st_mode;
-    statbuf->st_nlink = ret->st_nlink;
-    statbuf->st_uid = ret->st_uid;
-    statbuf->st_gid = ret->st_gid;
-    statbuf->st_rdev = ret->st_rdev;
-    statbuf->st_size = ret->st_size;
-    statbuf->st_blksize = ret->st_blksize;
-    statbuf->st_blocks = ret->st_blocks;
-    statbuf->st_atimensec = ret->st_atimensec;
-    statbuf->st_mtimensec = ret->st_mtimensec;
-    statbuf->st_ctimensec = ret->st_ctimensec;
+    statbuf->st_dev = ret.st_dev;
+    statbuf->st_ino = ret.st_ino;
+    statbuf->st_mode = ret.st_mode;
+    statbuf->st_nlink = ret.st_nlink;
+    statbuf->st_uid = ret.st_uid;
+    statbuf->st_gid = ret.st_gid;
+    statbuf->st_rdev = ret.st_rdev;
+    statbuf->st_size = ret.st_size;
+    statbuf->st_blksize = ret.st_blksize;
+    statbuf->st_blocks = ret.st_blocks;
+    statbuf->st_atimensec = ret.st_atimensec;
+    statbuf->st_mtimensec = ret.st_mtimensec;
+    statbuf->st_ctimensec = ret.st_ctimensec;
     return 0;
 }
 
@@ -152,7 +161,7 @@ int bb_readlink(const char *path, char *buf, size_t size)
 	  path, link, size);
 
     // Get attribute via RPC.
-    readlink_ret *ret = NULL;
+    readlink_ret ret;
     readlink_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
@@ -160,19 +169,19 @@ int bb_readlink(const char *path, char *buf, size_t size)
     arg.size = size - 1;
 
     CLIENT *clnt = connect_server();
-    ret = bb_readlink_6(&arg, clnt);
-    if (ret == (readlink_ret *) NULL) {
+    rpc_ret_t retval = bb_readlink_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
         log_msg("RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
 
-    if (ret->ret == -1) {
+    if (ret.ret == -1) {
         log_msg("readlink %s with size %zu error\n", fpath, size - 1);
-        return ret->ret;
+        return ret.ret;
     }
 
-    buf[ret->len] = '\0';
+    buf[ret.len] = '\0';
     return 0;
 }
 
@@ -188,7 +197,7 @@ int bb_mknod(const char *path, mode_t mode, dev_t dev)
 	  path, mode, dev);
 
     // Get attribute via RPC.
-    mknod_ret *ret = NULL;
+    mknod_ret ret;
     mknod_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
@@ -197,17 +206,17 @@ int bb_mknod(const char *path, mode_t mode, dev_t dev)
     arg.dev = dev;
     
     CLIENT *clnt = connect_server();
-    ret = bb_mknod_6(&arg, clnt);
-    if (ret == (mknod_ret *) NULL) {
+    rpc_ret_t retval = bb_mknod_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
         log_msg("RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
 
-    if (ret->ret < 0) {
+    if (ret.ret < 0) {
         log_msg("mknod for %s with mode %s and dev id %d error\n", fpath, mode, dev);
     }
-    return ret->ret;
+    return ret.ret;
 }
 
 /** Create a directory */
@@ -216,7 +225,7 @@ int bb_mkdir(const char *path, mode_t mode)
     log_msg("\nbb_mkdir(path=\"%s\", mode=0%3o)\n", path, mode);
 
     // Get attribute via RPC.
-    mkdir_ret *ret = NULL;
+    mkdir_ret ret;
     mkdir_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
@@ -224,17 +233,17 @@ int bb_mkdir(const char *path, mode_t mode)
     arg.mode = mode;
     
     CLIENT *clnt = connect_server();
-    ret = bb_mkdir_6(&arg, clnt);
-    if (ret == (mkdir_ret *) NULL) {
+    rpc_ret_t retval = bb_mkdir_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
         log_msg("RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
     
-    if (ret->ret < 0) {
+    if (ret.ret < 0) {
         log_msg("mkdir error for %s\n", fpath);
     }
-    return ret->ret;
+    return ret.ret;
 }
 
 /** Remove a file */
@@ -243,51 +252,50 @@ int bb_unlink(const char *path)
     log_msg("bb_unlink(path=\"%s\")\n", path);
 
     // Get attribute via RPC.
-    unlink_ret *ret = NULL;
+    unlink_ret ret;
     unlink_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
     arg.path = fpath;
     
     CLIENT *clnt = connect_server();
-    ret = bb_unlink_6(&arg, clnt);
-    if (ret == (unlink_ret *) NULL) {
+    rpc_ret_t retval = bb_unlink_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
         log_msg("RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
 
-    if (ret->ret < 0) {
-        log_msg("unlink error for %s with errno %d\n", fpath, -ret->ret);
+    if (ret.ret < 0) {
+        log_msg("unlink error for %s with errno %d\n", fpath, -ret.ret);
     }
-    return ret->ret;
+    return ret.ret;
 }
 
 /** Remove a directory */
 int bb_rmdir(const char *path)
 {
-    log_msg("bb_rmdir(path=\"%s\")\n",
-	    path);
+    log_msg("bb_rmdir(path=\"%s\")\n", path);
     
     // Get attribute via RPC.
-    rmdir_ret *ret = NULL;
+    rmdir_ret ret;
     rmdir_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
     arg.path = fpath;
     
     CLIENT *clnt = connect_server();
-    ret = bb_rmdir_6(&arg, clnt);
-    if (ret == (rmdir_ret *) NULL) {
+    rpc_ret_t retval = bb_rmdir_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
         log_msg("RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
 
-    if (ret->ret < 0) {
-        log_msg("rmdir error for %s with errno %d\n", fpath, -ret->ret);
+    if (ret.ret < 0) {
+        log_msg("rmdir error for %s with errno %d\n", fpath, -ret.ret);
     }
-    return ret->ret;
+    return ret.ret;
 }
 
 /** Create a symbolic link */
@@ -301,7 +309,7 @@ int bb_symlink(const char *path, const char *link)
 	    path, link);
 
     // Get attribute via RPC.
-    symlink_ret *ret = NULL;
+    symlink_ret ret;
     symlink_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
@@ -310,21 +318,22 @@ int bb_symlink(const char *path, const char *link)
     arg.path = fpath;
     arg.link = flink;
 
+    // DEBUG
     log_msg("path = %s, full path = %s\n", path, fpath);
     log_msg("link path = %s, full link path = %s\n", link, flink);
     
     CLIENT *clnt = connect_server();
-    ret = bb_symlink_6(&arg, clnt);
-    if (ret == (symlink_ret *) NULL) {
+    rpc_ret_t retval = bb_symlink_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
         log_msg("RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
 
-    if (ret->ret < 0) {
-        log_msg("symlink error to create %s for %s with errno %d\n", flink, fpath, -ret->ret);
+    if (ret.ret < 0) {
+        log_msg("symlink error to create %s for %s with errno %d\n", flink, fpath, -ret.ret);
     }
-    return ret->ret;
+    return ret.ret;
 }
 
 /** Rename a file */
@@ -335,7 +344,7 @@ int bb_rename(const char *path, const char *newpath)
 	    path, newpath);
 
     // Get attribute via RPC.
-    rename_ret *ret = NULL;
+    rename_ret ret;
     rename_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
@@ -345,17 +354,17 @@ int bb_rename(const char *path, const char *newpath)
     arg.newpath = fnewpath;
     
     CLIENT *clnt = connect_server();
-    ret = bb_rename_6(&arg, clnt);
-    if (ret == (rename_ret *) NULL) {
+    rpc_ret_t retval = bb_rename_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
         log_msg("RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
 
-    if (ret->ret < 0) {
-        log_msg("rename error from %s to %s with errno %d\n", fpath, fnewpath, -ret->ret);
+    if (ret.ret < 0) {
+        log_msg("rename error from %s to %s with errno %d\n", fpath, fnewpath, -ret.ret);
     }
-    return ret->ret;
+    return ret.ret;
 }
 
 /** Create a hard link to a file */
@@ -378,7 +387,7 @@ int bb_chmod(const char *path, mode_t mode)
 	    path, mode);
 
     // Get attribute via RPC.
-    chmod_ret *ret = NULL;
+    chmod_ret ret;
     chmod_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
@@ -386,17 +395,17 @@ int bb_chmod(const char *path, mode_t mode)
     arg.mode = mode;
     
     CLIENT *clnt = connect_server();
-    ret = bb_chmod_6(&arg, clnt);
-    if (ret == (chmod_ret *) NULL) {
+    rpc_ret_t retval = bb_chmod_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
         log_msg("RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
     
-    if (ret->ret < 0) {
+    if (ret.ret < 0) {
         log_msg("Chmod for file %s to mode %d error\n", path, mode);
     }
-    return ret->ret;
+    return ret.ret;
 }
 
 /** Change the owner and group of a file */
@@ -406,7 +415,7 @@ int bb_chown(const char *path, uid_t uid, gid_t gid)
 	    path, uid, gid);
     
     // Get attribute via RPC.
-    chown_ret *ret = NULL;
+    chown_ret ret;
     chown_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
@@ -415,17 +424,17 @@ int bb_chown(const char *path, uid_t uid, gid_t gid)
     arg.gid = gid;
     
     CLIENT *clnt = connect_server();
-    ret = bb_chown_6(&arg, clnt);
-    if (ret == (chown_ret *) NULL) {
+    rpc_ret_t retval = bb_chown_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
         log_msg("RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
     
-    if (ret->ret < 0) {
+    if (ret.ret < 0) {
         log_msg("Chown for file %s to uid %ld gid %ld error\n", path, uid, gid);
     }
-    return ret->ret;
+    return ret.ret;
 }
 
 /** Change the size of a file */
@@ -435,7 +444,7 @@ int bb_truncate(const char *path, off_t newsize)
 	    path, newsize);
     
     // Get attribute via RPC.
-    truncate_ret *ret = NULL;
+    truncate_ret ret;
     truncate_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
@@ -443,28 +452,27 @@ int bb_truncate(const char *path, off_t newsize)
     arg.newsize = newsize;
     
     CLIENT *clnt = connect_server();
-    ret = bb_truncate_6(&arg, clnt);
-    if (ret == (truncate_ret *) NULL) {
+    rpc_ret_t retval = bb_truncate_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
         log_msg("RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
 
-    if (ret->ret < 0) {
+    if (ret.ret < 0) {
         log_msg("truncate with path %s and new size %d error\n", fpath, newsize);
     }
-    return ret->ret;
+    return ret.ret;
 }
 
 /** Change the access and/or modification times of a file */
 /* note -- I'll want to change this as soon as 2.6 is in debian testing */
 int bb_utime(const char *path, struct utimbuf *ubuf)
 {
-    log_msg("\nbb_utime(path=\"%s\", ubuf=0x%08x)\n",
-	    path, ubuf);
+    log_msg("\nbb_utime(path=\"%s\", ubuf=0x%08x)\n", path, ubuf);
 
     // Get attribute via RPC.
-    utime_ret *ret = NULL;
+    utime_ret ret;
     utime_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
@@ -473,17 +481,17 @@ int bb_utime(const char *path, struct utimbuf *ubuf)
     arg.modtime = ubuf->modtime;
     
     CLIENT *clnt = connect_server();
-    ret = bb_utime_6(&arg, clnt);
-    if (ret == (utime_ret *) NULL) {
+    rpc_ret_t retval = bb_utime_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
         log_msg("RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
 
-    if (ret->ret < 0) {
+    if (ret.ret < 0) {
         log_msg("utime with path %s and access time %ld and modification time %ld error\n", fpath, arg.actime, arg.modtime);
     }
-    return ret->ret;
+    return ret.ret;
 }
 
 /** File open operation
@@ -502,7 +510,7 @@ int bb_open(const char *path, struct fuse_file_info *fi)
 	    path, fi);
 
     // Get attribute via RPC.
-    open_ret *ret = NULL;
+    open_ret ret;
     open_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
@@ -510,19 +518,19 @@ int bb_open(const char *path, struct fuse_file_info *fi)
     arg.flags = fi->flags;
     
     CLIENT *clnt = connect_server();
-    ret = bb_open_6(&arg, clnt);
-    if (ret == (open_ret *) NULL) {
+    rpc_ret_t retval = bb_open_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
         log_msg("RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
 
-    if (ret->ret < 0) {
-        log_msg("Open file %s error with errno %d\n", fpath, -ret->ret);
+    if (ret.ret < 0) {
+        log_msg("Open file %s error with errno %d\n", fpath, -ret.ret);
         return -1;
     }
 
-    fi->fh = ret->fd;
+    fi->fh = ret.fd;
     return 0;
 }
 
@@ -549,7 +557,7 @@ int bb_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 
     // Get attribute via RPC.
     CLIENT *clnt = connect_server();
-    read_ret *ret = NULL;
+    read_ret ret;
     read_arg arg;
     arg.fd = fi->fh;
     arg.size = size;
@@ -558,26 +566,26 @@ int bb_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
     // Keep RPC until requsted size is already read.
     int total_len = 0;
     while (total_len < size) {
-        ret = bb_read_6(&arg, clnt);
-        if (ret == (read_ret *) NULL) {
+        rpc_ret_t retval = bb_read_6(&arg, &ret, clnt);
+        if (retval != RPC_SUCCESS) {
             log_msg("RPC return value error\n");
             clnt_perror (clnt, "call failed");
         }
-        if (ret->ret < 0) {
-            log_msg("Read called error with errno %d\n", -ret->ret);
+        if (ret.ret < 0) {
+            log_msg("Read called error with errno %d\n", -ret.ret);
             clnt_destroy (clnt);
             return -1;
         }
 
         // If server has reached EOF.
-        int len = ret->len;
+        int len = ret.len;
         if (len == 0) {
             log_msg("Read for fd %d has finished\n", arg.fd);
             break;
         }
 
         // Assign read result to user space.
-        memmove(buf + total_len, ret->buffer, MAX_SIZE);
+        memmove(buf + total_len, ret.buffer, MAX_SIZE);
         total_len += len;
         arg.size -= len;
         arg.offset += len;
@@ -601,12 +609,11 @@ int bb_write(const char *path, const char *buf, size_t size, off_t offset,
 	     struct fuse_file_info *fi)
 {
     log_msg("\nbb_write(path=\"%s\", buf=0x%08x, size=%d, offset=%lld, fi=0x%08x)\n",
-	    path, buf, size, offset, fi
-	    );
+	    path, buf, size, offset, fi);
     
     // Get attribute via RPC.
     CLIENT *clnt = connect_server();
-    write_ret *ret = NULL;
+    write_ret ret;
     write_arg arg;
     arg.fd = fi->fh;
     arg.size = size;
@@ -617,21 +624,21 @@ int bb_write(const char *path, const char *buf, size_t size, off_t offset,
     // Keep RPC until all bytes has been writen to file.
     int total_len = 0;
     while (1) {
-        ret = bb_write_6(&arg, clnt);
-        if (ret == (write_ret *) NULL) {
+        rpc_ret_t retval = bb_write_6(&arg, &ret, clnt);
+        if (retval != RPC_SUCCESS) {
             log_msg("RPC return value error\n");
             clnt_perror (clnt, "call failed");
         }
 
         // RPC write issue error.
-        if (ret->ret < 0) {
-            log_msg("Read called error with errno %d\n", -ret->ret);
+        if (ret.ret < 0) {
+            log_msg("Read called error with errno %d\n", -ret.ret);
             clnt_destroy (clnt);
             return -1;
         }
 
         // Check whether all requested bytes have been written.
-        int len = ret->len;
+        int len = ret.len;
         total_len += len;
         if (total_len == size) {
             log_msg("Write for fd %d has finished\n", arg.fd);
@@ -724,20 +731,20 @@ int bb_release(const char *path, struct fuse_file_info *fi)
 	  path, fi);
     
     // Get attribute via RPC.
-    release_ret *ret = NULL;
+    release_ret ret;
     release_arg arg;
     arg.fd = fi->fh;
     
     CLIENT *clnt = connect_server();
-    ret = bb_release_6(&arg, clnt);
-    if (ret == (release_ret *) NULL) {
+    rpc_ret_t retval = bb_release_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
         log_msg("RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
 
-    if (ret->ret < 0) {
-        log_msg("Close file error with errno %d\n", -ret->ret);
+    if (ret.ret < 0) {
+        log_msg("Close file error with errno %d\n", -ret.ret);
         return -1;
     }
 
@@ -779,27 +786,27 @@ int bb_opendir(const char *path, struct fuse_file_info *fi)
 	  path, fi);
 
     // Get attribute via RPC.
-    opendir_ret *ret = NULL;
+    opendir_ret ret;
     opendir_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
     arg.path = fpath;
     
     CLIENT *clnt = connect_server();
-    ret = bb_opendir_6(&arg, clnt);
-    if (ret == (opendir_ret *) NULL) {
+    rpc_ret_t retval = bb_opendir_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
         log_msg("Return value null, RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
 
     // readdir() error.
-    if (ret->ret != 0) {
+    if (ret.ret != 0) {
         log_msg("Open directory error\n");
         return -1;
     }
 
-    fi->fh = ret->fd;
+    fi->fh = ret.fd;
     return 0;
 }
 
@@ -832,26 +839,26 @@ int bb_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset
 	    path, buf, filler, offset, fi);
 
     // Get attribute via RPC.
-    readdir_ret *ret = NULL;
+    readdir_ret ret;
     readdir_arg arg;
     arg.fd = fi->fh;
     
     CLIENT *clnt = connect_server();
-    ret = bb_readdir_6(&arg, clnt);
-    if (ret == (readdir_ret *) NULL) {
+    rpc_ret_t retval = bb_readdir_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
         log_msg("RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
 
     // readdir() error.
-    if (ret->ret != 0) {
+    if (ret.ret != 0) {
         log_msg("Read directory error\n");
         return -1;
     }
 
-    int count = ret->count;
-    char *entries = ret->entries;
+    int count = ret.count;
+    char *entries = ret.entries;
     for (int ii = 0; ii < count; ++ii) {
         log_msg("Ready to fill in dirent %s\n", entries);
         if (filler(buf, entries, NULL, 0) != 0) {
@@ -873,21 +880,21 @@ int bb_releasedir(const char *path, struct fuse_file_info *fi)
 	    path, fi);
     
     // Get attribute via RPC.
-    releasedir_ret *ret = NULL;
+    releasedir_ret ret;
     releasedir_arg arg;
     arg.fd = fi->fh;
     
     CLIENT *clnt = connect_server();
-    ret = bb_releasedir_6(&arg, clnt);
-    if (ret == (releasedir_ret *) NULL) {
+    rpc_ret_t retval = bb_releasedir_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
         log_msg("RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
 
     // releasedir() error
-    if (ret->ret < 0) {
-        log_msg("Close directory error with errno %d\n", -ret->ret);
+    if (ret.ret < 0) {
+        log_msg("Close directory error with errno %d\n", -ret.ret);
         return -1;
     }
     return 0;
@@ -966,7 +973,7 @@ void bb_destroy(void *userdata)
 int bb_access(const char *path, int mask)
 {
     // Check permission via RPC.
-    access_ret *ret = NULL;
+    access_ret ret;
     access_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
@@ -974,14 +981,14 @@ int bb_access(const char *path, int mask)
     arg.mask = mask;
     
     CLIENT *clnt = connect_server();
-    ret = bb_access_6(&arg, clnt);
-    if (ret == (access_ret *) NULL) {
+    rpc_ret_t retval = bb_access_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
         log_msg("RPC return value error\n");
         clnt_perror (clnt, "call failed");
     }
     clnt_destroy (clnt);
     
-    return ret->ret;
+    return ret.ret;
 }
 
 /**
@@ -1075,16 +1082,16 @@ struct fuse_operations bb_oper = {
   .listxattr = NULL,
   .removexattr = NULL,
 #endif
-  
+
   .opendir = bb_opendir,
   .readdir = bb_readdir,
   .releasedir = bb_releasedir,
-  .fsyncdir = bb_fsyncdir,
+  .fsyncdir = NULL,
   .init = bb_init,
   .destroy = bb_destroy,
   .access = bb_access,
-  .ftruncate = bb_ftruncate,
-  .fgetattr = bb_fgetattr
+  .ftruncate = NULL,
+  .fgetattr = NULL,
 };
 
 void bb_usage()

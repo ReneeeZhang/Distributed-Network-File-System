@@ -8,6 +8,7 @@
 
 #include <rpc/rpc.h>
 
+#include <pthread.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -261,128 +262,128 @@ typedef struct write_ret write_ret;
 
 #if defined(__STDC__) || defined(__cplusplus)
 #define BB_GETATTR 1
-extern  getattr_ret * bb_getattr_6(getattr_arg *, CLIENT *);
-extern  getattr_ret * bb_getattr_6_svc(getattr_arg *, struct svc_req *);
+extern  enum clnt_stat bb_getattr_6(getattr_arg *, getattr_ret *, CLIENT *);
+extern  bool_t bb_getattr_6_svc(getattr_arg *, getattr_ret *, struct svc_req *);
 #define BB_ACCESS 2
-extern  access_ret * bb_access_6(access_arg *, CLIENT *);
-extern  access_ret * bb_access_6_svc(access_arg *, struct svc_req *);
+extern  enum clnt_stat bb_access_6(access_arg *, access_ret *, CLIENT *);
+extern  bool_t bb_access_6_svc(access_arg *, access_ret *, struct svc_req *);
 #define BB_MKDIR 3
-extern  mkdir_ret * bb_mkdir_6(mkdir_arg *, CLIENT *);
-extern  mkdir_ret * bb_mkdir_6_svc(mkdir_arg *, struct svc_req *);
+extern  enum clnt_stat bb_mkdir_6(mkdir_arg *, mkdir_ret *, CLIENT *);
+extern  bool_t bb_mkdir_6_svc(mkdir_arg *, mkdir_ret *, struct svc_req *);
 #define BB_RMDIR 4
-extern  rmdir_ret * bb_rmdir_6(rmdir_arg *, CLIENT *);
-extern  rmdir_ret * bb_rmdir_6_svc(rmdir_arg *, struct svc_req *);
+extern  enum clnt_stat bb_rmdir_6(rmdir_arg *, rmdir_ret *, CLIENT *);
+extern  bool_t bb_rmdir_6_svc(rmdir_arg *, rmdir_ret *, struct svc_req *);
 #define BB_OPENDIR 5
-extern  opendir_ret * bb_opendir_6(opendir_arg *, CLIENT *);
-extern  opendir_ret * bb_opendir_6_svc(opendir_arg *, struct svc_req *);
+extern  enum clnt_stat bb_opendir_6(opendir_arg *, opendir_ret *, CLIENT *);
+extern  bool_t bb_opendir_6_svc(opendir_arg *, opendir_ret *, struct svc_req *);
 #define BB_READDIR 6
-extern  readdir_ret * bb_readdir_6(readdir_arg *, CLIENT *);
-extern  readdir_ret * bb_readdir_6_svc(readdir_arg *, struct svc_req *);
+extern  enum clnt_stat bb_readdir_6(readdir_arg *, readdir_ret *, CLIENT *);
+extern  bool_t bb_readdir_6_svc(readdir_arg *, readdir_ret *, struct svc_req *);
 #define BB_RELEASEDIR 7
-extern  releasedir_ret * bb_releasedir_6(releasedir_arg *, CLIENT *);
-extern  releasedir_ret * bb_releasedir_6_svc(releasedir_arg *, struct svc_req *);
+extern  enum clnt_stat bb_releasedir_6(releasedir_arg *, releasedir_ret *, CLIENT *);
+extern  bool_t bb_releasedir_6_svc(releasedir_arg *, releasedir_ret *, struct svc_req *);
 #define BB_RENAME 8
-extern  rename_ret * bb_rename_6(rename_arg *, CLIENT *);
-extern  rename_ret * bb_rename_6_svc(rename_arg *, struct svc_req *);
+extern  enum clnt_stat bb_rename_6(rename_arg *, rename_ret *, CLIENT *);
+extern  bool_t bb_rename_6_svc(rename_arg *, rename_ret *, struct svc_req *);
 #define BB_SYMLINK 9
-extern  symlink_ret * bb_symlink_6(symlink_arg *, CLIENT *);
-extern  symlink_ret * bb_symlink_6_svc(symlink_arg *, struct svc_req *);
+extern  enum clnt_stat bb_symlink_6(symlink_arg *, symlink_ret *, CLIENT *);
+extern  bool_t bb_symlink_6_svc(symlink_arg *, symlink_ret *, struct svc_req *);
 #define BB_READLINK 10
-extern  readlink_ret * bb_readlink_6(readlink_arg *, CLIENT *);
-extern  readlink_ret * bb_readlink_6_svc(readlink_arg *, struct svc_req *);
+extern  enum clnt_stat bb_readlink_6(readlink_arg *, readlink_ret *, CLIENT *);
+extern  bool_t bb_readlink_6_svc(readlink_arg *, readlink_ret *, struct svc_req *);
 #define BB_MKNOD 11
-extern  mknod_ret * bb_mknod_6(mknod_arg *, CLIENT *);
-extern  mknod_ret * bb_mknod_6_svc(mknod_arg *, struct svc_req *);
+extern  enum clnt_stat bb_mknod_6(mknod_arg *, mknod_ret *, CLIENT *);
+extern  bool_t bb_mknod_6_svc(mknod_arg *, mknod_ret *, struct svc_req *);
 #define BB_TRUNCATE 12
-extern  truncate_ret * bb_truncate_6(truncate_arg *, CLIENT *);
-extern  truncate_ret * bb_truncate_6_svc(truncate_arg *, struct svc_req *);
+extern  enum clnt_stat bb_truncate_6(truncate_arg *, truncate_ret *, CLIENT *);
+extern  bool_t bb_truncate_6_svc(truncate_arg *, truncate_ret *, struct svc_req *);
 #define BB_UNLINK 13
-extern  unlink_ret * bb_unlink_6(unlink_arg *, CLIENT *);
-extern  unlink_ret * bb_unlink_6_svc(unlink_arg *, struct svc_req *);
+extern  enum clnt_stat bb_unlink_6(unlink_arg *, unlink_ret *, CLIENT *);
+extern  bool_t bb_unlink_6_svc(unlink_arg *, unlink_ret *, struct svc_req *);
 #define BB_UTIME 14
-extern  utime_ret * bb_utime_6(utime_arg *, CLIENT *);
-extern  utime_ret * bb_utime_6_svc(utime_arg *, struct svc_req *);
+extern  enum clnt_stat bb_utime_6(utime_arg *, utime_ret *, CLIENT *);
+extern  bool_t bb_utime_6_svc(utime_arg *, utime_ret *, struct svc_req *);
 #define BB_CHMOD 15
-extern  chmod_ret * bb_chmod_6(chmod_arg *, CLIENT *);
-extern  chmod_ret * bb_chmod_6_svc(chmod_arg *, struct svc_req *);
+extern  enum clnt_stat bb_chmod_6(chmod_arg *, chmod_ret *, CLIENT *);
+extern  bool_t bb_chmod_6_svc(chmod_arg *, chmod_ret *, struct svc_req *);
 #define BB_CHOWN 16
-extern  chown_ret * bb_chown_6(chown_arg *, CLIENT *);
-extern  chown_ret * bb_chown_6_svc(chown_arg *, struct svc_req *);
+extern  enum clnt_stat bb_chown_6(chown_arg *, chown_ret *, CLIENT *);
+extern  bool_t bb_chown_6_svc(chown_arg *, chown_ret *, struct svc_req *);
 #define BB_OPEN 17
-extern  open_ret * bb_open_6(open_arg *, CLIENT *);
-extern  open_ret * bb_open_6_svc(open_arg *, struct svc_req *);
+extern  enum clnt_stat bb_open_6(open_arg *, open_ret *, CLIENT *);
+extern  bool_t bb_open_6_svc(open_arg *, open_ret *, struct svc_req *);
 #define BB_RELEASE 18
-extern  release_ret * bb_release_6(release_arg *, CLIENT *);
-extern  release_ret * bb_release_6_svc(release_arg *, struct svc_req *);
+extern  enum clnt_stat bb_release_6(release_arg *, release_ret *, CLIENT *);
+extern  bool_t bb_release_6_svc(release_arg *, release_ret *, struct svc_req *);
 #define BB_READ 19
-extern  read_ret * bb_read_6(read_arg *, CLIENT *);
-extern  read_ret * bb_read_6_svc(read_arg *, struct svc_req *);
+extern  enum clnt_stat bb_read_6(read_arg *, read_ret *, CLIENT *);
+extern  bool_t bb_read_6_svc(read_arg *, read_ret *, struct svc_req *);
 #define BB_WRITE 20
-extern  write_ret * bb_write_6(write_arg *, CLIENT *);
-extern  write_ret * bb_write_6_svc(write_arg *, struct svc_req *);
+extern  enum clnt_stat bb_write_6(write_arg *, write_ret *, CLIENT *);
+extern  bool_t bb_write_6_svc(write_arg *, write_ret *, struct svc_req *);
 extern int compute_6_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
 #else /* K&R C */
 #define BB_GETATTR 1
-extern  getattr_ret * bb_getattr_6();
-extern  getattr_ret * bb_getattr_6_svc();
+extern  enum clnt_stat bb_getattr_6();
+extern  bool_t bb_getattr_6_svc();
 #define BB_ACCESS 2
-extern  access_ret * bb_access_6();
-extern  access_ret * bb_access_6_svc();
+extern  enum clnt_stat bb_access_6();
+extern  bool_t bb_access_6_svc();
 #define BB_MKDIR 3
-extern  mkdir_ret * bb_mkdir_6();
-extern  mkdir_ret * bb_mkdir_6_svc();
+extern  enum clnt_stat bb_mkdir_6();
+extern  bool_t bb_mkdir_6_svc();
 #define BB_RMDIR 4
-extern  rmdir_ret * bb_rmdir_6();
-extern  rmdir_ret * bb_rmdir_6_svc();
+extern  enum clnt_stat bb_rmdir_6();
+extern  bool_t bb_rmdir_6_svc();
 #define BB_OPENDIR 5
-extern  opendir_ret * bb_opendir_6();
-extern  opendir_ret * bb_opendir_6_svc();
+extern  enum clnt_stat bb_opendir_6();
+extern  bool_t bb_opendir_6_svc();
 #define BB_READDIR 6
-extern  readdir_ret * bb_readdir_6();
-extern  readdir_ret * bb_readdir_6_svc();
+extern  enum clnt_stat bb_readdir_6();
+extern  bool_t bb_readdir_6_svc();
 #define BB_RELEASEDIR 7
-extern  releasedir_ret * bb_releasedir_6();
-extern  releasedir_ret * bb_releasedir_6_svc();
+extern  enum clnt_stat bb_releasedir_6();
+extern  bool_t bb_releasedir_6_svc();
 #define BB_RENAME 8
-extern  rename_ret * bb_rename_6();
-extern  rename_ret * bb_rename_6_svc();
+extern  enum clnt_stat bb_rename_6();
+extern  bool_t bb_rename_6_svc();
 #define BB_SYMLINK 9
-extern  symlink_ret * bb_symlink_6();
-extern  symlink_ret * bb_symlink_6_svc();
+extern  enum clnt_stat bb_symlink_6();
+extern  bool_t bb_symlink_6_svc();
 #define BB_READLINK 10
-extern  readlink_ret * bb_readlink_6();
-extern  readlink_ret * bb_readlink_6_svc();
+extern  enum clnt_stat bb_readlink_6();
+extern  bool_t bb_readlink_6_svc();
 #define BB_MKNOD 11
-extern  mknod_ret * bb_mknod_6();
-extern  mknod_ret * bb_mknod_6_svc();
+extern  enum clnt_stat bb_mknod_6();
+extern  bool_t bb_mknod_6_svc();
 #define BB_TRUNCATE 12
-extern  truncate_ret * bb_truncate_6();
-extern  truncate_ret * bb_truncate_6_svc();
+extern  enum clnt_stat bb_truncate_6();
+extern  bool_t bb_truncate_6_svc();
 #define BB_UNLINK 13
-extern  unlink_ret * bb_unlink_6();
-extern  unlink_ret * bb_unlink_6_svc();
+extern  enum clnt_stat bb_unlink_6();
+extern  bool_t bb_unlink_6_svc();
 #define BB_UTIME 14
-extern  utime_ret * bb_utime_6();
-extern  utime_ret * bb_utime_6_svc();
+extern  enum clnt_stat bb_utime_6();
+extern  bool_t bb_utime_6_svc();
 #define BB_CHMOD 15
-extern  chmod_ret * bb_chmod_6();
-extern  chmod_ret * bb_chmod_6_svc();
+extern  enum clnt_stat bb_chmod_6();
+extern  bool_t bb_chmod_6_svc();
 #define BB_CHOWN 16
-extern  chown_ret * bb_chown_6();
-extern  chown_ret * bb_chown_6_svc();
+extern  enum clnt_stat bb_chown_6();
+extern  bool_t bb_chown_6_svc();
 #define BB_OPEN 17
-extern  open_ret * bb_open_6();
-extern  open_ret * bb_open_6_svc();
+extern  enum clnt_stat bb_open_6();
+extern  bool_t bb_open_6_svc();
 #define BB_RELEASE 18
-extern  release_ret * bb_release_6();
-extern  release_ret * bb_release_6_svc();
+extern  enum clnt_stat bb_release_6();
+extern  bool_t bb_release_6_svc();
 #define BB_READ 19
-extern  read_ret * bb_read_6();
-extern  read_ret * bb_read_6_svc();
+extern  enum clnt_stat bb_read_6();
+extern  bool_t bb_read_6_svc();
 #define BB_WRITE 20
-extern  write_ret * bb_write_6();
-extern  write_ret * bb_write_6_svc();
+extern  enum clnt_stat bb_write_6();
+extern  bool_t bb_write_6_svc();
 extern int compute_6_freeresult ();
 #endif /* K&R C */
 

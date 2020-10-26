@@ -9,302 +9,182 @@
 /* Default timeout can be changed using clnt_control() */
 static struct timeval TIMEOUT = { 25, 0 };
 
-getattr_ret *
-bb_getattr_6(getattr_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_getattr_6(getattr_arg *argp, getattr_ret *clnt_res, CLIENT *clnt)
 {
-	static getattr_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_GETATTR,
+	return (clnt_call(clnt, BB_GETATTR,
 		(xdrproc_t) xdr_getattr_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_getattr_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_getattr_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-access_ret *
-bb_access_6(access_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_access_6(access_arg *argp, access_ret *clnt_res, CLIENT *clnt)
 {
-	static access_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_ACCESS,
+	return (clnt_call(clnt, BB_ACCESS,
 		(xdrproc_t) xdr_access_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_access_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_access_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-mkdir_ret *
-bb_mkdir_6(mkdir_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_mkdir_6(mkdir_arg *argp, mkdir_ret *clnt_res, CLIENT *clnt)
 {
-	static mkdir_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_MKDIR,
+	return (clnt_call(clnt, BB_MKDIR,
 		(xdrproc_t) xdr_mkdir_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_mkdir_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_mkdir_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-rmdir_ret *
-bb_rmdir_6(rmdir_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_rmdir_6(rmdir_arg *argp, rmdir_ret *clnt_res, CLIENT *clnt)
 {
-	static rmdir_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_RMDIR,
+	return (clnt_call(clnt, BB_RMDIR,
 		(xdrproc_t) xdr_rmdir_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_rmdir_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_rmdir_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-opendir_ret *
-bb_opendir_6(opendir_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_opendir_6(opendir_arg *argp, opendir_ret *clnt_res, CLIENT *clnt)
 {
-	static opendir_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_OPENDIR,
+	return (clnt_call(clnt, BB_OPENDIR,
 		(xdrproc_t) xdr_opendir_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_opendir_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_opendir_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-readdir_ret *
-bb_readdir_6(readdir_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_readdir_6(readdir_arg *argp, readdir_ret *clnt_res, CLIENT *clnt)
 {
-	static readdir_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_READDIR,
+	return (clnt_call(clnt, BB_READDIR,
 		(xdrproc_t) xdr_readdir_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_readdir_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_readdir_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-releasedir_ret *
-bb_releasedir_6(releasedir_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_releasedir_6(releasedir_arg *argp, releasedir_ret *clnt_res, CLIENT *clnt)
 {
-	static releasedir_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_RELEASEDIR,
+	return (clnt_call(clnt, BB_RELEASEDIR,
 		(xdrproc_t) xdr_releasedir_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_releasedir_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_releasedir_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-rename_ret *
-bb_rename_6(rename_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_rename_6(rename_arg *argp, rename_ret *clnt_res, CLIENT *clnt)
 {
-	static rename_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_RENAME,
+	return (clnt_call(clnt, BB_RENAME,
 		(xdrproc_t) xdr_rename_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_rename_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_rename_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-symlink_ret *
-bb_symlink_6(symlink_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_symlink_6(symlink_arg *argp, symlink_ret *clnt_res, CLIENT *clnt)
 {
-	static symlink_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_SYMLINK,
+	return (clnt_call(clnt, BB_SYMLINK,
 		(xdrproc_t) xdr_symlink_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_symlink_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_symlink_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-readlink_ret *
-bb_readlink_6(readlink_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_readlink_6(readlink_arg *argp, readlink_ret *clnt_res, CLIENT *clnt)
 {
-	static readlink_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_READLINK,
+	return (clnt_call(clnt, BB_READLINK,
 		(xdrproc_t) xdr_readlink_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_readlink_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_readlink_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-mknod_ret *
-bb_mknod_6(mknod_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_mknod_6(mknod_arg *argp, mknod_ret *clnt_res, CLIENT *clnt)
 {
-	static mknod_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_MKNOD,
+	return (clnt_call(clnt, BB_MKNOD,
 		(xdrproc_t) xdr_mknod_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_mknod_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_mknod_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-truncate_ret *
-bb_truncate_6(truncate_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_truncate_6(truncate_arg *argp, truncate_ret *clnt_res, CLIENT *clnt)
 {
-	static truncate_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_TRUNCATE,
+	return (clnt_call(clnt, BB_TRUNCATE,
 		(xdrproc_t) xdr_truncate_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_truncate_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_truncate_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-unlink_ret *
-bb_unlink_6(unlink_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_unlink_6(unlink_arg *argp, unlink_ret *clnt_res, CLIENT *clnt)
 {
-	static unlink_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_UNLINK,
+	return (clnt_call(clnt, BB_UNLINK,
 		(xdrproc_t) xdr_unlink_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_unlink_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_unlink_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-utime_ret *
-bb_utime_6(utime_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_utime_6(utime_arg *argp, utime_ret *clnt_res, CLIENT *clnt)
 {
-	static utime_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_UTIME,
+	return (clnt_call(clnt, BB_UTIME,
 		(xdrproc_t) xdr_utime_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_utime_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_utime_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-chmod_ret *
-bb_chmod_6(chmod_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_chmod_6(chmod_arg *argp, chmod_ret *clnt_res, CLIENT *clnt)
 {
-	static chmod_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_CHMOD,
+	return (clnt_call(clnt, BB_CHMOD,
 		(xdrproc_t) xdr_chmod_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_chmod_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_chmod_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-chown_ret *
-bb_chown_6(chown_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_chown_6(chown_arg *argp, chown_ret *clnt_res, CLIENT *clnt)
 {
-	static chown_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_CHOWN,
+	return (clnt_call(clnt, BB_CHOWN,
 		(xdrproc_t) xdr_chown_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_chown_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_chown_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-open_ret *
-bb_open_6(open_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_open_6(open_arg *argp, open_ret *clnt_res, CLIENT *clnt)
 {
-	static open_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_OPEN,
+	return (clnt_call(clnt, BB_OPEN,
 		(xdrproc_t) xdr_open_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_open_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_open_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-release_ret *
-bb_release_6(release_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_release_6(release_arg *argp, release_ret *clnt_res, CLIENT *clnt)
 {
-	static release_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_RELEASE,
+	return (clnt_call(clnt, BB_RELEASE,
 		(xdrproc_t) xdr_release_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_release_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_release_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-read_ret *
-bb_read_6(read_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_read_6(read_arg *argp, read_ret *clnt_res, CLIENT *clnt)
 {
-	static read_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_READ,
+	return (clnt_call(clnt, BB_READ,
 		(xdrproc_t) xdr_read_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_read_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_read_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }
 
-write_ret *
-bb_write_6(write_arg *argp, CLIENT *clnt)
+enum clnt_stat 
+bb_write_6(write_arg *argp, write_ret *clnt_res, CLIENT *clnt)
 {
-	static write_ret clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, BB_WRITE,
+	return (clnt_call(clnt, BB_WRITE,
 		(xdrproc_t) xdr_write_arg, (caddr_t) argp,
-		(xdrproc_t) xdr_write_ret, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
+		(xdrproc_t) xdr_write_ret, (caddr_t) clnt_res,
+		TIMEOUT));
 }

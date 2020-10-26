@@ -21,13 +21,14 @@ create:
 	mkdir rootdir/testdir
 
 header: fuse_rpc.x
-	rpcgen fuse_rpc.x
+#	rpcgen -M -a -C fuse_rpc.x
+	rpcgen -M fuse_rpc.x
 
 server: fuse_rpc.h fuse_rpc_svc.c fuse_rpc_server.c fuse_rpc_xdr.c
-	gcc -g3 fuse_rpc_svc.c fuse_rpc_server.c fuse_rpc_xdr.c -o fuse_rpc_server
+	gcc -g3 -pthread fuse_rpc_svc.c fuse_rpc_server.c fuse_rpc_xdr.c -o fuse_rpc_server
 
 tweakfs: tweakfs.c log.c fuse_rpc_clnt.o fuse_rpc_xdr.o
-	gcc -g3 $^ `pkg-config fuse --cflags --libs` -o $@
+	gcc -g3 -pthread $^ `pkg-config fuse --cflags --libs` -o $@
 
 mount:
 	./tweakfs -d -s rootdir/ mountdir/ localhost
