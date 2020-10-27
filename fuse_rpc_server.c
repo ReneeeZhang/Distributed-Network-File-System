@@ -186,6 +186,23 @@ bb_symlink_6_svc(symlink_arg *argp, symlink_ret *result, struct svc_req *rqstp)
 }
 
 bool_t
+bb_link_6_svc(link_arg *argp, link_ret *result, struct svc_req *rqstp)
+{
+	char *path = argp->path;
+	char *newpath = argp->newpath;
+	fprintf(stderr, "Create hard link source = %s, new path = %s\n", path, newpath);
+
+	int syscall_ret = link(path, newpath);
+	if (syscall_ret == -1) {
+		fprintf(stderr, "hard link creation error for creating link %s to file %s\n", newpath, path);
+		result->ret = -errno;
+		return TRUE;
+	}
+	result->ret = 0;
+	return TRUE;
+}
+
+bool_t
 bb_readlink_6_svc(readlink_arg *argp, readlink_ret *result, struct svc_req *rqstp)
 {
 	char *path = argp->path;

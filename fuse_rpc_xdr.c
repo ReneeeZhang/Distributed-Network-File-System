@@ -326,6 +326,28 @@ xdr_symlink_ret (XDR *xdrs, symlink_ret *objp)
 }
 
 bool_t
+xdr_link_arg (XDR *xdrs, link_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->newpath, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_link_ret (XDR *xdrs, link_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_readlink_arg (XDR *xdrs, readlink_arg *objp)
 {
 	register int32_t *buf;

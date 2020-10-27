@@ -126,6 +126,17 @@ struct symlink_ret {
 };
 typedef struct symlink_ret symlink_ret;
 
+struct link_arg {
+	char *path;
+	char *newpath;
+};
+typedef struct link_arg link_arg;
+
+struct link_ret {
+	int ret;
+};
+typedef struct link_ret link_ret;
+
 struct readlink_arg {
 	char *path;
 	u_int size;
@@ -288,37 +299,40 @@ extern  bool_t bb_rename_6_svc(rename_arg *, rename_ret *, struct svc_req *);
 #define BB_SYMLINK 9
 extern  enum clnt_stat bb_symlink_6(symlink_arg *, symlink_ret *, CLIENT *);
 extern  bool_t bb_symlink_6_svc(symlink_arg *, symlink_ret *, struct svc_req *);
-#define BB_READLINK 10
+#define BB_LINK 10
+extern  enum clnt_stat bb_link_6(link_arg *, link_ret *, CLIENT *);
+extern  bool_t bb_link_6_svc(link_arg *, link_ret *, struct svc_req *);
+#define BB_READLINK 11
 extern  enum clnt_stat bb_readlink_6(readlink_arg *, readlink_ret *, CLIENT *);
 extern  bool_t bb_readlink_6_svc(readlink_arg *, readlink_ret *, struct svc_req *);
-#define BB_MKNOD 11
+#define BB_MKNOD 12
 extern  enum clnt_stat bb_mknod_6(mknod_arg *, mknod_ret *, CLIENT *);
 extern  bool_t bb_mknod_6_svc(mknod_arg *, mknod_ret *, struct svc_req *);
-#define BB_TRUNCATE 12
+#define BB_TRUNCATE 13
 extern  enum clnt_stat bb_truncate_6(truncate_arg *, truncate_ret *, CLIENT *);
 extern  bool_t bb_truncate_6_svc(truncate_arg *, truncate_ret *, struct svc_req *);
-#define BB_UNLINK 13
+#define BB_UNLINK 14
 extern  enum clnt_stat bb_unlink_6(unlink_arg *, unlink_ret *, CLIENT *);
 extern  bool_t bb_unlink_6_svc(unlink_arg *, unlink_ret *, struct svc_req *);
-#define BB_UTIME 14
+#define BB_UTIME 15
 extern  enum clnt_stat bb_utime_6(utime_arg *, utime_ret *, CLIENT *);
 extern  bool_t bb_utime_6_svc(utime_arg *, utime_ret *, struct svc_req *);
-#define BB_CHMOD 15
+#define BB_CHMOD 16
 extern  enum clnt_stat bb_chmod_6(chmod_arg *, chmod_ret *, CLIENT *);
 extern  bool_t bb_chmod_6_svc(chmod_arg *, chmod_ret *, struct svc_req *);
-#define BB_CHOWN 16
+#define BB_CHOWN 17
 extern  enum clnt_stat bb_chown_6(chown_arg *, chown_ret *, CLIENT *);
 extern  bool_t bb_chown_6_svc(chown_arg *, chown_ret *, struct svc_req *);
-#define BB_OPEN 17
+#define BB_OPEN 18
 extern  enum clnt_stat bb_open_6(open_arg *, open_ret *, CLIENT *);
 extern  bool_t bb_open_6_svc(open_arg *, open_ret *, struct svc_req *);
-#define BB_RELEASE 18
+#define BB_RELEASE 19
 extern  enum clnt_stat bb_release_6(release_arg *, release_ret *, CLIENT *);
 extern  bool_t bb_release_6_svc(release_arg *, release_ret *, struct svc_req *);
-#define BB_READ 19
+#define BB_READ 20
 extern  enum clnt_stat bb_read_6(read_arg *, read_ret *, CLIENT *);
 extern  bool_t bb_read_6_svc(read_arg *, read_ret *, struct svc_req *);
-#define BB_WRITE 20
+#define BB_WRITE 21
 extern  enum clnt_stat bb_write_6(write_arg *, write_ret *, CLIENT *);
 extern  bool_t bb_write_6_svc(write_arg *, write_ret *, struct svc_req *);
 extern int compute_6_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
@@ -351,37 +365,40 @@ extern  bool_t bb_rename_6_svc();
 #define BB_SYMLINK 9
 extern  enum clnt_stat bb_symlink_6();
 extern  bool_t bb_symlink_6_svc();
-#define BB_READLINK 10
+#define BB_LINK 10
+extern  enum clnt_stat bb_link_6();
+extern  bool_t bb_link_6_svc();
+#define BB_READLINK 11
 extern  enum clnt_stat bb_readlink_6();
 extern  bool_t bb_readlink_6_svc();
-#define BB_MKNOD 11
+#define BB_MKNOD 12
 extern  enum clnt_stat bb_mknod_6();
 extern  bool_t bb_mknod_6_svc();
-#define BB_TRUNCATE 12
+#define BB_TRUNCATE 13
 extern  enum clnt_stat bb_truncate_6();
 extern  bool_t bb_truncate_6_svc();
-#define BB_UNLINK 13
+#define BB_UNLINK 14
 extern  enum clnt_stat bb_unlink_6();
 extern  bool_t bb_unlink_6_svc();
-#define BB_UTIME 14
+#define BB_UTIME 15
 extern  enum clnt_stat bb_utime_6();
 extern  bool_t bb_utime_6_svc();
-#define BB_CHMOD 15
+#define BB_CHMOD 16
 extern  enum clnt_stat bb_chmod_6();
 extern  bool_t bb_chmod_6_svc();
-#define BB_CHOWN 16
+#define BB_CHOWN 17
 extern  enum clnt_stat bb_chown_6();
 extern  bool_t bb_chown_6_svc();
-#define BB_OPEN 17
+#define BB_OPEN 18
 extern  enum clnt_stat bb_open_6();
 extern  bool_t bb_open_6_svc();
-#define BB_RELEASE 18
+#define BB_RELEASE 19
 extern  enum clnt_stat bb_release_6();
 extern  bool_t bb_release_6_svc();
-#define BB_READ 19
+#define BB_READ 20
 extern  enum clnt_stat bb_read_6();
 extern  bool_t bb_read_6_svc();
-#define BB_WRITE 20
+#define BB_WRITE 21
 extern  enum clnt_stat bb_write_6();
 extern  bool_t bb_write_6_svc();
 extern int compute_6_freeresult ();
@@ -408,6 +425,8 @@ extern  bool_t xdr_rename_arg (XDR *, rename_arg*);
 extern  bool_t xdr_rename_ret (XDR *, rename_ret*);
 extern  bool_t xdr_symlink_arg (XDR *, symlink_arg*);
 extern  bool_t xdr_symlink_ret (XDR *, symlink_ret*);
+extern  bool_t xdr_link_arg (XDR *, link_arg*);
+extern  bool_t xdr_link_ret (XDR *, link_ret*);
 extern  bool_t xdr_readlink_arg (XDR *, readlink_arg*);
 extern  bool_t xdr_readlink_ret (XDR *, readlink_ret*);
 extern  bool_t xdr_mknod_arg (XDR *, mknod_arg*);
@@ -450,6 +469,8 @@ extern bool_t xdr_rename_arg ();
 extern bool_t xdr_rename_ret ();
 extern bool_t xdr_symlink_arg ();
 extern bool_t xdr_symlink_ret ();
+extern bool_t xdr_link_arg ();
+extern bool_t xdr_link_ret ();
 extern bool_t xdr_readlink_arg ();
 extern bool_t xdr_readlink_ret ();
 extern bool_t xdr_mknod_arg ();

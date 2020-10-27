@@ -91,6 +91,15 @@ bb_symlink_6(symlink_arg *argp, symlink_ret *clnt_res, CLIENT *clnt)
 }
 
 enum clnt_stat 
+bb_link_6(link_arg *argp, link_ret *clnt_res, CLIENT *clnt)
+{
+	return (clnt_call(clnt, BB_LINK,
+		(xdrproc_t) xdr_link_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_link_ret, (caddr_t) clnt_res,
+		TIMEOUT));
+}
+
+enum clnt_stat 
 bb_readlink_6(readlink_arg *argp, readlink_ret *clnt_res, CLIENT *clnt)
 {
 	return (clnt_call(clnt, BB_READLINK,

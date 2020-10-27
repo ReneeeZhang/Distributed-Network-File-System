@@ -102,6 +102,15 @@ struct symlink_ret {
     int ret; /* status of RPC */
 };
 
+struct link_arg {
+    string path<>;
+    string newpath<>;
+};
+
+struct link_ret {
+    int ret; /* status of RPC */
+};
+
 struct readlink_arg {
     string path<>;
     unsigned int size;
@@ -222,17 +231,18 @@ program COMPUTE{
         releasedir_ret BB_RELEASEDIR(releasedir_arg) = 7;
         rename_ret BB_RENAME(rename_arg) = 8;
         symlink_ret BB_SYMLINK(symlink_arg) = 9;
-        readlink_ret BB_READLINK(readlink_arg) = 10;
-        mknod_ret BB_MKNOD(mknod_arg) = 11;
-        truncate_ret BB_TRUNCATE(truncate_arg) = 12;
-        unlink_ret BB_UNLINK(unlink_arg) = 13;
-        utime_ret BB_UTIME(utime_arg) = 14;
-        chmod_ret BB_CHMOD(chmod_arg) = 15;
-        chown_ret BB_CHOWN(chown_arg) = 16;
-        open_ret BB_OPEN(open_arg) = 17;
-        release_ret BB_RELEASE(release_arg) = 18;
-        read_ret BB_READ(read_arg) = 19;
-        write_ret BB_WRITE(write_arg) = 20;
+        link_ret BB_LINK(link_arg) = 10;
+        readlink_ret BB_READLINK(readlink_arg) = 11;
+        mknod_ret BB_MKNOD(mknod_arg) = 12;
+        truncate_ret BB_TRUNCATE(truncate_arg) = 13;
+        unlink_ret BB_UNLINK(unlink_arg) = 14;
+        utime_ret BB_UTIME(utime_arg) = 15;
+        chmod_ret BB_CHMOD(chmod_arg) = 16;
+        chown_ret BB_CHOWN(chown_arg) = 17;
+        open_ret BB_OPEN(open_arg) = 18;
+        release_ret BB_RELEASE(release_arg) = 19;
+        read_ret BB_READ(read_arg) = 20;
+        write_ret BB_WRITE(write_arg) = 21;
     } = 6;
 } = 456123789;
 

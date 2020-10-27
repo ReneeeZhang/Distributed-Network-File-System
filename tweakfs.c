@@ -81,12 +81,8 @@ static void bb_fullpath(char fpath[PATH_MAX], const char *path)
     }
     strncat(fpath, path, PATH_MAX);
 
-    // Debug
-    log_msg("path = %s\n", path);
-    log_msg("full path = %s\n", fpath);
-
-    // log_msg("    bb_fullpath:  rootdir = \"%s\", path = \"%s\", fpath = \"%s\"\n",
-	//    BB_DATA->rootdir, path, fpath);
+    log_msg("    bb_fullpath:  rootdir = \"%s\", path = \"%s\", fpath = \"%s\"\n",
+	    BB_DATA->rootdir, path, fpath);
 }
 
 ///////////////////////////////////////////////////////////
@@ -155,10 +151,10 @@ int bb_getattr(const char *path, struct stat *statbuf)
 // null.  So, the size passed to to the system readlink() must be one
 // less than the size passed to bb_readlink()
 // bb_readlink() code by Bernardo F Costa (thanks!)
+// size should be 4097, which pre-allocate the null-terminator in the end.
 int bb_readlink(const char *path, char *buf, size_t size)
 {
-    log_msg("\nbb_readlink(path=\"%s\", link=\"%s\", size=%d)\n",
-	  path, link, size);
+    log_msg("\nbb_readlink(path=\"%s\", size=%d)\n", path, size);
 
     // Get attribute via RPC.
     readlink_ret ret;
@@ -176,11 +172,12 @@ int bb_readlink(const char *path, char *buf, size_t size)
     }
     clnt_destroy (clnt);
 
+    log_msg("Return message of readlink is %s\n", ret.buffer);
+
     if (ret.ret == -1) {
         log_msg("readlink %s with size %zu error\n", fpath, size - 1);
         return ret.ret;
     }
-
     buf[ret.len] = '\0';
     return 0;
 }
@@ -317,10 +314,6 @@ int bb_symlink(const char *path, const char *link)
     bb_fullpath(flink, link);
     arg.path = fpath;
     arg.link = flink;
-
-    // DEBUG
-    log_msg("path = %s, full path = %s\n", path, fpath);
-    log_msg("link path = %s, full link path = %s\n", link, flink);
     
     CLIENT *clnt = connect_server();
     rpc_ret_t retval = bb_symlink_6(&arg, &ret, clnt);
@@ -340,8 +333,7 @@ int bb_symlink(const char *path, const char *link)
 // both path and newpath are fs-relative
 int bb_rename(const char *path, const char *newpath)
 {
-    log_msg("\nbb_rename(fpath=\"%s\", newpath=\"%s\")\n",
-	    path, newpath);
+    log_msg("\nbb_rename(fpath=\"%s\", newpath=\"%s\")\n", path, newpath);
 
     // Get attribute via RPC.
     rename_ret ret;
@@ -370,21 +362,37 @@ int bb_rename(const char *path, const char *newpath)
 /** Create a hard link to a file */
 int bb_link(const char *path, const char *newpath)
 {
-    char fpath[PATH_MAX], fnewpath[PATH_MAX];
-    
-    log_msg("\nbb_link(path=\"%s\", newpath=\"%s\")\n",
-	    path, newpath);
-    bb_fullpath(fpath, path);
-    bb_fullpath(fnewpath, newpath);
+    log_msg("\nbb_link(path=\"%s\", newpath=\"%s\")\n", path, newpath);
 
-    return log_syscall("link", link(fpath, fnewpath), 0);
+    // Get attribute via RPC.
+    link_ret ret;
+    link_arg arg;
+    char fpath[PATH_MAX];
+    bb_fullpath(fpath, path);
+    char fnewpath[PATH_MAX];
+    bb_fullpath(fnewpath, newpath);
+    arg.path = fpath;
+    arg.newpath = fnewpath;
+    
+    CLIENT *clnt = connect_server();
+    rpc_ret_t retval = bb_link_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
+        log_msg("RPC return value error\n");
+        clnt_perror (clnt, "call failed");
+    }
+    clnt_destroy (clnt);
+
+    if (ret.ret < 0) {
+        log_msg("link error with path %s to newpath %s with errno %d\n", fpath, fnewpath, -ret.ret);
+        return -1;
+    }
+    return 0;
 }
 
 /** Change the permission bits of a file */
 int bb_chmod(const char *path, mode_t mode)
 {
-    log_msg("\nbb_chmod(fpath=\"%s\", mode=0%03o)\n",
-	    path, mode);
+    log_msg("\nbb_chmod(fpath=\"%s\", mode=0%03o)\n", path, mode);
 
     // Get attribute via RPC.
     chmod_ret ret;
