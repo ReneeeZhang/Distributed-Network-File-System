@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/file.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
@@ -109,6 +110,7 @@ bb_readdir_6_svc(readdir_arg *argp, readdir_ret *result, struct svc_req *rqstp)
 	fprintf(stderr, "Read directory for fd %d\n", fd);
 
 	result->count = 0;
+	flock(fd, LOCK_SH);
 	DIR *dp = fdopendir(fd);
 	if (dp == NULL) {
 		fprintf(stderr, "opendir of fd %d error\n", fd);
@@ -128,6 +130,7 @@ bb_readdir_6_svc(readdir_arg *argp, readdir_ret *result, struct svc_req *rqstp)
 		offset += len + 1;
 		++result->count;
 	}
+	flock(fd, LOCK_UN);
 
 	result->ret = 0;
 	memcpy(result->entries, buf, MAX_SIZE);
@@ -409,7 +412,9 @@ bb_read_6_svc(read_arg *argp, read_ret *result, struct svc_req *rqstp)
 
 	char buf[MAX_SIZE];
 	memset(buf, '\0', MAX_SIZE);
+	flock(fd, LOCK_SH);
 	ssize_t read_len = pread(fd, buf, size, offset);
+	flock(fd, LOCK_UN);
 
 	if (read_len == -1) {
 			fprintf(stderr, "read file with fd = %d, with size = %u, offset = %u error with errno %d\n", fd, size, offset, errno);
@@ -433,7 +438,9 @@ bb_write_6_svc(write_arg *argp, write_ret *result, struct svc_req *rqstp)
 	char *buf = argp->buffer;
 	fprintf(stderr, "Write file with fd = %d, with size = %u, offset = %u\n", fd, size, offset);
 
+	flock(fd, LOCK_EX);
 	ssize_t write_ret = pwrite(fd, buf, size, offset);
+	flock(fd, LOCK_UN);
 	if (write_ret == -1) {
 			fprintf(stderr, "write file with fd = %d, with size = %u, offset = %u error\n", fd, size, offset);
 			result->ret = -errno;
