@@ -172,9 +172,7 @@ int bb_readlink(const char *path, char *buf, size_t size)
     }
     clnt_destroy (clnt);
 
-    log_msg("Return message of readlink is %s\n", ret.buffer);
     strncpy(buf, ret.buffer, size);
-
     if (ret.ret == -1) {
         log_msg("readlink %s with size %zu error\n", fpath, size - 1);
         return ret.ret;
@@ -307,13 +305,12 @@ int bb_symlink(const char *path, const char *link)
 	    path, link);
 
     // Get attribute via RPC.
+    // Note here: file path shouldn't use absolute path, while link path should.
     symlink_ret ret;
     symlink_arg arg;
-    char fpath[PATH_MAX]; // should not be absolute path
-    bb_fullpath(fpath, path);
     char flink[PATH_MAX];
     bb_fullpath(flink, link);
-    arg.path = fpath;
+    arg.path = (char*)path;
     arg.link = flink;
     
     CLIENT *clnt = connect_server();
@@ -325,7 +322,7 @@ int bb_symlink(const char *path, const char *link)
     clnt_destroy (clnt);
 
     if (ret.ret < 0) {
-        log_msg("symlink error to create %s for %s with errno %d\n", flink, fpath, -ret.ret);
+        log_msg("symlink error to create %s for %s with errno %d\n", flink, path, -ret.ret);
     }
     return ret.ret;
 }
