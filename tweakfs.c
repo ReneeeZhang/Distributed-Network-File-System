@@ -173,6 +173,7 @@ int bb_readlink(const char *path, char *buf, size_t size)
     clnt_destroy (clnt);
 
     log_msg("Return message of readlink is %s\n", ret.buffer);
+    strncpy(buf, ret.buffer, size);
 
     if (ret.ret == -1) {
         log_msg("readlink %s with size %zu error\n", fpath, size - 1);
@@ -308,7 +309,7 @@ int bb_symlink(const char *path, const char *link)
     // Get attribute via RPC.
     symlink_ret ret;
     symlink_arg arg;
-    char fpath[PATH_MAX];
+    char fpath[PATH_MAX]; // should not be absolute path
     bb_fullpath(fpath, path);
     char flink[PATH_MAX];
     bb_fullpath(flink, link);

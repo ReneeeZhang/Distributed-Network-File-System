@@ -3,6 +3,7 @@ all: server tweakfs
 clean:
 #	make -f Makefile.fuse_rpc clean
 	rm *.o
+	rm bbfs.log
 	rm -f fuse_rpc_client
 	rm -f fuse_rpc_server
 	rm -f tweakfs
