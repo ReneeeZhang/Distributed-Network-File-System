@@ -16,7 +16,14 @@ extern "C" {
 
 #define MAX_SIZE 4096
 
+struct identity {
+	int is_master;
+	int is_degraded;
+};
+typedef struct identity identity;
+
 struct getattr_arg {
+	identity server_info;
 	char *path;
 };
 typedef struct getattr_arg getattr_arg;
@@ -40,6 +47,7 @@ struct getattr_ret {
 typedef struct getattr_ret getattr_ret;
 
 struct access_arg {
+	identity server_info;
 	char *path;
 	int mask;
 };
@@ -51,6 +59,7 @@ struct access_ret {
 typedef struct access_ret access_ret;
 
 struct mkdir_arg {
+	identity server_info;
 	char *path;
 	int mode;
 };
@@ -62,6 +71,7 @@ struct mkdir_ret {
 typedef struct mkdir_ret mkdir_ret;
 
 struct rmdir_arg {
+	identity server_info;
 	char *path;
 };
 typedef struct rmdir_arg rmdir_arg;
@@ -72,6 +82,7 @@ struct rmdir_ret {
 typedef struct rmdir_ret rmdir_ret;
 
 struct opendir_arg {
+	identity server_info;
 	char *path;
 };
 typedef struct opendir_arg opendir_arg;
@@ -83,6 +94,7 @@ struct opendir_ret {
 typedef struct opendir_ret opendir_ret;
 
 struct readdir_arg {
+	identity server_info;
 	int fd;
 };
 typedef struct readdir_arg readdir_arg;
@@ -95,6 +107,7 @@ struct readdir_ret {
 typedef struct readdir_ret readdir_ret;
 
 struct releasedir_arg {
+	identity server_info;
 	int fd;
 };
 typedef struct releasedir_arg releasedir_arg;
@@ -105,6 +118,7 @@ struct releasedir_ret {
 typedef struct releasedir_ret releasedir_ret;
 
 struct rename_arg {
+	identity server_info;
 	char *path;
 	char *newpath;
 };
@@ -116,6 +130,7 @@ struct rename_ret {
 typedef struct rename_ret rename_ret;
 
 struct symlink_arg {
+	identity server_info;
 	char *path;
 	char *link;
 };
@@ -127,6 +142,7 @@ struct symlink_ret {
 typedef struct symlink_ret symlink_ret;
 
 struct link_arg {
+	identity server_info;
 	char *path;
 	char *newpath;
 };
@@ -138,6 +154,7 @@ struct link_ret {
 typedef struct link_ret link_ret;
 
 struct readlink_arg {
+	identity server_info;
 	char *path;
 	u_int size;
 };
@@ -151,6 +168,7 @@ struct readlink_ret {
 typedef struct readlink_ret readlink_ret;
 
 struct mknod_arg {
+	identity server_info;
 	char *path;
 	int mode;
 	int dev;
@@ -163,6 +181,7 @@ struct mknod_ret {
 typedef struct mknod_ret mknod_ret;
 
 struct utime_arg {
+	identity server_info;
 	char *path;
 	long actime;
 	long modtime;
@@ -175,6 +194,7 @@ struct utime_ret {
 typedef struct utime_ret utime_ret;
 
 struct truncate_arg {
+	identity server_info;
 	char *path;
 	int newsize;
 };
@@ -186,6 +206,7 @@ struct truncate_ret {
 typedef struct truncate_ret truncate_ret;
 
 struct chmod_arg {
+	identity server_info;
 	char *path;
 	int mode;
 };
@@ -197,6 +218,7 @@ struct chmod_ret {
 typedef struct chmod_ret chmod_ret;
 
 struct chown_arg {
+	identity server_info;
 	char *path;
 	u_int uid;
 	u_int gid;
@@ -209,6 +231,7 @@ struct chown_ret {
 typedef struct chown_ret chown_ret;
 
 struct unlink_arg {
+	identity server_info;
 	char *path;
 };
 typedef struct unlink_arg unlink_arg;
@@ -219,6 +242,7 @@ struct unlink_ret {
 typedef struct unlink_ret unlink_ret;
 
 struct open_arg {
+	identity server_info;
 	char *path;
 	int flags;
 };
@@ -231,6 +255,7 @@ struct open_ret {
 typedef struct open_ret open_ret;
 
 struct release_arg {
+	identity server_info;
 	int fd;
 };
 typedef struct release_arg release_arg;
@@ -241,6 +266,7 @@ struct release_ret {
 typedef struct release_ret release_ret;
 
 struct read_arg {
+	identity server_info;
 	int fd;
 	u_int size;
 	u_int offset;
@@ -255,6 +281,7 @@ struct read_ret {
 typedef struct read_ret read_ret;
 
 struct write_arg {
+	identity server_info;
 	int fd;
 	u_int size;
 	u_int offset;
@@ -407,6 +434,7 @@ extern int compute_6_freeresult ();
 /* the xdr functions */
 
 #if defined(__STDC__) || defined(__cplusplus)
+extern  bool_t xdr_identity (XDR *, identity*);
 extern  bool_t xdr_getattr_arg (XDR *, getattr_arg*);
 extern  bool_t xdr_getattr_ret (XDR *, getattr_ret*);
 extern  bool_t xdr_access_arg (XDR *, access_arg*);
@@ -451,6 +479,7 @@ extern  bool_t xdr_write_arg (XDR *, write_arg*);
 extern  bool_t xdr_write_ret (XDR *, write_ret*);
 
 #else /* K&R C */
+extern bool_t xdr_identity ();
 extern bool_t xdr_getattr_arg ();
 extern bool_t xdr_getattr_ret ();
 extern bool_t xdr_access_arg ();

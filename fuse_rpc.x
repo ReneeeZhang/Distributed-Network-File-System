@@ -10,6 +10,29 @@
 
 const MAX_SIZE = 4096;
 
+/*
+ * Used in operations which need to be transferred to secondary server,
+ * check at 
+ * (1) mkdir
+ * (2) rmdir
+ * (3) rename
+ * (4) symlink
+ * (5) link
+ * (6) mknod
+ * (7) utime
+ * (8) truncate
+ * (9) chmod
+ * (10) chown
+ * (11) unlink
+ * (12) write
+ * For these operations, path should be passed, since no fd will be opened
+ * in advance.
+ */
+struct identity {
+    int is_master;
+    int is_degraded;
+};
+
 struct getattr_arg {
     string path<>;
 };
@@ -41,6 +64,7 @@ struct access_ret {
 };
 
 struct mkdir_arg {
+    identity server_info;
     string path<>;
     int mode;
 };
@@ -50,6 +74,7 @@ struct mkdir_ret {
 };
 
 struct rmdir_arg {
+    identity server_info;
     string path<>;
 };
 
@@ -85,6 +110,7 @@ struct releasedir_ret {
 };
 
 struct rename_arg {
+    identity server_info;
     string path<>;
     string newpath<>;
 };
@@ -94,6 +120,7 @@ struct rename_ret {
 };
 
 struct symlink_arg {
+    identity server_info;
     string path<>;
     string link<>;
 };
@@ -103,6 +130,7 @@ struct symlink_ret {
 };
 
 struct link_arg {
+    identity server_info;
     string path<>;
     string newpath<>;
 };
@@ -123,6 +151,7 @@ struct readlink_ret {
 };
 
 struct mknod_arg {
+    identity server_info;
     string path<>;
     int mode; /* protection */
     int dev; /* ID of device containing file */
@@ -133,6 +162,7 @@ struct mknod_ret {
 };
 
 struct utime_arg {
+    identity server_info;
     string path<>;
     long actime; /* access time */
     long modtime; /* modification time */
@@ -143,6 +173,7 @@ struct utime_ret {
 };
 
 struct truncate_arg {
+    identity server_info;
     string path<>;
     int newsize;
 };
@@ -152,6 +183,7 @@ struct truncate_ret {
 };
 
 struct chmod_arg {
+    identity server_info;
     string path<>;
     int mode;
 };
@@ -161,6 +193,7 @@ struct chmod_ret {
 };
 
 struct chown_arg {
+    identity server_info;
     string path<>;
     unsigned int uid;
     unsigned int gid;
@@ -171,6 +204,7 @@ struct chown_ret {
 };
 
 struct unlink_arg {
+    identity server_info;
     string path<>;
 };
 
@@ -209,6 +243,7 @@ struct read_ret {
 };
 
 struct write_arg {
+    identity server_info;
     int fd;
     unsigned int size;
     unsigned int offset;
@@ -245,26 +280,3 @@ program COMPUTE{
         write_ret BB_WRITE(write_arg) = 21;
     } = 6;
 } = 456123789;
-
-/*
-Error message:
-Create symlink target = /home/hj110/FUSE/rootdir/link1, original path = /home/hj110/FUSE/rootdir/bogus.txt
-Get attribute for path = /home/hj110/FUSE/rootdir/link1
-Get attribute for path = /home/hj110/FUSE/rootdir/
-Open directory for /home/hj110/FUSE/rootdir/
-Read directory for /home/hj110/FUSE/rootdir/
-Close directory with fd = 6
-Get attribute for path = /home/hj110/FUSE/rootdir/bogus.txt
-Get attribute for path = /home/hj110/FUSE/rootdir/link1
-Get attribute for path = /home/hj110/FUSE/rootdir/secret.txt
-Get attribute for path = /home/hj110/FUSE/rootdir/secret_file.txt
-Get attribute for path = /home/hj110/FUSE/rootdir/testdir
-Read link /home/hj110/FUSE/rootdir/link1 with size 4096
-Get attribute for path = /home/hj110/FUSE/rootdir/ ���
-lstat /home/hj110/FUSE/rootdir/ ��� error
-*/
-
-/*
- * TODO:
- * symlink still needs debugging, getattr cannot identify it.
-*/

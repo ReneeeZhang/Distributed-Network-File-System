@@ -53,6 +53,13 @@ char *host = NULL;
 // Store the length of root directory, in order to transform to fullpath.
 size_t rootdir_len = 0;
 
+// Generate server_info to contact main server.
+static identity get_identity() {
+    identity id;
+    id.is_master = 1;
+    id.is_degraded = 0;
+}
+
 // Connect to host, use TCP by default.
 static CLIENT *connect_server() {
     CLIENT *clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
@@ -197,6 +204,7 @@ int bb_mknod(const char *path, mode_t mode, dev_t dev)
     mknod_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.server_info = get_identity();
     arg.path = fpath;
     arg.mode = mode;
     arg.dev = dev;
@@ -225,6 +233,7 @@ int bb_mkdir(const char *path, mode_t mode)
     mkdir_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.server_info = get_identity();
     arg.path = fpath;
     arg.mode = mode;
     
@@ -252,6 +261,7 @@ int bb_unlink(const char *path)
     unlink_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.server_info = get_identity();
     arg.path = fpath;
     
     CLIENT *clnt = connect_server();
@@ -278,6 +288,7 @@ int bb_rmdir(const char *path)
     rmdir_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.server_info = get_identity();
     arg.path = fpath;
     
     CLIENT *clnt = connect_server();
@@ -310,6 +321,7 @@ int bb_symlink(const char *path, const char *link)
     symlink_arg arg;
     char flink[PATH_MAX];
     bb_fullpath(flink, link);
+    arg.server_info = get_identity();
     arg.path = (char*)path;
     arg.link = flink;
     
@@ -340,6 +352,7 @@ int bb_rename(const char *path, const char *newpath)
     bb_fullpath(fpath, path);
     char fnewpath[PATH_MAX];
     bb_fullpath(fnewpath, newpath);
+    arg.server_info = get_identity();
     arg.path = fpath;
     arg.newpath = fnewpath;
     
@@ -369,6 +382,7 @@ int bb_link(const char *path, const char *newpath)
     bb_fullpath(fpath, path);
     char fnewpath[PATH_MAX];
     bb_fullpath(fnewpath, newpath);
+    arg.server_info = get_identity();
     arg.path = fpath;
     arg.newpath = fnewpath;
     
@@ -397,6 +411,7 @@ int bb_chmod(const char *path, mode_t mode)
     chmod_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.server_info = get_identity();
     arg.path = fpath;
     arg.mode = mode;
     
@@ -425,6 +440,7 @@ int bb_chown(const char *path, uid_t uid, gid_t gid)
     chown_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.server_info = get_identity();
     arg.path = fpath;
     arg.uid = uid;
     arg.gid = gid;
@@ -454,6 +470,7 @@ int bb_truncate(const char *path, off_t newsize)
     truncate_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.server_info = get_identity();
     arg.path = fpath;
     arg.newsize = newsize;
     
@@ -482,6 +499,7 @@ int bb_utime(const char *path, struct utimbuf *ubuf)
     utime_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.server_info = get_identity();
     arg.path = fpath;
     arg.actime = ubuf->actime;
     arg.modtime = ubuf->modtime;
@@ -621,6 +639,7 @@ int bb_write(const char *path, const char *buf, size_t size, off_t offset,
     CLIENT *clnt = connect_server();
     write_ret ret;
     write_arg arg;
+    arg.server_info = get_identity();
     arg.fd = fi->fh;
     arg.size = size;
     arg.offset = offset;

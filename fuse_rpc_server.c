@@ -23,6 +23,23 @@
 
 #include "fuse_rpc.h"
 
+// Using alias for RPC return type.
+typedef enum clnt_stat rpc_ret_t;
+
+// Connect to secondary server, use TCP by default.
+// TODO: Hard code secondary server IP.
+// TODO: Need to update /etc/hosts.
+static CLIENT *connect_server() {
+	static char *host = NULL; // TODO
+	CLIENT *clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
+	if (clnt == NULL) {
+		fprintf(stderr, "Create RPC connection error\n");
+		clnt_pcreateerror (host);
+		exit (1);
+	}
+	return clnt;
+}
+
 bool_t
 bb_getattr_6_svc(getattr_arg *argp, getattr_ret *result, struct svc_req *rqstp)
 {
@@ -67,9 +84,32 @@ bb_access_6_svc(access_arg *argp, access_ret *result, struct svc_req *rqstp)
 bool_t
 bb_mkdir_6_svc(mkdir_arg *argp, mkdir_ret *result, struct svc_req *rqstp)
 {
+	int is_master = argp->server_info.is_master;
+	int is_degraded = argp->server_info.is_degraded;
 	char *path = argp->path;
 	int mode = argp->mode;
 	fprintf(stderr, "Make directory for %s with mode %d\n", path, mode);
+
+	// Main transfer requests to secondary server.
+	if (is_master && !is_degraded) {
+		CLIENT *clnt = connect_server();
+		mkdir_arg slave_arg = *argp;
+		slave_arg.server_info.is_master = 0;
+		mkdir_ret slave_ret;
+		rpc_ret_t retval = bb_mkdir_6(&slave_arg, &slave_ret, clnt);
+		if (retval != RPC_SUCCESS) {
+			fprintf(stderr, "RPC return value error at mkdir\n");
+      clnt_perror (clnt, "call failed");
+		}
+		clnt_destroy (clnt);
+
+		// mkdir() error.
+    if (slave_ret.ret < 0) {
+        fprintf(stderr, "Mkdir error with errno %d\n", -slave_ret.ret);
+				result->ret = slave_ret.ret;
+        return TRUE;
+    }
+	}
 
 	result->ret = mkdir(path, mode);
 	return TRUE;
