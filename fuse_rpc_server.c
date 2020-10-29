@@ -23,6 +23,32 @@
 
 #include "fuse_rpc.h"
 
+#define TRANSMIT_TO_SECONDATY(ARG, RET, FUNC) \
+	do { \
+		int is_master = argp->server_info.is_master; \
+		int is_degraded = argp->server_info.is_degraded; \
+		if (is_master && !is_degraded) { \
+			if (is_master && !is_degraded) { \
+				fprintf(stderr, "is master, and not degrades, transmit to secondary\n"); \
+				CLIENT *clnt = connect_server(); \
+				ARG slave_arg = *argp; \
+				slave_arg.server_info.is_master = 0; \
+				RET slave_ret; \
+				rpc_ret_t retval = FUNC(&slave_arg, &slave_ret, clnt); \
+				if (retval != RPC_SUCCESS) { \
+					fprintf(stderr, "RPC return value error\n"); \
+					clnt_perror (clnt, "call failed"); \
+				} \
+				clnt_destroy (clnt); \
+				if (slave_ret.ret < 0) { \
+						fprintf(stderr, "Secondary server error with errno %d\n", -slave_ret.ret); \
+						result->ret = slave_ret.ret; \
+						return TRUE; \
+				} \
+			} \
+		} \
+	} while (0)
+
 // Using alias for RPC return type.
 typedef enum clnt_stat rpc_ret_t;
 
@@ -30,7 +56,7 @@ typedef enum clnt_stat rpc_ret_t;
 // TODO: Hard code secondary server IP.
 // TODO: Need to update /etc/hosts.
 static CLIENT *connect_server() {
-	static char *host = NULL; // TODO
+	static char *host = "10.148.54.200";
 	CLIENT *clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
 	if (clnt == NULL) {
 		fprintf(stderr, "Create RPC connection error\n");
@@ -84,33 +110,10 @@ bb_access_6_svc(access_arg *argp, access_ret *result, struct svc_req *rqstp)
 bool_t
 bb_mkdir_6_svc(mkdir_arg *argp, mkdir_ret *result, struct svc_req *rqstp)
 {
-	int is_master = argp->server_info.is_master;
-	int is_degraded = argp->server_info.is_degraded;
 	char *path = argp->path;
 	int mode = argp->mode;
 	fprintf(stderr, "Make directory for %s with mode %d\n", path, mode);
-
-	// Main transfer requests to secondary server.
-	if (is_master && !is_degraded) {
-		CLIENT *clnt = connect_server();
-		mkdir_arg slave_arg = *argp;
-		slave_arg.server_info.is_master = 0;
-		mkdir_ret slave_ret;
-		rpc_ret_t retval = bb_mkdir_6(&slave_arg, &slave_ret, clnt);
-		if (retval != RPC_SUCCESS) {
-			fprintf(stderr, "RPC return value error at mkdir\n");
-      clnt_perror (clnt, "call failed");
-		}
-		clnt_destroy (clnt);
-
-		// mkdir() error.
-    if (slave_ret.ret < 0) {
-        fprintf(stderr, "Mkdir error with errno %d\n", -slave_ret.ret);
-				result->ret = slave_ret.ret;
-        return TRUE;
-    }
-	}
-
+	TRANSMIT_TO_SECONDATY(mkdir_arg, mkdir_ret, bb_mkdir_6);
 	result->ret = mkdir(path, mode);
 	return TRUE;
 }
@@ -120,7 +123,7 @@ bb_rmdir_6_svc(rmdir_arg *argp, rmdir_ret *result, struct svc_req *rqstp)
 {
 	char *path = argp->path;
 	fprintf(stderr, "Remove directory for %s\n", path);
-
+	TRANSMIT_TO_SECONDATY(rmdir_arg, rmdir_ret, bb_rmdir_6);
 	result->ret = rmdir(path);
 	return TRUE;
 }
@@ -206,7 +209,7 @@ bb_rename_6_svc(rename_arg *argp, rename_ret *result, struct svc_req *rqstp)
 	char *path = argp->path;
 	char *newpath = argp->newpath;
 	fprintf(stderr, "Rename file from %s to %s\n", path, newpath);
-
+	TRANSMIT_TO_SECONDATY(rename_arg, rename_ret, bb_rename_6);
 	result->ret = rename(path, newpath);
 	return TRUE;
 }
@@ -217,6 +220,7 @@ bb_symlink_6_svc(symlink_arg *argp, symlink_ret *result, struct svc_req *rqstp)
 	char *path = argp->path;
 	char *link = argp->link;
 	fprintf(stderr, "Create symlink target = %s, original path = %s\n", link, path);
+	TRANSMIT_TO_SECONDATY(symlink_arg, symlink_ret, bb_symlink_6);
 
 	int syscall_ret = symlink(path, link);
 	if (syscall_ret == -1) {
@@ -234,6 +238,7 @@ bb_link_6_svc(link_arg *argp, link_ret *result, struct svc_req *rqstp)
 	char *path = argp->path;
 	char *newpath = argp->newpath;
 	fprintf(stderr, "Create hard link source = %s, new path = %s\n", path, newpath);
+	TRANSMIT_TO_SECONDATY(link_arg, link_ret, bb_link_6);
 
 	int syscall_ret = link(path, newpath);
 	if (syscall_ret == -1) {
@@ -275,6 +280,7 @@ bb_mknod_6_svc(mknod_arg *argp, mknod_ret *result, struct svc_req *rqstp)
 	int mode = argp->mode;
 	int dev = argp->dev;
 	fprintf(stderr, "Mknod for file %s with mode %d and dev %d\n", path, mode, dev);
+	TRANSMIT_TO_SECONDATY(mknod_arg, mknod_ret, bb_mknod_6);
 
 	int func_ret = -1;
 
@@ -320,6 +326,7 @@ bb_truncate_6_svc(truncate_arg *argp, truncate_ret *result, struct svc_req *rqst
 	char *path = argp->path;
 	int newsize = argp->newsize;
 	fprintf(stderr, "Truncate file %s to new size %d\n", path, newsize);
+	TRANSMIT_TO_SECONDATY(truncate_arg, truncate_ret, bb_truncate_6);
 
 	int syscall_ret = truncate(path, newsize);
 	if (syscall_ret < 0) {
@@ -337,6 +344,7 @@ bb_unlink_6_svc(unlink_arg *argp, unlink_ret *result, struct svc_req *rqstp)
 {
 	char *path = argp->path;
 	fprintf(stderr, "Unlink file for %s\n", path);
+	TRANSMIT_TO_SECONDATY(unlink_arg, unlink_ret, bb_unlink_6);
 
 	result->ret = unlink(path);
 	return TRUE;
@@ -349,6 +357,7 @@ bb_utime_6_svc(utime_arg *argp, utime_ret *result, struct svc_req *rqstp)
 	long actime = argp->actime;
 	long modtime = argp->modtime;
 	fprintf(stderr, "Utime %s with access time %ld and modification time %ld\n", path, actime, modtime);
+	TRANSMIT_TO_SECONDATY(utime_arg, utime_ret, bb_utime_6);
 
 	struct utimbuf ubuf;
 	ubuf.actime = actime;
@@ -370,6 +379,7 @@ bb_chmod_6_svc(chmod_arg *argp, chmod_ret *result, struct svc_req *rqstp)
 	char *path = argp->path;
 	int mode = argp->mode;
 	fprintf(stderr, "Change file %s to mode %d\n", path, mode);
+	TRANSMIT_TO_SECONDATY(chmod_arg, chmod_ret, bb_chmod_6);
 
 	int syscall_ret = chmod(path, mode);
 	if (syscall_ret < 0) {
@@ -389,6 +399,7 @@ bb_chown_6_svc(chown_arg *argp, chown_ret *result, struct svc_req *rqstp)
 	unsigned int uid = argp->uid;
 	unsigned int gid = argp->gid;
 	fprintf(stderr, "Change file %s to uid %u, gid %u\n", path, uid, gid);
+	TRANSMIT_TO_SECONDATY(chown_arg, chown_ret, bb_chown_6);
 
 	int syscall_ret = chown(path, uid, gid);
 	if (syscall_ret < 0) {
@@ -477,6 +488,19 @@ bb_write_6_svc(write_arg *argp, write_ret *result, struct svc_req *rqstp)
 	unsigned int offset = argp->offset;
 	char *buf = argp->buffer;
 	fprintf(stderr, "Write file with fd = %d, with size = %u, offset = %u\n", fd, size, offset);
+	TRANSMIT_TO_SECONDATY(write_arg, write_ret, bb_write_6);
+
+	// For secondary server, open file to get its fd.
+	int is_master = argp->server_info.is_master; 
+	int is_degraded = argp->server_info.is_degraded; 
+	if (!is_master && !is_degraded) {
+		char *path = argp->path;
+		fd = open(path, 33793); // TODO: default flag
+		if (fd < 0) {
+			fprintf(stderr, "Open file %s in the secondary server error\n", path);
+		}
+		fprintf(stderr, "Open file %s with fd %d in the secondary server\n", path, fd);
+	}
 
 	flock(fd, LOCK_EX);
 	ssize_t write_ret = pwrite(fd, buf, size, offset);
@@ -485,6 +509,12 @@ bb_write_6_svc(write_arg *argp, write_ret *result, struct svc_req *rqstp)
 			fprintf(stderr, "write file with fd = %d, with size = %u, offset = %u error\n", fd, size, offset);
 			result->ret = -errno;
 			return TRUE;
+	}
+
+	// Close fd for secondary server.
+	if (!is_master && !is_degraded) {
+		fprintf(stderr, "Close file with fd %d\n", fd);
+		close(fd);
 	}
 
 	result->len = write_ret;

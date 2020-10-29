@@ -58,6 +58,7 @@ static identity get_identity() {
     identity id;
     id.is_master = 1;
     id.is_degraded = 0;
+    return id;
 }
 
 // Connect to host, use TCP by default.
@@ -641,6 +642,9 @@ int bb_write(const char *path, const char *buf, size_t size, off_t offset,
     write_arg arg;
     arg.server_info = get_identity();
     arg.fd = fi->fh;
+    char fpath[PATH_MAX];
+    bb_fullpath(fpath, path);
+    arg.path = fpath;
     arg.size = size;
     arg.offset = offset;
     memset(arg.buffer, '\0', MAX_SIZE);

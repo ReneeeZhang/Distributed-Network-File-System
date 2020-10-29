@@ -245,6 +245,7 @@ struct read_ret {
 struct write_arg {
     identity server_info;
     int fd;
+    string path<>;
     unsigned int size;
     unsigned int offset;
     opaque buffer[MAX_SIZE]; /* write-in content */

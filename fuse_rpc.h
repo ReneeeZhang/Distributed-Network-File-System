@@ -23,7 +23,6 @@ struct identity {
 typedef struct identity identity;
 
 struct getattr_arg {
-	identity server_info;
 	char *path;
 };
 typedef struct getattr_arg getattr_arg;
@@ -47,7 +46,6 @@ struct getattr_ret {
 typedef struct getattr_ret getattr_ret;
 
 struct access_arg {
-	identity server_info;
 	char *path;
 	int mask;
 };
@@ -82,7 +80,6 @@ struct rmdir_ret {
 typedef struct rmdir_ret rmdir_ret;
 
 struct opendir_arg {
-	identity server_info;
 	char *path;
 };
 typedef struct opendir_arg opendir_arg;
@@ -94,7 +91,6 @@ struct opendir_ret {
 typedef struct opendir_ret opendir_ret;
 
 struct readdir_arg {
-	identity server_info;
 	int fd;
 };
 typedef struct readdir_arg readdir_arg;
@@ -107,7 +103,6 @@ struct readdir_ret {
 typedef struct readdir_ret readdir_ret;
 
 struct releasedir_arg {
-	identity server_info;
 	int fd;
 };
 typedef struct releasedir_arg releasedir_arg;
@@ -154,7 +149,6 @@ struct link_ret {
 typedef struct link_ret link_ret;
 
 struct readlink_arg {
-	identity server_info;
 	char *path;
 	u_int size;
 };
@@ -242,7 +236,6 @@ struct unlink_ret {
 typedef struct unlink_ret unlink_ret;
 
 struct open_arg {
-	identity server_info;
 	char *path;
 	int flags;
 };
@@ -255,7 +248,6 @@ struct open_ret {
 typedef struct open_ret open_ret;
 
 struct release_arg {
-	identity server_info;
 	int fd;
 };
 typedef struct release_arg release_arg;
@@ -266,7 +258,6 @@ struct release_ret {
 typedef struct release_ret release_ret;
 
 struct read_arg {
-	identity server_info;
 	int fd;
 	u_int size;
 	u_int offset;
@@ -283,6 +274,7 @@ typedef struct read_ret read_ret;
 struct write_arg {
 	identity server_info;
 	int fd;
+	char *path;
 	u_int size;
 	u_int offset;
 	char buffer[MAX_SIZE];
