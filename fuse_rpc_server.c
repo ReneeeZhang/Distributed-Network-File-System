@@ -114,9 +114,10 @@ static int mkdir_if_miss(char *dir) {
 
 // Translate the absolute path from client side to /ip/abs_path on server side.
 static void translate_abspath(char *buf, char *ip, char *path) {
+	static char *prefix = "/DFS/";
 	int len = strlen(ip);
 	memset(buf, '\0', MAX_PATH_LEN);
-	buf[0] = '/';
+	strncpy(buf, prefix, strlen(prefix));
 	strncat(buf, ip, len);
 	if (path[0] != '/') {
 		buf[len + 1] = '/';
