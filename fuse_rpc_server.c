@@ -30,24 +30,22 @@
 		int is_master = argp->server_info.is_master;                                       \
 		int is_degraded = argp->server_info.is_degraded | degraded;                        \
 		if (is_master && !is_degraded) {                                                   \
-			if (is_master && !is_degraded) {                                                 \
-				fprintf(stderr, "is master, and not degrades, transmit to secondary\n");       \
-				CLIENT *clnt = connect_server();                                               \
-				ARG slave_arg = *argp;                                                         \
-				slave_arg.server_info.is_master = 0;                                           \
-				RET slave_ret;                                                                 \
-				rpc_ret_t retval = FUNC(&slave_arg, &slave_ret, clnt);                         \
-				if (retval != RPC_SUCCESS) {                                                   \
-					fprintf(stderr, "RPC return value error\n");                                 \
-					clnt_perror (clnt, "call failed");                                           \
-					degraded = 1;                                                                \
-				}                                                                              \
-				clnt_destroy (clnt);                                                           \
-				if (slave_ret.ret < 0) {                                                       \
-						fprintf(stderr, "Secondary server error with errno %d\n", -slave_ret.ret); \
-						result->ret = slave_ret.ret;                                               \
-						return TRUE;                                                               \
-				}                                                                              \
+			fprintf(stderr, "is master, and not degrades, transmit to secondary\n");         \
+			CLIENT *clnt = connect_server();                                                 \
+			ARG slave_arg = *argp;                                                           \
+			slave_arg.server_info.is_master = 0;                                             \
+			RET slave_ret;                                                                   \
+			rpc_ret_t retval = FUNC(&slave_arg, &slave_ret, clnt);                           \
+			if (retval != RPC_SUCCESS) {                                                     \
+				fprintf(stderr, "RPC return value error\n");                                   \
+				clnt_perror (clnt, "call failed");                                             \
+				degraded = 1;                                                                  \
+			}                                                                                \
+			clnt_destroy (clnt);                                                             \
+			if (slave_ret.ret < 0) {                                                         \
+					fprintf(stderr, "Secondary server error with errno %d\n", -slave_ret.ret);   \
+					result->ret = slave_ret.ret;                                                 \
+					return TRUE;                                                                 \
 			}                                                                                \
 		}                                                                                  \
 	} while (0)
