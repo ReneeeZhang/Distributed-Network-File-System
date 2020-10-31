@@ -36,7 +36,8 @@ mount:
 #	./tweakfs rootdir/ mountdir/ localhost
 
 debug:
-	valgrind ./tweakfs -d -s rootdir/ mountdir localhost	
+#	valgrind ./tweakfs -d -s rootdir/ mountdir localhost	
+	valgrind ./tweakfs -d -s rootdir/ mountdir localhost 10.148.54.200
 
 unmount:
 	fusermount -u mountdir

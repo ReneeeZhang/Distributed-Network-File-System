@@ -48,7 +48,11 @@
 typedef enum clnt_stat rpc_ret_t;
 
 // RPC-related variables.
-char *host = NULL;
+char *host1 = NULL; // primary host
+char *host2 = NULL; // secondary host
+
+// Whether master server fails.
+int is_degraded = 0;
 
 // Store the length of root directory, in order to transform to fullpath.
 size_t rootdir_len = 0;
@@ -57,19 +61,37 @@ size_t rootdir_len = 0;
 static identity get_identity() {
     identity id;
     id.is_master = 1;
-    id.is_degraded = 0;
+    id.is_degraded = is_degraded;
     return id;
 }
 
 // Connect to host, use TCP by default.
 static CLIENT *connect_server() {
-    CLIENT *clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
-    if (clnt == NULL) {
-        log_msg("Create RPC connection error\n");
-        clnt_pcreateerror (host);
-        exit (1);
+    // If the master server is considered alive, connect.
+    CLIENT *clnt = NULL;
+    if (!is_degraded) {
+        clnt = clnt_create (host1, COMPUTE, COMPUTE_VERS, "tcp");
+        if (clnt == NULL && !is_degraded) {
+            log_msg("Create RPC connection with primary server error\n");
+            clnt_pcreateerror(host1);
+            is_degraded = 1;
+        } else {
+            return clnt;
+        }
     }
-    return clnt;
+
+    // Otherwise, connect to secondary server.
+    clnt = clnt_create(host2, COMPUTE, COMPUTE_VERS, "tcp");
+    if (clnt == NULL) {
+        log_msg("Create RPC connection with secondary server error\n");
+        clnt_pcreateerror (host2);
+        exit(1);
+    } else {
+        return clnt;
+    }
+
+    assert(0);
+    return NULL;
 }
 
 
@@ -504,7 +526,7 @@ int bb_utime(const char *path, struct utimbuf *ubuf)
     arg.path = fpath;
     arg.actime = ubuf->actime;
     arg.modtime = ubuf->modtime;
-    
+
     CLIENT *clnt = connect_server();
     rpc_ret_t retval = bb_utime_6(&arg, &ret, clnt);
     if (retval != RPC_SUCCESS) {
@@ -1162,9 +1184,11 @@ int main(int argc, char *argv[])
     fprintf(stderr, "argc = %d\n", argc);
 
     // Assign host.
-    host = argv[argc - 1];
-    fprintf(stderr, "server address = %s\n", host);
-    --argc;
+    host1 = argv[argc - 2];
+    host2 = argv[argc - 1];
+    fprintf(stderr, "master server address = %s\n", host1);
+    fprintf(stderr, "secondary server address = %s\n", host2);
+    argc -= 2;
 
     bb_data = malloc(sizeof(struct bb_state));
     if (bb_data == NULL) {
