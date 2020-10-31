@@ -6,6 +6,9 @@
  * it returns 0 if RPC succeeds, otherwise it'd be assigned -errno.
  * (3) For r/w requests, a len member is included, which indicates the 
  * actual bytes completes.
+ * (4) Every *_arg has a data member called ip, which is used to differentiate
+ * seperate path for distinct clients. To create path at server side, it's 
+ * represented as a unsigned integer.
  */
 
 const MAX_SIZE = 4096;
@@ -33,7 +36,19 @@ struct identity {
     int is_degraded;
 };
 
+/* client asks the server to initialize rootdir */
+struct init_arg {
+    identity server_info;
+    string ip<>;
+    string rootdir<>;
+};
+
+struct init_ret {
+    int ret; /* status of RPC */
+};
+
 struct getattr_arg {
+    string ip<>;
     string path<>;
 };
 
@@ -55,6 +70,7 @@ struct getattr_ret {
 };
 
 struct access_arg {
+    string ip<>;
     string path<>;
     int mask;
 };
@@ -64,6 +80,7 @@ struct access_ret {
 };
 
 struct mkdir_arg {
+    string ip<>;
     identity server_info;
     string path<>;
     int mode;
@@ -74,6 +91,7 @@ struct mkdir_ret {
 };
 
 struct rmdir_arg {
+    string ip<>;
     identity server_info;
     string path<>;
 };
@@ -83,6 +101,7 @@ struct rmdir_ret {
 };
 
 struct opendir_arg {
+    string ip<>;
     string path<>;
 };
 
@@ -110,6 +129,7 @@ struct releasedir_ret {
 };
 
 struct rename_arg {
+    string ip<>;
     identity server_info;
     string path<>;
     string newpath<>;
@@ -120,6 +140,7 @@ struct rename_ret {
 };
 
 struct symlink_arg {
+    string ip<>;
     identity server_info;
     string path<>;
     string link<>;
@@ -130,6 +151,7 @@ struct symlink_ret {
 };
 
 struct link_arg {
+    string ip<>;
     identity server_info;
     string path<>;
     string newpath<>;
@@ -140,6 +162,7 @@ struct link_ret {
 };
 
 struct readlink_arg {
+    string ip<>;
     string path<>;
     unsigned int size;
 };
@@ -151,6 +174,7 @@ struct readlink_ret {
 };
 
 struct mknod_arg {
+    string ip<>;
     identity server_info;
     string path<>;
     int mode; /* protection */
@@ -162,6 +186,7 @@ struct mknod_ret {
 };
 
 struct utime_arg {
+    string ip<>;
     identity server_info;
     string path<>;
     long actime; /* access time */
@@ -173,6 +198,7 @@ struct utime_ret {
 };
 
 struct truncate_arg {
+    string ip<>;
     identity server_info;
     string path<>;
     int newsize;
@@ -183,6 +209,7 @@ struct truncate_ret {
 };
 
 struct chmod_arg {
+    string ip<>;
     identity server_info;
     string path<>;
     int mode;
@@ -193,6 +220,7 @@ struct chmod_ret {
 };
 
 struct chown_arg {
+    string ip<>;
     identity server_info;
     string path<>;
     unsigned int uid;
@@ -204,6 +232,7 @@ struct chown_ret {
 };
 
 struct unlink_arg {
+    string ip<>;
     identity server_info;
     string path<>;
 };
@@ -213,6 +242,7 @@ struct unlink_ret {
 };
 
 struct open_arg {
+    string ip<>;
     string path<>;
     int flags;
 };
@@ -223,6 +253,7 @@ struct open_ret {
 };
 
 struct release_arg {
+    string ip<>;
     int fd;
 };
 
@@ -231,6 +262,7 @@ struct release_ret {
 };
 
 struct read_arg {
+    string ip<>;
     int fd;
     unsigned int size;
     unsigned int offset;
@@ -243,6 +275,7 @@ struct read_ret {
 };
 
 struct write_arg {
+    string ip<>;
     identity server_info;
     int fd;
     string path<>;
@@ -258,6 +291,7 @@ struct write_ret {
 
 program COMPUTE{
     version COMPUTE_VERS {
+        init_ret INIT_ROOTDIR(init_arg) = 0;
         getattr_ret BB_GETATTR(getattr_arg) = 1;
         access_ret BB_ACCESS(access_arg) = 2;
         mkdir_ret BB_MKDIR(mkdir_arg) = 3;

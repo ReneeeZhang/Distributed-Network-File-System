@@ -22,7 +22,20 @@ struct identity {
 };
 typedef struct identity identity;
 
+struct init_arg {
+	identity server_info;
+	char *ip;
+	char *rootdir;
+};
+typedef struct init_arg init_arg;
+
+struct init_ret {
+	int ret;
+};
+typedef struct init_ret init_ret;
+
 struct getattr_arg {
+	char *ip;
 	char *path;
 };
 typedef struct getattr_arg getattr_arg;
@@ -46,6 +59,7 @@ struct getattr_ret {
 typedef struct getattr_ret getattr_ret;
 
 struct access_arg {
+	char *ip;
 	char *path;
 	int mask;
 };
@@ -57,6 +71,7 @@ struct access_ret {
 typedef struct access_ret access_ret;
 
 struct mkdir_arg {
+	char *ip;
 	identity server_info;
 	char *path;
 	int mode;
@@ -69,6 +84,7 @@ struct mkdir_ret {
 typedef struct mkdir_ret mkdir_ret;
 
 struct rmdir_arg {
+	char *ip;
 	identity server_info;
 	char *path;
 };
@@ -80,6 +96,7 @@ struct rmdir_ret {
 typedef struct rmdir_ret rmdir_ret;
 
 struct opendir_arg {
+	char *ip;
 	char *path;
 };
 typedef struct opendir_arg opendir_arg;
@@ -113,6 +130,7 @@ struct releasedir_ret {
 typedef struct releasedir_ret releasedir_ret;
 
 struct rename_arg {
+	char *ip;
 	identity server_info;
 	char *path;
 	char *newpath;
@@ -125,6 +143,7 @@ struct rename_ret {
 typedef struct rename_ret rename_ret;
 
 struct symlink_arg {
+	char *ip;
 	identity server_info;
 	char *path;
 	char *link;
@@ -137,6 +156,7 @@ struct symlink_ret {
 typedef struct symlink_ret symlink_ret;
 
 struct link_arg {
+	char *ip;
 	identity server_info;
 	char *path;
 	char *newpath;
@@ -149,6 +169,7 @@ struct link_ret {
 typedef struct link_ret link_ret;
 
 struct readlink_arg {
+	char *ip;
 	char *path;
 	u_int size;
 };
@@ -162,6 +183,7 @@ struct readlink_ret {
 typedef struct readlink_ret readlink_ret;
 
 struct mknod_arg {
+	char *ip;
 	identity server_info;
 	char *path;
 	int mode;
@@ -175,6 +197,7 @@ struct mknod_ret {
 typedef struct mknod_ret mknod_ret;
 
 struct utime_arg {
+	char *ip;
 	identity server_info;
 	char *path;
 	long actime;
@@ -188,6 +211,7 @@ struct utime_ret {
 typedef struct utime_ret utime_ret;
 
 struct truncate_arg {
+	char *ip;
 	identity server_info;
 	char *path;
 	int newsize;
@@ -200,6 +224,7 @@ struct truncate_ret {
 typedef struct truncate_ret truncate_ret;
 
 struct chmod_arg {
+	char *ip;
 	identity server_info;
 	char *path;
 	int mode;
@@ -212,6 +237,7 @@ struct chmod_ret {
 typedef struct chmod_ret chmod_ret;
 
 struct chown_arg {
+	char *ip;
 	identity server_info;
 	char *path;
 	u_int uid;
@@ -225,6 +251,7 @@ struct chown_ret {
 typedef struct chown_ret chown_ret;
 
 struct unlink_arg {
+	char *ip;
 	identity server_info;
 	char *path;
 };
@@ -236,6 +263,7 @@ struct unlink_ret {
 typedef struct unlink_ret unlink_ret;
 
 struct open_arg {
+	char *ip;
 	char *path;
 	int flags;
 };
@@ -248,6 +276,7 @@ struct open_ret {
 typedef struct open_ret open_ret;
 
 struct release_arg {
+	char *ip;
 	int fd;
 };
 typedef struct release_arg release_arg;
@@ -258,6 +287,7 @@ struct release_ret {
 typedef struct release_ret release_ret;
 
 struct read_arg {
+	char *ip;
 	int fd;
 	u_int size;
 	u_int offset;
@@ -272,6 +302,7 @@ struct read_ret {
 typedef struct read_ret read_ret;
 
 struct write_arg {
+	char *ip;
 	identity server_info;
 	int fd;
 	char *path;
@@ -291,6 +322,9 @@ typedef struct write_ret write_ret;
 #define COMPUTE_VERS 6
 
 #if defined(__STDC__) || defined(__cplusplus)
+#define INIT_ROOTDIR 0
+extern  enum clnt_stat init_rootdir_6(init_arg *, init_ret *, CLIENT *);
+extern  bool_t init_rootdir_6_svc(init_arg *, init_ret *, struct svc_req *);
 #define BB_GETATTR 1
 extern  enum clnt_stat bb_getattr_6(getattr_arg *, getattr_ret *, CLIENT *);
 extern  bool_t bb_getattr_6_svc(getattr_arg *, getattr_ret *, struct svc_req *);
@@ -357,6 +391,9 @@ extern  bool_t bb_write_6_svc(write_arg *, write_ret *, struct svc_req *);
 extern int compute_6_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
 #else /* K&R C */
+#define INIT_ROOTDIR 0
+extern  enum clnt_stat init_rootdir_6();
+extern  bool_t init_rootdir_6_svc();
 #define BB_GETATTR 1
 extern  enum clnt_stat bb_getattr_6();
 extern  bool_t bb_getattr_6_svc();
@@ -427,6 +464,8 @@ extern int compute_6_freeresult ();
 
 #if defined(__STDC__) || defined(__cplusplus)
 extern  bool_t xdr_identity (XDR *, identity*);
+extern  bool_t xdr_init_arg (XDR *, init_arg*);
+extern  bool_t xdr_init_ret (XDR *, init_ret*);
 extern  bool_t xdr_getattr_arg (XDR *, getattr_arg*);
 extern  bool_t xdr_getattr_ret (XDR *, getattr_ret*);
 extern  bool_t xdr_access_arg (XDR *, access_arg*);
@@ -472,6 +511,8 @@ extern  bool_t xdr_write_ret (XDR *, write_ret*);
 
 #else /* K&R C */
 extern bool_t xdr_identity ();
+extern bool_t xdr_init_arg ();
+extern bool_t xdr_init_ret ();
 extern bool_t xdr_getattr_arg ();
 extern bool_t xdr_getattr_ret ();
 extern bool_t xdr_access_arg ();

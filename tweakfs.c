@@ -23,6 +23,7 @@
 */
 #include "params.h"
 
+#include <arpa/inet.h> 
 #include <assert.h>
 #include <ctype.h>
 #include <dirent.h>
@@ -31,10 +32,13 @@
 #include <fuse.h>
 #include <libgen.h>
 #include <limits.h>
+#include <netdb.h> 
+#include <netinet/in.h> 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/socket.h> 
 #include <sys/types.h>
 
 #ifdef HAVE_SYS_XATTR_H
@@ -47,15 +51,66 @@
 // Using alias for RPC return type.
 typedef enum clnt_stat rpc_ret_t;
 
-// RPC-related variables.
-char *host1 = NULL; // primary host
-char *host2 = NULL; // secondary host
-
-// Whether master server fails.
-int is_degraded = 0;
-
 // Store the length of root directory, in order to transform to fullpath.
 size_t rootdir_len = 0;
+
+// Convert IP address to int.
+int ip_to_int(char *ip) {
+    int cur_val = 0;
+    int res_val = 0;
+    for (char *ptr = ip; *ptr != '\0'; ++ptr) {
+        if (*ptr == '.') {
+            res_val = res_val * 256 + cur_val;
+            cur_val = 0;
+        } else {
+            cur_val = cur_val * 10 + (*ptr - '0');
+        }
+    }
+    return res_val;
+}
+
+// Server side use IP address to differentiate absolute path. The IP is 
+// represented in unsignec integer.
+static char ip[20];
+
+static void get_ip() {
+    char hostbuffer[256]; 
+    memset(hostbuffer, '\0', 256);
+    int ret = gethostname(hostbuffer, sizeof(hostbuffer)); 
+    if (ret == -1) {
+        goto bad;
+    }
+    struct hostent *host_entry = gethostbyname(hostbuffer); 
+    if (host_entry == NULL) {
+        goto bad;
+    }
+    char *IPbuffer = inet_ntoa(*((struct in_addr*)host_entry->h_addr_list[0]));
+    if (IPbuffer == NULL) {
+        goto bad;
+    }
+    memset(ip, '\0', 20);
+    strncpy(ip, IPbuffer, 20);
+    return;
+
+bad:
+    fprintf(stderr, "Get Ip address error\n");
+    exit(1);
+}
+
+// Convert IP address into integer, and store it as string.
+static void get_ip_addr() {
+    get_ip();
+    int val = ip_to_int(ip);
+    memset(ip, '\0', 20);
+    sprintf(ip, "%d", val); 
+}
+
+// RPC-related variables.
+static char *host1 = NULL; // primary host
+static char *host2 = NULL; // secondary host
+
+// Whether master server fails.
+static int is_degraded = 0;
 
 // Generate server_info to contact main server.
 static identity get_identity() {
@@ -94,7 +149,6 @@ static CLIENT *connect_server() {
     return NULL;
 }
 
-
 //  All the paths I see are relative to the root of the mounted
 //  filesystem.  In order to get to the underlying filesystem, I need to
 //  have the mountpoint.  I'll save it away early on in main(), and then
@@ -115,6 +169,31 @@ static void bb_fullpath(char fpath[PATH_MAX], const char *path)
 	    BB_DATA->rootdir, path, fpath);
 }
 
+// Client asks server to initialize rootdir.
+static void init_rootdir() {
+    log_msg("init_rootdir called\n");
+
+    init_ret ret;
+    init_arg arg;
+    arg.server_info = get_identity();
+    arg.ip = ip;
+    arg.rootdir = BB_DATA->rootdir;
+
+    CLIENT *clnt = connect_server();
+    rpc_ret_t retval = init_rootdir_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
+        log_msg("RPC return value error\n");
+        clnt_perror (clnt, "call failed");
+    }
+    clnt_destroy (clnt);
+    
+    // Initialize rootdir error.
+    if (ret.ret < 0) {
+        log_msg("Get attribute error with errno %d\n", -ret.ret);
+        exit(1);
+    }
+}
+
 ///////////////////////////////////////////////////////////
 //
 // Prototypes for all these functions, and the C-style comments,
@@ -128,6 +207,14 @@ static void bb_fullpath(char fpath[PATH_MAX], const char *path)
  */
 int bb_getattr(const char *path, struct stat *statbuf)
 {
+    // getattr is the first function for the file system, first request
+    // server to initialize rootdir.
+    static int initialized = 0;
+    if (!initialized) {
+        init_rootdir();
+        initialized = 1;
+    }
+
     log_msg("\nbb_getattr(path=\"%s\")\n", path);
 
     // Get attribute via RPC.
@@ -135,6 +222,7 @@ int bb_getattr(const char *path, struct stat *statbuf)
     getattr_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.ip = ip;
     arg.path = fpath;
     
     CLIENT *clnt = connect_server();
@@ -191,6 +279,7 @@ int bb_readlink(const char *path, char *buf, size_t size)
     readlink_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.ip = ip;
     arg.path = fpath;
     arg.size = size - 1;
 
@@ -227,6 +316,7 @@ int bb_mknod(const char *path, mode_t mode, dev_t dev)
     mknod_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.ip = ip;
     arg.server_info = get_identity();
     arg.path = fpath;
     arg.mode = mode;
@@ -256,6 +346,7 @@ int bb_mkdir(const char *path, mode_t mode)
     mkdir_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.ip = ip;
     arg.server_info = get_identity();
     arg.path = fpath;
     arg.mode = mode;
@@ -284,6 +375,7 @@ int bb_unlink(const char *path)
     unlink_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.ip = ip;
     arg.server_info = get_identity();
     arg.path = fpath;
     
@@ -311,6 +403,7 @@ int bb_rmdir(const char *path)
     rmdir_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.ip = ip;
     arg.server_info = get_identity();
     arg.path = fpath;
     
@@ -344,6 +437,7 @@ int bb_symlink(const char *path, const char *link)
     symlink_arg arg;
     char flink[PATH_MAX];
     bb_fullpath(flink, link);
+    arg.ip = ip;
     arg.server_info = get_identity();
     arg.path = (char*)path;
     arg.link = flink;
@@ -375,6 +469,7 @@ int bb_rename(const char *path, const char *newpath)
     bb_fullpath(fpath, path);
     char fnewpath[PATH_MAX];
     bb_fullpath(fnewpath, newpath);
+    arg.ip = ip;
     arg.server_info = get_identity();
     arg.path = fpath;
     arg.newpath = fnewpath;
@@ -405,6 +500,7 @@ int bb_link(const char *path, const char *newpath)
     bb_fullpath(fpath, path);
     char fnewpath[PATH_MAX];
     bb_fullpath(fnewpath, newpath);
+    arg.ip = ip;
     arg.server_info = get_identity();
     arg.path = fpath;
     arg.newpath = fnewpath;
@@ -434,6 +530,7 @@ int bb_chmod(const char *path, mode_t mode)
     chmod_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.ip = ip;
     arg.server_info = get_identity();
     arg.path = fpath;
     arg.mode = mode;
@@ -463,6 +560,7 @@ int bb_chown(const char *path, uid_t uid, gid_t gid)
     chown_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.ip = ip;
     arg.server_info = get_identity();
     arg.path = fpath;
     arg.uid = uid;
@@ -493,6 +591,7 @@ int bb_truncate(const char *path, off_t newsize)
     truncate_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.ip = ip;
     arg.server_info = get_identity();
     arg.path = fpath;
     arg.newsize = newsize;
@@ -522,6 +621,7 @@ int bb_utime(const char *path, struct utimbuf *ubuf)
     utime_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.ip = ip;
     arg.server_info = get_identity();
     arg.path = fpath;
     arg.actime = ubuf->actime;
@@ -561,6 +661,7 @@ int bb_open(const char *path, struct fuse_file_info *fi)
     open_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.ip = ip;
     arg.path = fpath;
     arg.flags = fi->flags;
     
@@ -606,6 +707,7 @@ int bb_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
     CLIENT *clnt = connect_server();
     read_ret ret;
     read_arg arg;
+    arg.ip = ip;
     arg.fd = fi->fh;
     arg.size = size;
     arg.offset = offset;
@@ -662,6 +764,7 @@ int bb_write(const char *path, const char *buf, size_t size, off_t offset,
     CLIENT *clnt = connect_server();
     write_ret ret;
     write_arg arg;
+    arg.ip = ip;
     arg.server_info = get_identity();
     arg.fd = fi->fh;
     char fpath[PATH_MAX];
@@ -784,6 +887,7 @@ int bb_release(const char *path, struct fuse_file_info *fi)
     // Get attribute via RPC.
     release_ret ret;
     release_arg arg;
+    arg.ip = ip;
     arg.fd = fi->fh;
     
     CLIENT *clnt = connect_server();
@@ -841,6 +945,7 @@ int bb_opendir(const char *path, struct fuse_file_info *fi)
     opendir_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.ip = ip;
     arg.path = fpath;
     
     CLIENT *clnt = connect_server();
@@ -1028,6 +1133,7 @@ int bb_access(const char *path, int mask)
     access_arg arg;
     char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
+    arg.ip = ip;
     arg.path = fpath;
     arg.mask = mask;
     
@@ -1153,6 +1259,10 @@ void bb_usage()
 
 int main(int argc, char *argv[])
 {
+    // Acquire IP address of the current machine.
+    get_ip_addr();
+    fprintf(stderr, "IP address is %s\n", ip);
+
     int fuse_stat;
     struct bb_state *bb_data;
 
