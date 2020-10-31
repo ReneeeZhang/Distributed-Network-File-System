@@ -28,7 +28,7 @@
 #define TRANSMIT_TO_SECONDATY(ARG, RET, FUNC)                                          \
 	do {                                                                                 \
 		int is_master = argp->server_info.is_master;                                       \
-		int is_degraded = argp->server_info.is_degraded;                                   \
+		int is_degraded = argp->server_info.is_degraded | degraded;                        \
 		if (is_master && !is_degraded) {                                                   \
 			if (is_master && !is_degraded) {                                                 \
 				fprintf(stderr, "is master, and not degrades, transmit to secondary\n");       \
@@ -40,6 +40,7 @@
 				if (retval != RPC_SUCCESS) {                                                   \
 					fprintf(stderr, "RPC return value error\n");                                 \
 					clnt_perror (clnt, "call failed");                                           \
+					degraded = 1;                                                                \
 				}                                                                              \
 				clnt_destroy (clnt);                                                           \
 				if (slave_ret.ret < 0) {                                                       \
@@ -53,6 +54,9 @@
 
 // Using alias for RPC return type.
 typedef enum clnt_stat rpc_ret_t;
+
+// For master server, whether should contact secondary server.
+static int degraded = 0;
 
 // Connect to secondary server, use TCP by default.
 // TODO: Hard code secondary server IP.
@@ -110,8 +114,13 @@ static int mkdir_if_miss(char *dir) {
 
 // Translate the absolute path from client side to /ip/abs_path on server side.
 static void translate_abspath(char *buf, char *ip, char *path) {
+	int len = strlen(ip);
 	memset(buf, '\0', MAX_PATH_LEN);
-	strncpy(buf, ip, strlen(ip));
+	buf[0] = '/';
+	strncat(buf, ip, len);
+	if (path[0] != '/') {
+		buf[len + 1] = '/';
+	}
 	strncat(buf, path, strlen(path));
 }
 
@@ -119,11 +128,11 @@ bool_t
 init_rootdir_6_svc(init_arg *argp, init_ret *result, struct svc_req *rqstp) {
 	char *ip = argp->ip;
 	char *rootdir = argp->rootdir;
-	fprintf(stderr, "Initialize rootdir.\n");
-	TRANSMIT_TO_SECONDATY(init_arg, init_ret, init_rootdir_6);
-
 	char fpath[MAX_PATH_LEN];
 	translate_abspath(fpath, ip, rootdir);
+	fprintf(stderr, "Initialize rootdir with fpath %s.\n", fpath);
+	TRANSMIT_TO_SECONDATY(init_arg, init_ret, init_rootdir_6);
+
 	result->ret = mkdir_if_miss(fpath);
 	if (result->ret < 0) {
 		fprintf(stderr, "Create directory %s fails\n", fpath);

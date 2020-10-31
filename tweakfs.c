@@ -4,7 +4,6 @@
 
   This program can be distributed under the terms of the GNU GPLv3.
   See the file COPYING.
-
   This code is derived from function prototypes found /usr/include/fuse/fuse.h
   Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
   His code is licensed under the LGPLv2.
@@ -178,6 +177,9 @@ static void init_rootdir() {
     arg.server_info = get_identity();
     arg.ip = ip;
     arg.rootdir = BB_DATA->rootdir;
+
+    log_msg("ip = %s\n", arg.ip);
+    log_msg("rootdir = %s\n", arg.rootdir);
 
     CLIENT *clnt = connect_server();
     rpc_ret_t retval = init_rootdir_6(&arg, &ret, clnt);
@@ -435,11 +437,13 @@ int bb_symlink(const char *path, const char *link)
     // Note here: file path shouldn't use absolute path, while link path should.
     symlink_ret ret;
     symlink_arg arg;
+    char fpath[PATH_MAX];
+    bb_fullpath(fpath, path);
     char flink[PATH_MAX];
     bb_fullpath(flink, link);
     arg.ip = ip;
     arg.server_info = get_identity();
-    arg.path = (char*)path;
+    arg.path = fpath; // TODO: symlink with abspath
     arg.link = flink;
     
     CLIENT *clnt = connect_server();
