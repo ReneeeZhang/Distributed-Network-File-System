@@ -10,6 +10,15 @@
 static struct timeval TIMEOUT = { 25, 0 };
 
 enum clnt_stat 
+init_rootdir_6(init_arg *argp, init_ret *clnt_res, CLIENT *clnt)
+{
+	return (clnt_call(clnt, INIT_ROOTDIR,
+		(xdrproc_t) xdr_init_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_init_ret, (caddr_t) clnt_res,
+		TIMEOUT));
+}
+
+enum clnt_stat 
 bb_getattr_6(getattr_arg *argp, getattr_ret *clnt_res, CLIENT *clnt)
 {
 	return (clnt_call(clnt, BB_GETATTR,

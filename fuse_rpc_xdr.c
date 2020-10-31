@@ -18,10 +18,36 @@ xdr_identity (XDR *xdrs, identity *objp)
 }
 
 bool_t
+xdr_init_arg (XDR *xdrs, init_arg *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_identity (xdrs, &objp->server_info))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->rootdir, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_init_ret (XDR *xdrs, init_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->ret))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_getattr_arg (XDR *xdrs, getattr_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
 		 return FALSE;
 	return TRUE;
@@ -167,6 +193,8 @@ xdr_access_arg (XDR *xdrs, access_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->mask))
@@ -189,6 +217,8 @@ xdr_mkdir_arg (XDR *xdrs, mkdir_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_identity (xdrs, &objp->server_info))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
@@ -213,6 +243,8 @@ xdr_rmdir_arg (XDR *xdrs, rmdir_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_identity (xdrs, &objp->server_info))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
@@ -235,6 +267,8 @@ xdr_opendir_arg (XDR *xdrs, opendir_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
 		 return FALSE;
 	return TRUE;
@@ -302,6 +336,8 @@ xdr_rename_arg (XDR *xdrs, rename_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_identity (xdrs, &objp->server_info))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
@@ -326,6 +362,8 @@ xdr_symlink_arg (XDR *xdrs, symlink_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_identity (xdrs, &objp->server_info))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
@@ -350,6 +388,8 @@ xdr_link_arg (XDR *xdrs, link_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_identity (xdrs, &objp->server_info))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
@@ -374,6 +414,8 @@ xdr_readlink_arg (XDR *xdrs, readlink_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
 		 return FALSE;
 	 if (!xdr_u_int (xdrs, &objp->size))
@@ -401,6 +443,8 @@ xdr_mknod_arg (XDR *xdrs, mknod_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_identity (xdrs, &objp->server_info))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
@@ -427,6 +471,8 @@ xdr_utime_arg (XDR *xdrs, utime_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_identity (xdrs, &objp->server_info))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
@@ -453,6 +499,8 @@ xdr_truncate_arg (XDR *xdrs, truncate_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_identity (xdrs, &objp->server_info))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
@@ -477,6 +525,8 @@ xdr_chmod_arg (XDR *xdrs, chmod_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_identity (xdrs, &objp->server_info))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
@@ -501,6 +551,8 @@ xdr_chown_arg (XDR *xdrs, chown_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_identity (xdrs, &objp->server_info))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
@@ -527,6 +579,8 @@ xdr_unlink_arg (XDR *xdrs, unlink_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_identity (xdrs, &objp->server_info))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
@@ -549,6 +603,8 @@ xdr_open_arg (XDR *xdrs, open_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->flags))
@@ -573,6 +629,8 @@ xdr_release_arg (XDR *xdrs, release_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->fd))
 		 return FALSE;
 	return TRUE;
@@ -593,6 +651,8 @@ xdr_read_arg (XDR *xdrs, read_arg *objp)
 {
 	register int32_t *buf;
 
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->fd))
 		 return FALSE;
 	 if (!xdr_u_int (xdrs, &objp->size))
@@ -623,6 +683,8 @@ xdr_write_arg (XDR *xdrs, write_arg *objp)
 	register int32_t *buf;
 
 	int i;
+	 if (!xdr_string (xdrs, &objp->ip, ~0))
+		 return FALSE;
 	 if (!xdr_identity (xdrs, &objp->server_info))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->fd))

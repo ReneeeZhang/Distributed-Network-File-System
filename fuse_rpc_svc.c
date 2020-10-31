@@ -20,6 +20,7 @@ static void
 compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 {
 	union {
+		init_arg init_rootdir_6_arg;
 		getattr_arg bb_getattr_6_arg;
 		access_arg bb_access_6_arg;
 		mkdir_arg bb_mkdir_6_arg;
@@ -43,6 +44,7 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		write_arg bb_write_6_arg;
 	} argument;
 	union {
+		init_ret init_rootdir_6_res;
 		getattr_ret bb_getattr_6_res;
 		access_ret bb_access_6_res;
 		mkdir_ret bb_mkdir_6_res;
@@ -70,9 +72,11 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 	bool_t (*local)(char *, void *, struct svc_req *);
 
 	switch (rqstp->rq_proc) {
-	case NULLPROC:
-		(void) svc_sendreply (transp, (xdrproc_t) xdr_void, (char *)NULL);
-		return;
+	case INIT_ROOTDIR:
+		_xdr_argument = (xdrproc_t) xdr_init_arg;
+		_xdr_result = (xdrproc_t) xdr_init_ret;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))init_rootdir_6_svc;
+		break;
 
 	case BB_GETATTR:
 		_xdr_argument = (xdrproc_t) xdr_getattr_arg;
