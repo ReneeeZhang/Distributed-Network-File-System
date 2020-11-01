@@ -75,7 +75,7 @@ static char ip[20];
 static void get_ip() {
     char hostbuffer[256]; 
     memset(hostbuffer, '\0', 256);
-    int ret = gethostname(hostbuffer, sizeof(hostbuffer)); 
+    int ret = gethostname(hostbuffer, sizeof(hostbuffer));
     if (ret == -1) {
         goto bad;
     }

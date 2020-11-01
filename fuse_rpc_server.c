@@ -23,7 +23,7 @@
 
 #include "fuse_rpc.h"
 
-#define MAX_PATH_LEN 100
+#define MAX_PATH_LEN 200
 
 #define TRANSMIT_TO_SECONDATY(ARG, RET, FUNC)                                          \
 	do {                                                                                 \
@@ -85,9 +85,15 @@ static int mkdir_if_miss(char *dir) {
   int s = 0;
   int e = -1;
   int len = strlen(dir);
-  char buf[50];
-  memset(buf, '\0', 50);
+  char buf[MAX_PATH_LEN];
+  memset(buf, '\0', MAX_PATH_LEN);
   while ((e = get_next_slash(dir, s)) != len) {
+		// Check if pathname overflow.
+		if (e >= MAX_PATH_LEN) {
+			fprintf(stderr, "Path name too long, overflow error\n");
+			return -1;
+		}
+
     int new_len = e - s;
     strncat(buf, &dir[s], new_len);
     if (access(buf, F_OK) == -1) {
@@ -108,6 +114,7 @@ static int mkdir_if_miss(char *dir) {
 			return -1;
     }
   }
+	return 0;
 }
 
 // Translate the absolute path from client side to /ip/abs_path on server side.
