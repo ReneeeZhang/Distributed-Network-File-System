@@ -137,7 +137,7 @@ init_rootdir_6_svc(init_arg *argp, init_ret *result, struct svc_req *rqstp) {
 	char fpath[MAX_PATH_LEN];
 	translate_abspath(fpath, ip, rootdir);
 	fprintf(stderr, "Initialize rootdir with fpath %s.\n", fpath);
-	TRANSMIT_TO_SECONDATY(init_arg, init_ret, init_rootdir_6);
+	// TRANSMIT_TO_SECONDATY(init_arg, init_ret, init_rootdir_6);
 
 	result->ret = mkdir_if_miss(fpath);
 	if (result->ret < 0) {
@@ -204,7 +204,7 @@ bb_mkdir_6_svc(mkdir_arg *argp, mkdir_ret *result, struct svc_req *rqstp)
 	char fpath[MAX_PATH_LEN];
 	translate_abspath(fpath, ip, path);
 	fprintf(stderr, "Make directory for %s with mode %d\n", fpath, mode);
-	TRANSMIT_TO_SECONDATY(mkdir_arg, mkdir_ret, bb_mkdir_6);
+	// TRANSMIT_TO_SECONDATY(mkdir_arg, mkdir_ret, bb_mkdir_6);
 	result->ret = mkdir(fpath, mode);
 	return TRUE;
 }
@@ -217,7 +217,7 @@ bb_rmdir_6_svc(rmdir_arg *argp, rmdir_ret *result, struct svc_req *rqstp)
 	char fpath[MAX_PATH_LEN];
 	translate_abspath(fpath, ip, path);
 	fprintf(stderr, "Remove directory for %s\n", fpath);
-	TRANSMIT_TO_SECONDATY(rmdir_arg, rmdir_ret, bb_rmdir_6);
+	// TRANSMIT_TO_SECONDATY(rmdir_arg, rmdir_ret, bb_rmdir_6);
 	result->ret = rmdir(fpath);
 	return TRUE;
 }
@@ -311,7 +311,7 @@ bb_rename_6_svc(rename_arg *argp, rename_ret *result, struct svc_req *rqstp)
 	char fnewpath[MAX_PATH_LEN];
 	translate_abspath(fnewpath, ip, newpath);
 	fprintf(stderr, "Rename file from %s to %s\n", fpath, fnewpath);
-	TRANSMIT_TO_SECONDATY(rename_arg, rename_ret, bb_rename_6);
+	// TRANSMIT_TO_SECONDATY(rename_arg, rename_ret, bb_rename_6);
 	result->ret = rename(fpath, fnewpath);
 	return TRUE;
 }
@@ -327,7 +327,7 @@ bb_symlink_6_svc(symlink_arg *argp, symlink_ret *result, struct svc_req *rqstp)
 	char flink[MAX_PATH_LEN];
 	translate_abspath(flink, ip, link);
 	fprintf(stderr, "Create symlink target = %s, original path = %s\n", flink, fpath);
-	TRANSMIT_TO_SECONDATY(symlink_arg, symlink_ret, bb_symlink_6);
+	// TRANSMIT_TO_SECONDATY(symlink_arg, symlink_ret, bb_symlink_6);
 
 	int syscall_ret = symlink(fpath, flink);
 	if (syscall_ret == -1) {
@@ -350,7 +350,7 @@ bb_link_6_svc(link_arg *argp, link_ret *result, struct svc_req *rqstp)
 	char fnewpath[MAX_PATH_LEN];
 	translate_abspath(fnewpath, ip, newpath);
 	fprintf(stderr, "Create hard link source = %s, new path = %s\n", fpath, fnewpath);
-	TRANSMIT_TO_SECONDATY(link_arg, link_ret, bb_link_6);
+	// TRANSMIT_TO_SECONDATY(link_arg, link_ret, bb_link_6);
 
 	int syscall_ret = link(fpath, fnewpath);
 	if (syscall_ret == -1) {
@@ -398,7 +398,7 @@ bb_mknod_6_svc(mknod_arg *argp, mknod_ret *result, struct svc_req *rqstp)
 	int mode = argp->mode;
 	int dev = argp->dev;
 	fprintf(stderr, "Mknod for file %s with mode %d and dev %d\n", fpath, mode, dev);
-	TRANSMIT_TO_SECONDATY(mknod_arg, mknod_ret, bb_mknod_6);
+	// TRANSMIT_TO_SECONDATY(mknod_arg, mknod_ret, bb_mknod_6);
 
 	int func_ret = -1;
 
@@ -447,7 +447,7 @@ bb_truncate_6_svc(truncate_arg *argp, truncate_ret *result, struct svc_req *rqst
 	translate_abspath(fpath, ip, path);
 	int newsize = argp->newsize;
 	fprintf(stderr, "Truncate file %s to new size %d\n", fpath, newsize);
-	TRANSMIT_TO_SECONDATY(truncate_arg, truncate_ret, bb_truncate_6);
+	// TRANSMIT_TO_SECONDATY(truncate_arg, truncate_ret, bb_truncate_6);
 
 	int syscall_ret = truncate(fpath, newsize);
 	if (syscall_ret < 0) {
@@ -468,7 +468,7 @@ bb_unlink_6_svc(unlink_arg *argp, unlink_ret *result, struct svc_req *rqstp)
 	char fpath[MAX_PATH_LEN];
 	translate_abspath(fpath, ip, path);
 	fprintf(stderr, "Unlink file for %s\n", fpath);
-	TRANSMIT_TO_SECONDATY(unlink_arg, unlink_ret, bb_unlink_6);
+	// TRANSMIT_TO_SECONDATY(unlink_arg, unlink_ret, bb_unlink_6);
 
 	result->ret = unlink(fpath);
 	return TRUE;
@@ -484,7 +484,7 @@ bb_utime_6_svc(utime_arg *argp, utime_ret *result, struct svc_req *rqstp)
 	long actime = argp->actime;
 	long modtime = argp->modtime;
 	fprintf(stderr, "Utime %s with access time %ld and modification time %ld\n", fpath, actime, modtime);
-	TRANSMIT_TO_SECONDATY(utime_arg, utime_ret, bb_utime_6);
+	// TRANSMIT_TO_SECONDATY(utime_arg, utime_ret, bb_utime_6);
 
 	struct utimbuf ubuf;
 	ubuf.actime = actime;
@@ -509,7 +509,7 @@ bb_chmod_6_svc(chmod_arg *argp, chmod_ret *result, struct svc_req *rqstp)
 	translate_abspath(fpath, ip, path);
 	int mode = argp->mode;
 	fprintf(stderr, "Change file %s to mode %d\n", fpath, mode);
-	TRANSMIT_TO_SECONDATY(chmod_arg, chmod_ret, bb_chmod_6);
+	// TRANSMIT_TO_SECONDATY(chmod_arg, chmod_ret, bb_chmod_6);
 
 	int syscall_ret = chmod(fpath, mode);
 	if (syscall_ret < 0) {
@@ -532,7 +532,7 @@ bb_chown_6_svc(chown_arg *argp, chown_ret *result, struct svc_req *rqstp)
 	unsigned int uid = argp->uid;
 	unsigned int gid = argp->gid;
 	fprintf(stderr, "Change file %s to uid %u, gid %u\n", fpath, uid, gid);
-	TRANSMIT_TO_SECONDATY(chown_arg, chown_ret, bb_chown_6);
+	// TRANSMIT_TO_SECONDATY(chown_arg, chown_ret, bb_chown_6);
 
 	int syscall_ret = chown(fpath, uid, gid);
 	if (syscall_ret < 0) {
@@ -570,17 +570,11 @@ bool_t
 bb_release_6_svc(release_arg *argp, release_ret *result, struct svc_req *rqstp)
 {
 	int fd = argp->fd;
-	fprintf(stderr, "Close directory with fd = %d\n", fd);
+	fprintf(stderr, "Close file with fd = %d\n", fd);
 
-	DIR* dir = fdopendir(fd);
-	if (dir == NULL) {
-			fprintf(stderr, "Open directory associated with fd %d error\n", fd);
-			result->ret = -errno;
-			return TRUE;
-	}
-	int close_ret = closedir(dir);
+	int close_ret = close(fd);
 	if (close_ret == -1) {
-			fprintf(stderr, "Close directory error\n");
+			fprintf(stderr, "Close file error\n");
 			result->ret = -errno;
 			return TRUE;
 	}
@@ -624,7 +618,7 @@ bb_write_6_svc(write_arg *argp, write_ret *result, struct svc_req *rqstp)
 	unsigned int offset = argp->offset;
 	char *buf = argp->buffer;
 	fprintf(stderr, "Write file with fd = %d, with size = %u, offset = %u\n", fd, size, offset);
-	TRANSMIT_TO_SECONDATY(write_arg, write_ret, bb_write_6);
+	// TRANSMIT_TO_SECONDATY(write_arg, write_ret, bb_write_6);
 
 	// For secondary server, open file to get its fd.
 	int is_master = argp->server_info.is_master; 
