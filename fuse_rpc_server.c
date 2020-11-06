@@ -25,36 +25,42 @@
 
 #define MAX_PATH_LEN 200
 
+// Master server will transmit to secondary first, if possible. Execution 
+// status in return value is for primary server.
 #define TRANSMIT_TO_SECONDATY(ARG, RET, FUNC)                                          \
 	do {                                                                                 \
 		int is_master = argp->server_info.is_master;                                       \
-		int is_degraded = argp->server_info.is_degraded | degraded;                        \
+		int is_degraded = argp->server_info.is_degraded;                                   \
 		if (is_master && !is_degraded) {                                                   \
 			fprintf(stderr, "is master, and not degrades, transmit to secondary\n");         \
+			int secondary_degraded = 0;                                                      \
 			CLIENT *clnt = connect_server();                                                 \
-			ARG slave_arg = *argp;                                                           \
-			slave_arg.server_info.is_master = 0;                                             \
-			RET slave_ret;                                                                   \
-			rpc_ret_t retval = FUNC(&slave_arg, &slave_ret, clnt);                           \
-			if (retval != RPC_SUCCESS) {                                                     \
-				fprintf(stderr, "RPC return value error\n");                                   \
-				clnt_perror (clnt, "call failed");                                             \
-				degraded = 1;                                                                  \
+			if (clnt == NULL) {                                                              \
+				fprintf(stderr, "is master, connect secondary server error\n");                \
+				secondary_degraded = 1;                                                        \
 			}                                                                                \
-			clnt_destroy (clnt);                                                             \
-			if (slave_ret.ret < 0) {                                                         \
-					fprintf(stderr, "Secondary server error with errno %d\n", -slave_ret.ret);   \
-					result->ret = slave_ret.ret;                                                 \
-					return TRUE;                                                                 \
+			if (!secondary_degraded) {                                                       \
+				ARG slave_arg = *argp;                                                         \
+				slave_arg.server_info.is_master = 0;                                           \
+				RET slave_ret;                                                                 \
+				rpc_ret_t retval = FUNC(&slave_arg, &slave_ret, clnt);                         \
+				if (retval != RPC_SUCCESS) {                                                   \
+					fprintf(stderr, "Secondary server RPC return value error\n");                \
+					clnt_perror (clnt, "call failed");                                           \
+				} else {                                                                       \
+					if (slave_ret.ret < 0) {                                                     \
+						fprintf(stderr, "Secondary server error with errno %d\n", -slave_ret.ret); \
+						result->ret = slave_ret.ret;                                               \
+					}                                                                            \
+				}                                                                              \
+				clnt_destroy (clnt);                                                           \
 			}                                                                                \
 		}                                                                                  \
 	} while (0)
 
+
 // Using alias for RPC return type.
 typedef enum clnt_stat rpc_ret_t;
-
-// For master server, whether should contact secondary server.
-static int degraded = 0;
 
 // Connect to secondary server, use TCP by default.
 // TODO: Hard code secondary server IP.
@@ -63,9 +69,7 @@ static CLIENT *connect_server() {
 	static char *host = "10.148.54.200";
 	CLIENT *clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
 	if (clnt == NULL) {
-		fprintf(stderr, "Create RPC connection error\n");
 		clnt_pcreateerror (host);
-		exit (1);
 	}
 	return clnt;
 }
