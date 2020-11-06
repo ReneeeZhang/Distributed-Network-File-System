@@ -41,7 +41,6 @@ debug:
 
 unmount:
 	fusermount -u mountdir
-	rm bbfs.log
 
 rpc:
 #	rpcgen -a -C fuse_rpc.x
