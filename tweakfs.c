@@ -119,10 +119,10 @@ static identity get_identity(int is_degraded) {
     return id;
 }
 
-// Connect to host, use TCP by default.
+// Connect to host, use UDP by default.
 static int connect_server(CLIENT **clnt) {
     // If the master server is considered alive, connect.
-    *clnt = clnt_create (host1, COMPUTE, COMPUTE_VERS, "tcp");
+    *clnt = clnt_create (host1, COMPUTE, COMPUTE_VERS, "udp");
     if (*clnt == NULL) {
         log_msg("Create RPC connection with primary server error\n");
         clnt_pcreateerror(host1);
@@ -131,7 +131,7 @@ static int connect_server(CLIENT **clnt) {
     }
 
     // Otherwise, connect to secondary server.
-    *clnt = clnt_create(host2, COMPUTE, COMPUTE_VERS, "tcp");
+    *clnt = clnt_create(host2, COMPUTE, COMPUTE_VERS, "udp");
     if (*clnt == NULL) {
         log_msg("Create RPC connection with secondary server error\n");
         clnt_pcreateerror (host2);
@@ -151,6 +151,7 @@ static int connect_server(CLIENT **clnt) {
 //  it.
 static void bb_fullpath(char fpath[PATH_MAX], const char *path)
 {
+    /*
     // For some functions, say symlink, argument path may not begin with '/',
     // so have to prepend purposefully.
     memset(fpath, '\0', PATH_MAX);
@@ -162,6 +163,9 @@ static void bb_fullpath(char fpath[PATH_MAX], const char *path)
 
     log_msg("    bb_fullpath:  rootdir = \"%s\", path = \"%s\", fpath = \"%s\"\n",
 	    BB_DATA->rootdir, path, fpath);
+    */
+
+    strncpy(fpath, path, strlen(path));
 }
 
 // Client asks server to initialize rootdir.

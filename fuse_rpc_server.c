@@ -84,71 +84,37 @@ static int get_next_slash(char *dir, int cur) {
   return idx;
 }
 
-// Recursively check directory, and create if it doesn't exist.
-static int mkdir_if_miss(char *dir) {
-  int s = 0;
-  int e = -1;
-  int len = strlen(dir);
-  char buf[MAX_PATH_LEN];
-  memset(buf, '\0', MAX_PATH_LEN);
-  while ((e = get_next_slash(dir, s)) != len) {
-		// Check if pathname overflow.
-		if (e >= MAX_PATH_LEN) {
-			fprintf(stderr, "Path name too long, overflow error\n");
-			return -1;
-		}
-
-    int new_len = e - s;
-    strncat(buf, &dir[s], new_len);
-    if (access(buf, F_OK) == -1) {
-      if (mkdir(buf, 0777) != 0) {
-        fprintf(stderr, "mkdir %s failure\n", buf);
-				return -1;
-      }
-    }
-    s = e;
-  }
-
-	// Check the last segment of directory.
-  int new_len = len - s;
-  strncat(buf, &dir[s], new_len);
-	if (access(buf, F_OK) == -1) {
-    if (mkdir(buf, 0777) != 0) {
-      fprintf(stderr, "mkdir %s failure\n", buf);
-			return -1;
-    }
-  }
-	return 0;
-}
-
-// Translate the absolute path from client side to /ip/abs_path on server side.
-static void translate_abspath(char *buf, char *ip, char *path) {
-	static char *prefix = "/DFS/";
-	int len = strlen(ip);
+// Translate the absolute path from client side to /DFS/path on server side.
+static void translate_abspath(char *buf, char *path) {
+	static char *prefix = "/DFS";
 	memset(buf, '\0', MAX_PATH_LEN);
 	strncpy(buf, prefix, strlen(prefix));
-	strncat(buf, ip, len);
 	if (path[0] != '/') {
-		buf[len + 1] = '/';
+		buf[4] = '/';
 	}
 	strncat(buf, path, strlen(path));
 }
 
 bool_t
 init_rootdir_6_svc(init_arg *argp, init_ret *result, struct svc_req *rqstp) {
+	TRANSMIT_TO_SECONDATY(init_arg, init_ret, init_rootdir_6);
+
+	// Make sure "/DFS" exists, create if not.
+	char *root = "/DFS";
+	if (access(root, F_OK) == -1) {
+		if (mkdir(root, 0777) != 0) {
+			fprintf(stderr, "mkdir %s failure\n", root);
+			result->ret = -1;
+			return TRUE;
+		}
+	}
+
 	char *ip = argp->ip;
 	char *rootdir = argp->rootdir;
 	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, ip, rootdir);
+	translate_abspath(fpath, rootdir);
 	fprintf(stderr, "Initialize rootdir with fpath %s.\n", fpath);
-	TRANSMIT_TO_SECONDATY(init_arg, init_ret, init_rootdir_6);
-
-	result->ret = mkdir_if_miss(fpath);
-	if (result->ret < 0) {
-		fprintf(stderr, "Create directory %s fails\n", fpath);
-	} else {
-		fprintf(stderr, "Create directory %s succeeds\n", fpath);
-	}
+	result->ret = 0;
 	return TRUE;
 }
 
@@ -158,7 +124,7 @@ bb_getattr_6_svc(getattr_arg *argp, getattr_ret *result, struct svc_req *rqstp)
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, ip, path);
+	translate_abspath(fpath, path);
 	fprintf(stderr, "Get attribute for path = %s\n", fpath);
 
 	struct stat statbuf;
@@ -192,7 +158,7 @@ bb_access_6_svc(access_arg *argp, access_ret *result, struct svc_req *rqstp)
 	char *path = argp->path;
   int mask = argp->mask;
 	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, ip, path);
+	translate_abspath(fpath, path);
 	fprintf(stderr, "Access for path = %s, with mask = %d\n", fpath, mask);
     
 	result->ret = access(fpath, mask);
@@ -206,7 +172,7 @@ bb_mkdir_6_svc(mkdir_arg *argp, mkdir_ret *result, struct svc_req *rqstp)
 	char *path = argp->path;
 	int mode = argp->mode;
 	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, ip, path);
+	translate_abspath(fpath, path);
 	fprintf(stderr, "Make directory for %s with mode %d\n", fpath, mode);
 	TRANSMIT_TO_SECONDATY(mkdir_arg, mkdir_ret, bb_mkdir_6);
 	result->ret = mkdir(fpath, mode);
@@ -219,7 +185,7 @@ bb_rmdir_6_svc(rmdir_arg *argp, rmdir_ret *result, struct svc_req *rqstp)
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, ip, path);
+	translate_abspath(fpath, path);
 	fprintf(stderr, "Remove directory for %s\n", fpath);
 	TRANSMIT_TO_SECONDATY(rmdir_arg, rmdir_ret, bb_rmdir_6);
 	result->ret = rmdir(fpath);
@@ -232,7 +198,7 @@ bb_opendir_6_svc(opendir_arg *argp, opendir_ret *result, struct svc_req *rqstp)
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, ip, path);
+	translate_abspath(fpath, path);
 	fprintf(stderr, "Open directory for %s\n", fpath);
 
 	DIR *dp = opendir(fpath);
@@ -310,10 +276,10 @@ bb_rename_6_svc(rename_arg *argp, rename_ret *result, struct svc_req *rqstp)
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, ip, path);
+	translate_abspath(fpath, path);
 	char *newpath = argp->newpath;
 	char fnewpath[MAX_PATH_LEN];
-	translate_abspath(fnewpath, ip, newpath);
+	translate_abspath(fnewpath, newpath);
 	fprintf(stderr, "Rename file from %s to %s\n", fpath, fnewpath);
 	TRANSMIT_TO_SECONDATY(rename_arg, rename_ret, bb_rename_6);
 	result->ret = rename(fpath, fnewpath);
@@ -326,10 +292,10 @@ bb_symlink_6_svc(symlink_arg *argp, symlink_ret *result, struct svc_req *rqstp)
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, ip, path);
+	translate_abspath(fpath, path);
 	char *link = argp->link;
 	char flink[MAX_PATH_LEN];
-	translate_abspath(flink, ip, link);
+	translate_abspath(flink, link);
 	fprintf(stderr, "Create symlink target = %s, original path = %s\n", flink, fpath);
 	TRANSMIT_TO_SECONDATY(symlink_arg, symlink_ret, bb_symlink_6);
 
@@ -349,10 +315,10 @@ bb_link_6_svc(link_arg *argp, link_ret *result, struct svc_req *rqstp)
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, ip, path);
+	translate_abspath(fpath, path);
 	char *newpath = argp->newpath;
 	char fnewpath[MAX_PATH_LEN];
-	translate_abspath(fnewpath, ip, newpath);
+	translate_abspath(fnewpath, newpath);
 	fprintf(stderr, "Create hard link source = %s, new path = %s\n", fpath, fnewpath);
 	TRANSMIT_TO_SECONDATY(link_arg, link_ret, bb_link_6);
 
@@ -373,7 +339,7 @@ bb_readlink_6_svc(readlink_arg *argp, readlink_ret *result, struct svc_req *rqst
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, ip, path);
+	translate_abspath(fpath, path);
 	fprintf(stderr, "Read link %s with size %u\n", fpath, size);
 
 	char buffer[MAX_SIZE];
@@ -398,7 +364,7 @@ bb_mknod_6_svc(mknod_arg *argp, mknod_ret *result, struct svc_req *rqstp)
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, ip, path);
+	translate_abspath(fpath, path);
 	int mode = argp->mode;
 	int dev = argp->dev;
 	fprintf(stderr, "Mknod for file %s with mode %d and dev %d\n", fpath, mode, dev);
@@ -448,7 +414,7 @@ bb_truncate_6_svc(truncate_arg *argp, truncate_ret *result, struct svc_req *rqst
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, ip, path);
+	translate_abspath(fpath, path);
 	int newsize = argp->newsize;
 	fprintf(stderr, "Truncate file %s to new size %d\n", fpath, newsize);
 	TRANSMIT_TO_SECONDATY(truncate_arg, truncate_ret, bb_truncate_6);
@@ -470,7 +436,7 @@ bb_unlink_6_svc(unlink_arg *argp, unlink_ret *result, struct svc_req *rqstp)
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, ip, path);
+	translate_abspath(fpath, path);
 	fprintf(stderr, "Unlink file for %s\n", fpath);
 	TRANSMIT_TO_SECONDATY(unlink_arg, unlink_ret, bb_unlink_6);
 
@@ -484,7 +450,7 @@ bb_utime_6_svc(utime_arg *argp, utime_ret *result, struct svc_req *rqstp)
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, ip, path);
+	translate_abspath(fpath, path);
 	long actime = argp->actime;
 	long modtime = argp->modtime;
 	fprintf(stderr, "Utime %s with access time %ld and modification time %ld\n", fpath, actime, modtime);
@@ -510,7 +476,7 @@ bb_chmod_6_svc(chmod_arg *argp, chmod_ret *result, struct svc_req *rqstp)
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, ip, path);
+	translate_abspath(fpath, path);
 	int mode = argp->mode;
 	fprintf(stderr, "Change file %s to mode %d\n", fpath, mode);
 	TRANSMIT_TO_SECONDATY(chmod_arg, chmod_ret, bb_chmod_6);
@@ -532,7 +498,7 @@ bb_chown_6_svc(chown_arg *argp, chown_ret *result, struct svc_req *rqstp)
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, ip, path);
+	translate_abspath(fpath, path);
 	unsigned int uid = argp->uid;
 	unsigned int gid = argp->gid;
 	fprintf(stderr, "Change file %s to uid %u, gid %u\n", fpath, uid, gid);
@@ -555,7 +521,7 @@ bb_open_6_svc(open_arg *argp, open_ret *result, struct svc_req *rqstp)
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, ip, path);
+	translate_abspath(fpath, path);
 	int flags = argp->flags;
 	fprintf(stderr, "Open file for %s with flag %d\n", fpath, flags);
 
@@ -631,7 +597,7 @@ bb_write_6_svc(write_arg *argp, write_ret *result, struct svc_req *rqstp)
 		char *ip = argp->ip;
 		char *path = argp->path;
 		char fpath[MAX_PATH_LEN];
-		translate_abspath(fpath, ip, path);
+		translate_abspath(fpath, path);
 		fd = open(fpath, 33793); // TODO: default flag
 		if (fd < 0) {
 			fprintf(stderr, "Open file %s in the secondary server error\n", fpath);
