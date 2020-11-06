@@ -67,7 +67,7 @@ typedef enum clnt_stat rpc_ret_t;
 // Note: Need to update /etc/hosts.
 static CLIENT *connect_server() {
 	static char *host = "10.148.54.200";
-	CLIENT *clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "tcp");
+	CLIENT *clnt = clnt_create (host, COMPUTE, COMPUTE_VERS, "udp");
 	if (clnt == NULL) {
 		clnt_pcreateerror (host);
 	}
