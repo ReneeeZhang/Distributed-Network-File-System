@@ -713,7 +713,7 @@ int bb_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
     read_arg arg;
     arg.ip = ip;
     arg.fd = fi->fh;
-    arg.size = size;
+    arg.size = size <= MAX_SIZE ? size : MAX_SIZE;
     arg.offset = offset;
     
     // Keep RPC until requsted size is already read.
@@ -740,8 +740,9 @@ int bb_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
         // Assign read result to user space.
         memmove(buf + total_len, ret.buffer, MAX_SIZE);
         total_len += len;
-        arg.size -= len;
         arg.offset += len;
+        int left_size = size - total_len;
+        arg.size = left_size <= MAX_SIZE ? left_size : MAX_SIZE;
     }
     
     clnt_destroy (clnt);
@@ -1235,7 +1236,7 @@ struct fuse_operations bb_oper = {
   .statfs = bb_statfs,
   .flush = bb_flush,
   .release = bb_release,
-  .fsync = bb_fsync,
+  .fsync = NULL,
   
 #ifdef HAVE_SYS_XATTR_H
   .setxattr = NULL,
