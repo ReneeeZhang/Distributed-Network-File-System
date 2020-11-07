@@ -89,6 +89,13 @@ static void translate_abspath(char *buf, char *path) {
 	static char *prefix = "/DFS";
 	memset(buf, '\0', MAX_PATH_LEN);
 	strncpy(buf, prefix, strlen(prefix));
+
+	// Path from client is root '/'.
+	if (strcmp(path, "/") == 0) {
+		return;
+	}
+
+	// Otherwise, concatenate path.
 	if (path[0] != '/') {
 		buf[4] = '/';
 	}

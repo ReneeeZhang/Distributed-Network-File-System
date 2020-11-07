@@ -165,6 +165,7 @@ static void bb_fullpath(char fpath[PATH_MAX], const char *path)
 	    BB_DATA->rootdir, path, fpath);
     */
 
+    memset(fpath, '\0', PATH_MAX);
     strncpy(fpath, path, strlen(path));
 }
 
