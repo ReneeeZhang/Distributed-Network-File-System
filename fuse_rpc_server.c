@@ -27,9 +27,9 @@
 #define MAX_PATH_LEN 200
 
 // Used for authentication.
-#define R_REQ 0
-#define W_REQ 1
-#define X_REQ 2
+#define R_REQ 1
+#define W_REQ 2
+#define X_REQ 4
 
 // Master server will transmit to secondary first, if possible. Execution 
 // status in return value is for primary server.
@@ -519,7 +519,7 @@ bb_unlink_6_svc(unlink_arg *argp, unlink_ret *result, struct svc_req *rqstp)
 	char dir[MAX_PATH_LEN];
 	get_dir(dir, fpath);
 	fprintf(stderr, "Get directory %s from full path %s\n", dir, fpath);
-	int flag_to_check = (1 << W_REQ) | (1 << X_REQ);
+	int flag_to_check = W_REQ | X_REQ;
 	if (is_op_valid(dir, ip, flag_to_check) != 1) {
 		fprintf(stderr, "Authentication for unlink %s error\n", fpath);
 		result->ret = -EACCES;
@@ -613,10 +613,10 @@ bb_open_6_svc(open_arg *argp, open_ret *result, struct svc_req *rqstp)
 
 	int flag_to_check = 0;
 	if ((flags & O_RDONLY) || (flags & O_RDWR)) {
-		flag_to_check |= (1 << R_REQ);
+		flag_to_check |= R_REQ;
 	}
 	if ((flags & O_WRONLY) || (flags & O_RDWR)) {
-		flag_to_check |= (1 << W_REQ);
+		flag_to_check |= W_REQ;
 	}
 	if (is_op_valid(fpath, ip, flag_to_check) != 1) {
 		fprintf(stderr, "Authentication when open file %s error\n", fpath);
