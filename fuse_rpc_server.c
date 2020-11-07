@@ -50,14 +50,12 @@
 				} else {                                                                       \
 					if (slave_ret.ret < 0) {                                                     \
 						fprintf(stderr, "Secondary server error with errno %d\n", -slave_ret.ret); \
-						result->ret = slave_ret.ret;                                               \
 					}                                                                            \
 				}                                                                              \
 				clnt_destroy (clnt);                                                           \
 			}                                                                                \
 		}                                                                                  \
 	} while (0)
-
 
 // Using alias for RPC return type.
 typedef enum clnt_stat rpc_ret_t;
@@ -74,14 +72,15 @@ static CLIENT *connect_server() {
 	return clnt;
 }
 
-static int get_next_slash(char *dir, int cur) {
-  int idx = cur + 1;
-  for (; dir[idx] != '\0'; ++idx) {
-    if (dir[idx] == '/') {
-      return idx;
-    }
-  }
-  return idx;
+// Set owner and group after creating file and directory.
+static int set_owner(char *fpath, char *ip) {
+	fprintf(stderr, "Set owner for %s with owner %s\n", fpath, ip);
+	int id = atoi(ip);
+	if (chown(fpath, id, id) != 0) {
+		fprintf(stderr, "Chown for %s for user %d error\n", fpath, id);
+		return -1;
+	}
+	return 0;
 }
 
 // Translate the absolute path from client side to /DFS/path on server side.
@@ -175,14 +174,24 @@ bb_access_6_svc(access_arg *argp, access_ret *result, struct svc_req *rqstp)
 bool_t
 bb_mkdir_6_svc(mkdir_arg *argp, mkdir_ret *result, struct svc_req *rqstp)
 {
+	TRANSMIT_TO_SECONDATY(mkdir_arg, mkdir_ret, bb_mkdir_6);
 	char *ip = argp->ip;
 	char *path = argp->path;
 	int mode = argp->mode;
 	char fpath[MAX_PATH_LEN];
 	translate_abspath(fpath, path);
 	fprintf(stderr, "Make directory for %s with mode %d\n", fpath, mode);
-	TRANSMIT_TO_SECONDATY(mkdir_arg, mkdir_ret, bb_mkdir_6);
-	result->ret = mkdir(fpath, mode);
+	int syscall_ret = mkdir(fpath, mode);
+	if (syscall_ret < 0) {
+		fprintf(stderr, "make directory for %s with mode %d error\n", fpath, mode);
+		result->ret = -1;
+		return TRUE;
+	}
+
+	result->ret = 0;
+	if (set_owner(fpath, ip) != 0) {
+		result->ret = -1;
+	}
 	return TRUE;
 }
 
@@ -366,6 +375,7 @@ bb_readlink_6_svc(readlink_arg *argp, readlink_ret *result, struct svc_req *rqst
 bool_t
 bb_mknod_6_svc(mknod_arg *argp, mknod_ret *result, struct svc_req *rqstp)
 {
+	TRANSMIT_TO_SECONDATY(mknod_arg, mknod_ret, bb_mknod_6);
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
@@ -373,8 +383,7 @@ bb_mknod_6_svc(mknod_arg *argp, mknod_ret *result, struct svc_req *rqstp)
 	int mode = argp->mode;
 	int dev = argp->dev;
 	fprintf(stderr, "Mknod for file %s with mode %d and dev %d\n", fpath, mode, dev);
-	TRANSMIT_TO_SECONDATY(mknod_arg, mknod_ret, bb_mknod_6);
-
+	
 	int func_ret = -1;
 
 	// Create file, close it if succeeds.
@@ -382,7 +391,7 @@ bb_mknod_6_svc(mknod_arg *argp, mknod_ret *result, struct svc_req *rqstp)
 		func_ret = open(fpath, O_CREAT | O_EXCL | O_WRONLY, mode);
 		if (func_ret < 0) {
 			fprintf(stderr, "mknod for regular file %s with mode %d with errno %d\n", fpath, mode, -errno);
-			result->ret = -errno;
+			result->ret = -1;
 			return TRUE;
 		} else {
 			close(func_ret);
@@ -394,7 +403,7 @@ bb_mknod_6_svc(mknod_arg *argp, mknod_ret *result, struct svc_req *rqstp)
 		func_ret = mkfifo(fpath, mode);
 		if (func_ret < 0) {
 			fprintf(stderr, "mknod for fifo file %s with mode %d with errno %d\n", fpath, mode, -errno);
-			result->ret = -errno;
+			result->ret = -1;
 			return TRUE;
 		}
 	}
@@ -404,12 +413,15 @@ bb_mknod_6_svc(mknod_arg *argp, mknod_ret *result, struct svc_req *rqstp)
 		func_ret = mknod(fpath, mode, dev);
 		if (func_ret < 0) {
 			fprintf(stderr, "mknod for device file %s with mode %d device id %d with errno %d\n", fpath, mode, dev, -errno);
-			result->ret = -errno;
+			result->ret = -1;
 			return TRUE;
 		}
 	}
 
 	result->ret = 0;
+	if (set_owner(fpath, ip) < 0) {
+		result->ret = -1;
+	}
 	return TRUE;
 }
 
