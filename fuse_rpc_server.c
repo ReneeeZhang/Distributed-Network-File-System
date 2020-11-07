@@ -657,9 +657,6 @@ bb_read_6_svc(read_arg *argp, read_ret *result, struct svc_req *rqstp)
 {
 	int fd = argp->fd;
 	char *ip = argp->ip;
-	char *path = argp->path;
-	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, path);
 	unsigned int size = argp->size;
 	unsigned int offset = argp->offset;
 	fprintf(stderr, "Read file with fd = %d, with size = %u, offset = %u\n", fd, size, offset);
