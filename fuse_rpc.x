@@ -264,7 +264,6 @@ struct release_ret {
 struct read_arg {
     string ip<>;
     int fd;
-    string path<>;
     unsigned int size;
     unsigned int offset;
 };

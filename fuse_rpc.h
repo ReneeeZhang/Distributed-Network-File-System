@@ -289,7 +289,6 @@ typedef struct release_ret release_ret;
 struct read_arg {
 	char *ip;
 	int fd;
-	char *path;
 	u_int size;
 	u_int offset;
 };

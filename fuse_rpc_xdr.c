@@ -655,8 +655,6 @@ xdr_read_arg (XDR *xdrs, read_arg *objp)
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->fd))
 		 return FALSE;
-	 if (!xdr_string (xdrs, &objp->path, ~0))
-		 return FALSE;
 	 if (!xdr_u_int (xdrs, &objp->size))
 		 return FALSE;
 	 if (!xdr_u_int (xdrs, &objp->offset))

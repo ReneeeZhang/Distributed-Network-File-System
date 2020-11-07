@@ -727,13 +727,11 @@ int bb_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
     int is_degraded = connect_server(&clnt);
     read_ret ret;
     read_arg arg;
-    char fpath[PATH_MAX];
-    bb_fullpath(fpath, path);
     arg.ip = ip;
     arg.fd = fi->fh;
     arg.size = size <= MAX_SIZE ? size : MAX_SIZE;
     arg.offset = offset;
-    
+
     // Keep RPC until requsted size is already read.
     int total_len = 0;
     while (total_len < size) {
