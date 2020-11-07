@@ -611,11 +611,20 @@ bb_open_6_svc(open_arg *argp, open_ret *result, struct svc_req *rqstp)
 	int flags = argp->flags;
 	fprintf(stderr, "Open file for %s with flag %d\n", fpath, flags);
 
+	/*
+	 * O_RDONLY = 0
+	 * O_WRONLY = 1
+	 * O_RDWR = 2
+	 * O_ACCMODE = 3
+	 * Access mode should be check via numerical comparison, rather than bit checking.
+	 */
 	int flag_to_check = 0;
-	if ((flags & O_RDONLY) || (flags & O_RDWR)) {
+	int acc_mode = flags & O_ACCMODE;
+	if (acc_mode == O_RDONLY || acc_mode == O_RDWR) {
+		fprintf(stderr, "read bit set\n");
 		flag_to_check |= R_REQ;
 	}
-	if ((flags & O_WRONLY) || (flags & O_RDWR)) {
+	if (acc_mode == O_WRONLY || acc_mode == O_RDWR) {
 		flag_to_check |= W_REQ;
 	}
 	if (is_op_valid(fpath, ip, flag_to_check) != 1) {
