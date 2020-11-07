@@ -26,7 +26,7 @@
 
 #define MAX_PATH_LEN 200
 
-// Used to check operation validility.
+// Used for authentication.
 #define R_REQ 0
 #define W_REQ 1
 #define X_REQ 2
@@ -78,6 +78,24 @@ static CLIENT *connect_server() {
 	return clnt;
 }
 
+static int get_last_slash(char *fpath) {
+	int idx = -1;
+	for (char *ptr = fpath; *ptr != '\0'; ++ptr) {
+		if (*ptr == '/') {
+			idx = ptr - fpath;
+		}
+	}
+	return idx;
+}
+
+// File creation, rename and deletion needs directory w&x. This util extracts
+// directory from full path.
+static void get_dir(char *buf, char *fpath) {
+	memset(buf, '\0', MAX_PATH_LEN);
+	int last_slash_idx = get_last_slash(fpath);
+	strncpy(buf, fpath, last_slash_idx);
+}
+
 // Set owner and group after creating file and directory.
 static int set_owner(char *fpath, char *ip) {
 	fprintf(stderr, "Set owner for %s with owner %s\n", fpath, ip);
@@ -90,7 +108,7 @@ static int set_owner(char *fpath, char *ip) {
 }
 
 // Check whether the operation is valid based on operation type and owner.
-static int is_op_valid(char *fpath, char *ip, int requested) {
+static int is_op_valid(char *fpath, char *ip, int flags) {
 	struct stat statbuf;
 	if (lstat(fpath, &statbuf) == -1) {
 		fprintf(stderr, "Error when checking %s stat\n", fpath);
@@ -99,16 +117,20 @@ static int is_op_valid(char *fpath, char *ip, int requested) {
 	int id = atoi(ip);
 	int uid = statbuf.st_uid;
 	int mode = statbuf.st_mode;
-	switch (requested) {
-		case R_REQ:
-			return uid == id ? ((mode & S_IRUSR) != 0) : ((mode & S_IROTH) != 0);
-		case W_REQ:
-			return uid == id ? ((mode & S_IWUSR) != 0) : ((mode & S_IWOTH) != 0);
-		case X_REQ:
-			return uid == id ? ((mode & S_IXUSR) != 0) : ((mode & S_IXOTH) != 0);
-		default:
-			assert(0);
+	int is_valid = 1;
+	if (flags & R_REQ) {
+		int read_valid = uid == id ? ((mode & S_IRUSR) != 0) : ((mode & S_IROTH) != 0);
+		is_valid = read_valid ? is_valid : 0;
 	}
+	if (flags & W_REQ) {
+		int write_valid = uid == id ? ((mode & S_IWUSR) != 0) : ((mode & S_IWOTH) != 0);
+		is_valid = write_valid ? is_valid : 0;
+	}
+	if (flags & X_REQ) {
+		int exec_valid = uid == id ? ((mode & S_IXUSR) != 0) : ((mode & S_IXOTH) != 0);
+		is_valid = exec_valid ? is_valid : 0;
+	}
+	return is_valid;
 }
 
 // Translate the absolute path from client side to /DFS/path on server side.
@@ -133,14 +155,21 @@ bool_t
 init_rootdir_6_svc(init_arg *argp, init_ret *result, struct svc_req *rqstp) {
 	TRANSMIT_TO_SECONDATY(init_arg, init_ret, init_rootdir_6);
 
-	// Make sure "/DFS" exists, create if not.
+	// Make sure "/DFS" exists, create if not. 
 	char *root = "/DFS";
 	if (access(root, F_OK) == -1) {
 		if (mkdir(root, 0777) != 0) {
 			fprintf(stderr, "mkdir %s failure\n", root);
-			result->ret = -1;
-			return TRUE;
+			exit(1);
 		}
+	}
+
+	// Make sure root directory "/DFS" has all access control bits set.
+	char buf[] = "0777";
+	int mode = strtol(buf, 0, 8);
+	if (chmod("/DFS", mode) != 0) {
+		fprintf(stderr, "Change access control bits for rootdir failure\n");
+		exit(1);
 	}
 
 	char *ip = argp->ip;
@@ -244,13 +273,6 @@ bb_opendir_6_svc(opendir_arg *argp, opendir_ret *result, struct svc_req *rqstp)
 	char fpath[MAX_PATH_LEN];
 	translate_abspath(fpath, path);
 	fprintf(stderr, "Open directory for %s\n", fpath);
-
-	int is_valid = is_op_valid(fpath, ip, R_REQ);
-	if (!is_valid) {
-		fprintf(stderr, "Open directory is not valid by authentication\n");
-		result->ret = -1;
-		return TRUE;
-	}
 
 	DIR *dp = opendir(fpath);
 	if (dp == NULL) {
@@ -485,12 +507,23 @@ bb_truncate_6_svc(truncate_arg *argp, truncate_ret *result, struct svc_req *rqst
 bool_t
 bb_unlink_6_svc(unlink_arg *argp, unlink_ret *result, struct svc_req *rqstp)
 {
+	TRANSMIT_TO_SECONDATY(unlink_arg, unlink_ret, bb_unlink_6);
+
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
 	translate_abspath(fpath, path);
 	fprintf(stderr, "Unlink file for %s\n", fpath);
-	TRANSMIT_TO_SECONDATY(unlink_arg, unlink_ret, bb_unlink_6);
+	
+	// Unlink file should have w&x mode.
+	char dir[MAX_PATH_LEN];
+	get_dir(dir, fpath);
+	fprintf(stderr, "Get directory %s from full path %s\n", dir, fpath);
+	int flag_to_check = (1 << W_REQ) | (1 << X_REQ);
+	if (is_op_valid(dir, ip, flag_to_check) != 1) {
+		result->ret = -EACCES;
+		return TRUE;
+	}
 
 	result->ret = unlink(fpath);
 	return TRUE;
@@ -577,6 +610,18 @@ bb_open_6_svc(open_arg *argp, open_ret *result, struct svc_req *rqstp)
 	int flags = argp->flags;
 	fprintf(stderr, "Open file for %s with flag %d\n", fpath, flags);
 
+	int flag_to_check = 0;
+	if ((flags & O_RDONLY) || (flags & O_RDWR)) {
+		flag_to_check |= (1 << R_REQ);
+	}
+	if ((flags & O_WRONLY) || (flags & O_RDWR)) {
+		flag_to_check |= (1 << W_REQ);
+	}
+	if (is_op_valid(fpath, ip, flag_to_check) != 1) {
+		result->ret = -EACCES;
+		return TRUE;
+	}	
+
 	result->fd = open(fpath, flags);
 	if (result->fd == -1) {
 		fprintf(stderr, "open file %s with flag %d error with errno %d\n", fpath, flags, errno);
@@ -616,13 +661,6 @@ bb_read_6_svc(read_arg *argp, read_ret *result, struct svc_req *rqstp)
 	unsigned int size = argp->size;
 	unsigned int offset = argp->offset;
 	fprintf(stderr, "Read file with fd = %d, with size = %u, offset = %u\n", fd, size, offset);
-
-	int is_valid = is_op_valid(fpath, ip, R_REQ);
-	if (!is_valid) {
-		fprintf(stderr, "Read file %s error for user %s by authentication\n", fpath, ip);
-		result->ret = -1;
-		return TRUE;
-	}
 
 	char buf[MAX_SIZE];
 	memset(buf, '\0', MAX_SIZE);
