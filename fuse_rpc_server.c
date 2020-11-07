@@ -298,17 +298,15 @@ bb_symlink_6_svc(symlink_arg *argp, symlink_ret *result, struct svc_req *rqstp)
 {
 	char *ip = argp->ip;
 	char *path = argp->path;
-	char fpath[MAX_PATH_LEN];
-	translate_abspath(fpath, path);
 	char *link = argp->link;
 	char flink[MAX_PATH_LEN];
 	translate_abspath(flink, link);
-	fprintf(stderr, "Create symlink target = %s, original path = %s\n", flink, fpath);
+	fprintf(stderr, "Create symlink target = %s, original path = %s\n", flink, path);
 	TRANSMIT_TO_SECONDATY(symlink_arg, symlink_ret, bb_symlink_6);
 
-	int syscall_ret = symlink(fpath, flink);
+	int syscall_ret = symlink(path, flink);
 	if (syscall_ret == -1) {
-		fprintf(stderr, "symlink error for creating link %s to file %s\n", flink, fpath);
+		fprintf(stderr, "symlink error for creating link %s to file %s\n", flink, path);
 		result->ret = -errno;
 		return TRUE;
 	}
