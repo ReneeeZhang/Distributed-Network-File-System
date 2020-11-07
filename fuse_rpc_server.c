@@ -3,6 +3,10 @@
  * (1) transmit request to primary server, if possible
  * (2) check rwx validility, if possible
  * (3) execute the operation
+ * 
+ * About access authentication:
+ * (1) file open is checked by read and write bit
+ * (2) file creation, rename and deletion need the w&x bits of directory
  */
 
 #include <assert.h>
