@@ -521,6 +521,7 @@ bb_unlink_6_svc(unlink_arg *argp, unlink_ret *result, struct svc_req *rqstp)
 	fprintf(stderr, "Get directory %s from full path %s\n", dir, fpath);
 	int flag_to_check = (1 << W_REQ) | (1 << X_REQ);
 	if (is_op_valid(dir, ip, flag_to_check) != 1) {
+		fprintf(stderr, "Authentication for unlink %s error\n", fpath);
 		result->ret = -EACCES;
 		return TRUE;
 	}
@@ -618,6 +619,7 @@ bb_open_6_svc(open_arg *argp, open_ret *result, struct svc_req *rqstp)
 		flag_to_check |= (1 << W_REQ);
 	}
 	if (is_op_valid(fpath, ip, flag_to_check) != 1) {
+		fprintf(stderr, "Authentication when open file %s error\n", fpath);
 		result->ret = -EACCES;
 		return TRUE;
 	}	
