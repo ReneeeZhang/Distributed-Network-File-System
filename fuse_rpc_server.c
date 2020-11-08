@@ -6,7 +6,9 @@
  * 
  * About access authentication:
  * (1) file open is checked by read and write bit
- * (2) file creation, rename and deletion need the w&x bits of directory
+ * (2) file creation, rename and deletion need the w&x bits of parent directory
+ * include operation: unlink, mkdir, rmdir, mknod
+ * (3) chown needs root, chmod needs owner
  */
 
 #include <assert.h>
@@ -111,6 +113,18 @@ static int set_owner(char *fpath, char *ip) {
 	return 0;
 }
 
+// Whether current user is the owner.
+static int is_owner(char *fpath, char *ip) {
+	struct stat statbuf;
+	if (lstat(fpath, &statbuf) == -1) {
+		fprintf(stderr, "Error when checking %s stat\n", fpath);
+		return -1;
+	}
+	int id = atoi(ip);
+	int uid = statbuf.st_uid;
+	return id == uid;
+}
+
 // Check whether the operation is valid based on operation type and owner.
 static int is_op_valid(char *fpath, char *ip, int flags) {
 	struct stat statbuf;
@@ -153,6 +167,21 @@ static void translate_abspath(char *buf, char *path) {
 		buf[4] = '/';
 	}
 	strncat(buf, path, strlen(path));
+}
+
+// Check parent directory validility, op includes unlink, mkdir, rmdir, etc. 
+// Parent directory should have the wx bit set.
+static int is_parent_dir_valid(char *fpath, char *ip, char *op_name) {
+	fprintf(stderr, "Checking parent directory validility\n");
+	char dir[MAX_PATH_LEN];
+	get_dir(dir, fpath);
+	fprintf(stderr, "Get directory %s from full path %s\n", dir, fpath);
+	int flag_to_check = W_REQ | X_REQ;
+	if (is_op_valid(dir, ip, flag_to_check) != 1) {
+		fprintf(stderr, "Authentication for %s on full path %s error\n", op_name, fpath);
+		return 0;
+	}
+	return 1;
 }
 
 bool_t
@@ -242,6 +271,12 @@ bb_mkdir_6_svc(mkdir_arg *argp, mkdir_ret *result, struct svc_req *rqstp)
 	char fpath[MAX_PATH_LEN];
 	translate_abspath(fpath, path);
 	fprintf(stderr, "Make directory for %s with mode %d\n", fpath, mode);
+
+	if (!is_parent_dir_valid(fpath, ip, "mkdir")) {
+		result->ret = -EACCES;
+		return TRUE;
+	}
+
 	int syscall_ret = mkdir(fpath, mode);
 	if (syscall_ret < 0) {
 		fprintf(stderr, "make directory for %s with mode %d error\n", fpath, mode);
@@ -259,12 +294,18 @@ bb_mkdir_6_svc(mkdir_arg *argp, mkdir_ret *result, struct svc_req *rqstp)
 bool_t
 bb_rmdir_6_svc(rmdir_arg *argp, rmdir_ret *result, struct svc_req *rqstp)
 {
+	TRANSMIT_TO_SECONDATY(rmdir_arg, rmdir_ret, bb_rmdir_6);
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
 	translate_abspath(fpath, path);
 	fprintf(stderr, "Remove directory for %s\n", fpath);
-	TRANSMIT_TO_SECONDATY(rmdir_arg, rmdir_ret, bb_rmdir_6);
+
+	if (!is_parent_dir_valid(fpath, ip, "rmdir")) {
+		result->ret = -EACCES;
+		return TRUE;
+	}
+
 	result->ret = rmdir(fpath);
 	return TRUE;
 }
@@ -366,13 +407,18 @@ bb_rename_6_svc(rename_arg *argp, rename_ret *result, struct svc_req *rqstp)
 bool_t
 bb_symlink_6_svc(symlink_arg *argp, symlink_ret *result, struct svc_req *rqstp)
 {
+	TRANSMIT_TO_SECONDATY(symlink_arg, symlink_ret, bb_symlink_6);
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char *link = argp->link;
 	char flink[MAX_PATH_LEN];
 	translate_abspath(flink, link);
 	fprintf(stderr, "Create symlink target = %s, original path = %s\n", flink, path);
-	TRANSMIT_TO_SECONDATY(symlink_arg, symlink_ret, bb_symlink_6);
+	
+	if (!is_parent_dir_valid(flink, ip, "symlink")) {
+		result->ret = -EACCES;
+		return TRUE;
+	}
 
 	int syscall_ret = symlink(path, flink);
 	if (syscall_ret == -1) {
@@ -387,6 +433,7 @@ bb_symlink_6_svc(symlink_arg *argp, symlink_ret *result, struct svc_req *rqstp)
 bool_t
 bb_link_6_svc(link_arg *argp, link_ret *result, struct svc_req *rqstp)
 {
+	TRANSMIT_TO_SECONDATY(link_arg, link_ret, bb_link_6);
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
@@ -395,7 +442,11 @@ bb_link_6_svc(link_arg *argp, link_ret *result, struct svc_req *rqstp)
 	char fnewpath[MAX_PATH_LEN];
 	translate_abspath(fnewpath, newpath);
 	fprintf(stderr, "Create hard link source = %s, new path = %s\n", fpath, fnewpath);
-	TRANSMIT_TO_SECONDATY(link_arg, link_ret, bb_link_6);
+	
+	if (!is_parent_dir_valid(fpath, ip, "link")) {
+		result->ret = -EACCES;
+		return TRUE;
+	}
 
 	int syscall_ret = link(fpath, fnewpath);
 	if (syscall_ret == -1) {
@@ -444,6 +495,11 @@ bb_mknod_6_svc(mknod_arg *argp, mknod_ret *result, struct svc_req *rqstp)
 	int mode = argp->mode;
 	int dev = argp->dev;
 	fprintf(stderr, "Mknod for file %s with mode %d and dev %d\n", fpath, mode, dev);
+
+	if (!is_parent_dir_valid(fpath, ip, "mknod")) {
+		result->ret = -EACCES;
+		return TRUE;
+	}
 	
 	int func_ret = -1;
 
@@ -518,14 +574,8 @@ bb_unlink_6_svc(unlink_arg *argp, unlink_ret *result, struct svc_req *rqstp)
 	char fpath[MAX_PATH_LEN];
 	translate_abspath(fpath, path);
 	fprintf(stderr, "Unlink file for %s\n", fpath);
-	
-	// Unlink file should have w&x mode.
-	char dir[MAX_PATH_LEN];
-	get_dir(dir, fpath);
-	fprintf(stderr, "Get directory %s from full path %s\n", dir, fpath);
-	int flag_to_check = W_REQ | X_REQ;
-	if (is_op_valid(dir, ip, flag_to_check) != 1) {
-		fprintf(stderr, "Authentication for unlink %s error\n", fpath);
+
+	if (!is_parent_dir_valid(fpath, ip, "unlink")) {
 		result->ret = -EACCES;
 		return TRUE;
 	}
@@ -571,6 +621,12 @@ bb_chmod_6_svc(chmod_arg *argp, chmod_ret *result, struct svc_req *rqstp)
 	fprintf(stderr, "Change file %s to mode %d\n", fpath, mode);
 	TRANSMIT_TO_SECONDATY(chmod_arg, chmod_ret, bb_chmod_6);
 
+	if (!is_owner(fpath, ip)) {
+		fprintf(stderr, "Chmod failure for not being the owner of file\n");
+		result->ret = -EACCES;
+		return TRUE;
+	}
+
 	int syscall_ret = chmod(fpath, mode);
 	if (syscall_ret < 0) {
 		fprintf(stderr, "change file to %s mode %d error with errno %d\n", fpath, mode, errno);
@@ -582,6 +638,7 @@ bb_chmod_6_svc(chmod_arg *argp, chmod_ret *result, struct svc_req *rqstp)
 	return TRUE;
 }
 
+// TODO: chown requires root.
 bool_t
 bb_chown_6_svc(chown_arg *argp, chown_ret *result, struct svc_req *rqstp)
 {
