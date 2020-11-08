@@ -200,6 +200,7 @@ static int is_parent_dir_valid(char *fpath, char *ip, char *op_name) {
 			fprintf(stderr, "Authentication for %s %s on rootdir error\n", op_name, fpath);
 			return 0;
 		}
+		return 1;
 	}
 
 	if (is_op_valid(dir, ip, flag_to_check) != 1) {
