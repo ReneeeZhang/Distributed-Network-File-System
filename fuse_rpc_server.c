@@ -6,9 +6,10 @@
  * 
  * About access authentication:
  * (1) file open is checked by read and write bit
- * (2) file creation, rename and deletion need the w&x bits of parent directory
- * include operation: unlink, mkdir, rmdir, mknod
- * (3) chown needs root, chmod needs owner
+ * (2) directory open is checked by execute bit
+ * (3) file creation, rename and deletion need the rwx bits of parent directory
+ * include operation: unlink, mkdir, rmdir, mknod, rename
+ * (4) chown needs root, chmod needs owner, utime needs owner
  */
 
 #include <assert.h>
@@ -94,7 +95,7 @@ static int get_last_slash(char *fpath) {
 	return idx;
 }
 
-// File creation, rename and deletion needs directory w&x. This util extracts
+// File creation, rename and deletion needs directory rwx. This util extracts
 // directory from full path.
 static void get_dir(char *buf, char *fpath) {
 	memset(buf, '\0', MAX_PATH_LEN);
@@ -176,7 +177,7 @@ static int is_parent_dir_valid(char *fpath, char *ip, char *op_name) {
 	char dir[MAX_PATH_LEN];
 	get_dir(dir, fpath);
 	fprintf(stderr, "Get directory %s from full path %s\n", dir, fpath);
-	int flag_to_check = W_REQ | X_REQ;
+	int flag_to_check = R_REQ | W_REQ | X_REQ;
 	if (is_op_valid(dir, ip, flag_to_check) != 1) {
 		fprintf(stderr, "Authentication for %s on full path %s error\n", op_name, fpath);
 		return 0;
@@ -319,6 +320,13 @@ bb_opendir_6_svc(opendir_arg *argp, opendir_ret *result, struct svc_req *rqstp)
 	translate_abspath(fpath, path);
 	fprintf(stderr, "Open directory for %s\n", fpath);
 
+	int flag_to_check = X_REQ;
+	if (is_op_valid(fpath, ip, flag_to_check) != 1) {
+		fprintf(stderr, "Authentication when open directory %s error\n", fpath);
+		result->ret = -EACCES;
+		return TRUE;
+	}	
+
 	DIR *dp = opendir(fpath);
 	if (dp == NULL) {
 		fprintf(stderr, "opendir %s error\n", fpath);
@@ -391,6 +399,7 @@ bb_releasedir_6_svc(releasedir_arg *argp, releasedir_ret *result, struct svc_req
 bool_t
 bb_rename_6_svc(rename_arg *argp, rename_ret *result, struct svc_req *rqstp)
 {
+	TRANSMIT_TO_SECONDATY(rename_arg, rename_ret, bb_rename_6);
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
@@ -398,8 +407,13 @@ bb_rename_6_svc(rename_arg *argp, rename_ret *result, struct svc_req *rqstp)
 	char *newpath = argp->newpath;
 	char fnewpath[MAX_PATH_LEN];
 	translate_abspath(fnewpath, newpath);
+
+	if (!is_parent_dir_valid(fpath, ip, "rename") || !is_parent_dir_valid(fnewpath, ip, "rename")) {
+		result->ret = -EACCES;
+		return TRUE;
+	}
+
 	fprintf(stderr, "Rename file from %s to %s\n", fpath, fnewpath);
-	TRANSMIT_TO_SECONDATY(rename_arg, rename_ret, bb_rename_6);
 	result->ret = rename(fpath, fnewpath);
 	return TRUE;
 }
@@ -545,13 +559,13 @@ bb_mknod_6_svc(mknod_arg *argp, mknod_ret *result, struct svc_req *rqstp)
 bool_t
 bb_truncate_6_svc(truncate_arg *argp, truncate_ret *result, struct svc_req *rqstp)
 {
+	TRANSMIT_TO_SECONDATY(truncate_arg, truncate_ret, bb_truncate_6);
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
 	translate_abspath(fpath, path);
 	int newsize = argp->newsize;
 	fprintf(stderr, "Truncate file %s to new size %d\n", fpath, newsize);
-	TRANSMIT_TO_SECONDATY(truncate_arg, truncate_ret, bb_truncate_6);
 
 	int syscall_ret = truncate(fpath, newsize);
 	if (syscall_ret < 0) {
@@ -568,7 +582,6 @@ bool_t
 bb_unlink_6_svc(unlink_arg *argp, unlink_ret *result, struct svc_req *rqstp)
 {
 	TRANSMIT_TO_SECONDATY(unlink_arg, unlink_ret, bb_unlink_6);
-
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
@@ -587,6 +600,7 @@ bb_unlink_6_svc(unlink_arg *argp, unlink_ret *result, struct svc_req *rqstp)
 bool_t
 bb_utime_6_svc(utime_arg *argp, utime_ret *result, struct svc_req *rqstp)
 {
+	TRANSMIT_TO_SECONDATY(utime_arg, utime_ret, bb_utime_6);
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
@@ -594,7 +608,12 @@ bb_utime_6_svc(utime_arg *argp, utime_ret *result, struct svc_req *rqstp)
 	long actime = argp->actime;
 	long modtime = argp->modtime;
 	fprintf(stderr, "Utime %s with access time %ld and modification time %ld\n", fpath, actime, modtime);
-	TRANSMIT_TO_SECONDATY(utime_arg, utime_ret, bb_utime_6);
+	
+	if (!is_owner(fpath, ip)) {
+		fprintf(stderr, "Utime failure for not being the owner of file\n");
+		result->ret = -EACCES;
+		return TRUE;
+	}
 
 	struct utimbuf ubuf;
 	ubuf.actime = actime;
@@ -613,14 +632,14 @@ bb_utime_6_svc(utime_arg *argp, utime_ret *result, struct svc_req *rqstp)
 bool_t
 bb_chmod_6_svc(chmod_arg *argp, chmod_ret *result, struct svc_req *rqstp)
 {
+	TRANSMIT_TO_SECONDATY(chmod_arg, chmod_ret, bb_chmod_6);
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
 	translate_abspath(fpath, path);
 	int mode = argp->mode;
 	fprintf(stderr, "Change file %s to mode %d\n", fpath, mode);
-	TRANSMIT_TO_SECONDATY(chmod_arg, chmod_ret, bb_chmod_6);
-
+	
 	if (!is_owner(fpath, ip)) {
 		fprintf(stderr, "Chmod failure for not being the owner of file\n");
 		result->ret = -EACCES;

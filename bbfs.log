@@ -1,0 +1,331 @@
+
+bb_init()
+    conn:
+    proto_major = 7
+    proto_minor = 26
+    async_read = 1
+    max_write = 131072
+    max_readahead = 131072
+    capable = 00000ffb
+    want = 00000010
+    max_background = 0
+    congestion_threshold = 0
+    context:
+    fuse = 0589f6d0
+    uid = 0
+    gid = 0
+    pid = 0
+    private_data = 058959d0
+    logfile = 05896a60
+    rootdir = /home/hj110/ece-566-distributed-network-file-system/rootdir
+    umask = 00000
+init_rootdir called
+ip = 9962309
+rootdir = /home/hj110/ece-566-distributed-network-file-system/rootdir
+
+bb_getattr(path="/")
+
+bb_getattr(path="/.git")
+Get attribute error with errno 2
+
+bb_getattr(path="/")
+
+bb_getattr(path="/.git")
+Get attribute error with errno 2
+
+bb_opendir(path="/", fi=0xfefffb50)
+
+bb_readdir(path="/", buf=0x059014f0, filler=0x04e45d00, offset=0, fi=0xfefffb50)
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent haha.txt
+
+bb_getattr(path="/haha.txt")
+
+bb_getattr(path="/")
+
+bb_getattr(path="/.gitignore")
+Get attribute error with errno 2
+
+bb_releasedir(path="/", fi=0xfefffb60)
+
+bb_getattr(path="/")
+
+bb_getattr(path="/.git")
+Get attribute error with errno 2
+
+bb_getattr(path="/")
+
+bb_getattr(path="/.git")
+Get attribute error with errno 2
+
+bb_opendir(path="/", fi=0xfefffb50)
+
+bb_readdir(path="/", buf=0x05943520, filler=0x04e45d00, offset=0, fi=0xfefffb50)
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent haha.txt
+
+bb_getattr(path="/haha.txt")
+
+bb_getattr(path="/")
+
+bb_getattr(path="/.gitignore")
+Get attribute error with errno 2
+
+bb_releasedir(path="/", fi=0xfefffb60)
+
+bb_getattr(path="/")
+
+bb_getattr(path="/.git")
+Get attribute error with errno 2
+
+bb_getattr(path="/")
+
+bb_getattr(path="/.git")
+Get attribute error with errno 2
+
+bb_opendir(path="/", fi=0xfefffb50)
+
+bb_readdir(path="/", buf=0x0597f5d0, filler=0x04e45d00, offset=0, fi=0xfefffb50)
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent haha.txt
+
+bb_getattr(path="/haha.txt")
+
+bb_getattr(path="/")
+
+bb_getattr(path="/.gitignore")
+Get attribute error with errno 2
+
+bb_releasedir(path="/", fi=0xfefffb60)
+
+bb_getattr(path="/")
+
+bb_getattr(path="/hello.txt")
+Get attribute error with errno 2
+
+bb_mknod(path="/hello.txt", mode=0100664, dev=0)
+
+bb_getattr(path="/hello.txt")
+
+bb_open(path"/hello.txt", fi=0xfefffc10)
+
+bb_getattr(path="/")
+
+bb_flush(path="/hello.txt", fi=0xfefffc10)
+    fi:
+    flags = 0x00000000
+    fh_old = 0x00000005
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x0000000000000005
+    lock_owner = 0xa5ee88e58ec8b419
+
+bb_write(path="/hello.txt", buf=0x058c0140, size=12, offset=0, fi=0xfefffc80)
+Write for fd 5 has finished
+
+bb_flush(path="/hello.txt", fi=0xfefffc10)
+    fi:
+    flags = 0x00000000
+    fh_old = 0x00000005
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x0000000000000005
+    lock_owner = 0xa5ee88e58ec8b419
+
+bb_release(path="/hello.txt", fi=0xfefffc10)
+
+bb_getattr(path="/")
+
+bb_getattr(path="/")
+
+bb_opendir(path="/", fi=0xfefffb50)
+
+bb_readdir(path="/", buf=0x059df980, filler=0x04e45d00, offset=0, fi=0xfefffb50)
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent haha.txt
+Ready to fill in dirent hello.txt
+
+bb_getattr(path="/haha.txt")
+
+bb_getattr(path="/")
+
+bb_getattr(path="/hello.txt")
+
+bb_releasedir(path="/", fi=0xfefffb60)
+
+bb_getattr(path="/")
+
+bb_opendir(path="/", fi=0xfefffb50)
+
+bb_getattr(path="/")
+
+bb_getattr(path="/")
+
+bb_readdir(path="/", buf=0x05a09bb0, filler=0x04e45d00, offset=0, fi=0xfefffb50)
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent haha.txt
+Ready to fill in dirent hello.txt
+
+bb_getattr(path="/haha.txt")
+
+bb_getattr(path="/hello.txt")
+
+bb_getattr(path="/")
+
+bb_releasedir(path="/", fi=0xfefffb60)
+
+bb_getattr(path="/")
+
+bb_getattr(path="/.git")
+Get attribute error with errno 2
+
+bb_getattr(path="/")
+
+bb_getattr(path="/.git")
+Get attribute error with errno 2
+
+bb_opendir(path="/", fi=0xfefffb50)
+
+bb_readdir(path="/", buf=0x05a51b60, filler=0x04e45d00, offset=0, fi=0xfefffb50)
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent haha.txt
+Ready to fill in dirent hello.txt
+
+bb_getattr(path="/haha.txt")
+
+bb_getattr(path="/")
+
+bb_getattr(path="/.gitignore")
+Get attribute error with errno 2
+
+bb_getattr(path="/hello.txt")
+
+bb_releasedir(path="/", fi=0xfefffb60)
+
+bb_getattr(path="/")
+
+bb_opendir(path="/", fi=0xfefffb50)
+
+bb_getattr(path="/")
+
+bb_getattr(path="/")
+
+bb_readdir(path="/", buf=0x05a81d10, filler=0x04e45d00, offset=0, fi=0xfefffb50)
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent haha.txt
+Ready to fill in dirent hello.txt
+
+bb_getattr(path="/haha.txt")
+
+bb_getattr(path="/")
+
+bb_getattr(path="/hello.txt")
+
+bb_releasedir(path="/", fi=0xfefffb60)
+
+bb_getattr(path="/")
+
+bb_getattr(path="/")
+
+bb_opendir(path="/", fi=0xfefffb50)
+
+bb_readdir(path="/", buf=0x05abddc0, filler=0x04e45d00, offset=0, fi=0xfefffb50)
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent haha.txt
+Ready to fill in dirent hello.txt
+
+bb_releasedir(path="/", fi=0xfefffb60)
+
+bb_getattr(path="/haha.txt")
+
+bb_getattr(path="/hello.txt")
+
+bb_getattr(path="/")
+
+bb_getattr(path="/.git")
+Get attribute error with errno 2
+
+bb_getattr(path="/")
+
+bb_getattr(path="/.git")
+Get attribute error with errno 2
+
+bb_opendir(path="/", fi=0xfefffb50)
+
+bb_readdir(path="/", buf=0x05af3ef0, filler=0x04e45d00, offset=0, fi=0xfefffb50)
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent haha.txt
+Ready to fill in dirent hello.txt
+
+bb_getattr(path="/haha.txt")
+
+bb_getattr(path="/")
+
+bb_getattr(path="/.gitignore")
+Get attribute error with errno 2
+
+bb_getattr(path="/hello.txt")
+
+bb_releasedir(path="/", fi=0xfefffb60)
+
+bb_getattr(path="/")
+
+bb_getattr(path="/.git")
+Get attribute error with errno 2
+
+bb_getattr(path="/.git")
+Get attribute error with errno 2
+
+bb_getattr(path="/")
+
+bb_opendir(path="/", fi=0xfefffb50)
+
+bb_readdir(path="/", buf=0x05b35f20, filler=0x04e45d00, offset=0, fi=0xfefffb50)
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent haha.txt
+Ready to fill in dirent hello.txt
+
+bb_getattr(path="/haha.txt")
+
+bb_getattr(path="/.gitignore")
+Get attribute error with errno 2
+
+bb_getattr(path="/")
+
+bb_getattr(path="/hello.txt")
+
+bb_releasedir(path="/", fi=0xfefffb60)
+
+bb_getattr(path="/")
+
+bb_getattr(path="/")
+
+bb_opendir(path="/", fi=0xfefffb50)
+
+bb_readdir(path="/", buf=0x05b6c050, filler=0x04e45d00, offset=0, fi=0xfefffb50)
+Ready to fill in dirent .
+Ready to fill in dirent ..
+Ready to fill in dirent haha.txt
+Ready to fill in dirent hello.txt
+
+bb_releasedir(path="/", fi=0xfefffb60)
+
+bb_getattr(path="/")
+
+bb_getattr(path="/haha.txt")
+
+bb_getattr(path="/hello.txt")
+
+bb_destroy(userdata=0x058959d0)
