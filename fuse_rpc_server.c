@@ -240,9 +240,9 @@ bb_getattr_6_svc(getattr_arg *argp, getattr_ret *result, struct svc_req *rqstp)
 	result->st_size = statbuf.st_size;
 	result->st_blksize = statbuf.st_blksize;
 	result->st_blocks = statbuf.st_blocks;
-	result->st_atimensec = statbuf.st_atim.tv_nsec;
-	result->st_mtimensec = statbuf.st_mtim.tv_nsec;
-	result->st_ctimensec = statbuf.st_ctim.tv_nsec;
+	result->st_acc_time = statbuf.st_atime;
+	result->st_mod_time = statbuf.st_mtime;
+	result->st_chg_time = statbuf.st_ctime;
 	result->ret = 0;
 	return TRUE;
 }

@@ -51,9 +51,9 @@ struct getattr_ret {
 	u_long st_size;
 	u_long st_blksize;
 	u_long st_blocks;
-	long st_atimensec;
-	long st_mtimensec;
-	long st_ctimensec;
+	long st_acc_time;
+	long st_mod_time;
+	long st_chg_time;
 	int ret;
 };
 typedef struct getattr_ret getattr_ret;

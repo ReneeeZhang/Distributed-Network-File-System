@@ -20,6 +20,7 @@
   underlying filesystem.  The information is saved in a logfile named
   bbfs.log, in the directory from which you run bbfs.
 */
+
 #include "params.h"
 
 #include <arpa/inet.h> 
@@ -44,8 +45,8 @@
 #include <sys/xattr.h>
 #endif
 
-#include "log.h"
 #include "fuse_rpc.h"
+#include "log.h"
 
 #define IS_NOT_DEGRADED 0
 #define IS_DEGRADED     1
@@ -255,9 +256,9 @@ int bb_getattr(const char *path, struct stat *statbuf)
     statbuf->st_size = ret.st_size;
     statbuf->st_blksize = ret.st_blksize;
     statbuf->st_blocks = ret.st_blocks;
-    statbuf->st_atimensec = ret.st_atimensec;
-    statbuf->st_mtimensec = ret.st_mtimensec;
-    statbuf->st_ctimensec = ret.st_ctimensec;
+    statbuf->st_atime = ret.st_acc_time;
+    statbuf->st_mtime = ret.st_mod_time;
+    statbuf->st_ctime = ret.st_chg_time;
     return 0;
 }
 

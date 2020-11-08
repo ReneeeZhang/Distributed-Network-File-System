@@ -82,11 +82,11 @@ xdr_getattr_ret (XDR *xdrs, getattr_ret *objp)
 				 return FALSE;
 			 if (!xdr_u_long (xdrs, &objp->st_blocks))
 				 return FALSE;
-			 if (!xdr_long (xdrs, &objp->st_atimensec))
+			 if (!xdr_long (xdrs, &objp->st_acc_time))
 				 return FALSE;
-			 if (!xdr_long (xdrs, &objp->st_mtimensec))
+			 if (!xdr_long (xdrs, &objp->st_mod_time))
 				 return FALSE;
-			 if (!xdr_long (xdrs, &objp->st_ctimensec))
+			 if (!xdr_long (xdrs, &objp->st_chg_time))
 				 return FALSE;
 			 if (!xdr_int (xdrs, &objp->ret))
 				 return FALSE;
@@ -101,9 +101,9 @@ xdr_getattr_ret (XDR *xdrs, getattr_ret *objp)
 			IXDR_PUT_U_LONG(buf, objp->st_size);
 			IXDR_PUT_U_LONG(buf, objp->st_blksize);
 			IXDR_PUT_U_LONG(buf, objp->st_blocks);
-			IXDR_PUT_LONG(buf, objp->st_atimensec);
-			IXDR_PUT_LONG(buf, objp->st_mtimensec);
-			IXDR_PUT_LONG(buf, objp->st_ctimensec);
+			IXDR_PUT_LONG(buf, objp->st_acc_time);
+			IXDR_PUT_LONG(buf, objp->st_mod_time);
+			IXDR_PUT_LONG(buf, objp->st_chg_time);
 			IXDR_PUT_LONG(buf, objp->ret);
 		}
 		return TRUE;
@@ -130,11 +130,11 @@ xdr_getattr_ret (XDR *xdrs, getattr_ret *objp)
 				 return FALSE;
 			 if (!xdr_u_long (xdrs, &objp->st_blocks))
 				 return FALSE;
-			 if (!xdr_long (xdrs, &objp->st_atimensec))
+			 if (!xdr_long (xdrs, &objp->st_acc_time))
 				 return FALSE;
-			 if (!xdr_long (xdrs, &objp->st_mtimensec))
+			 if (!xdr_long (xdrs, &objp->st_mod_time))
 				 return FALSE;
-			 if (!xdr_long (xdrs, &objp->st_ctimensec))
+			 if (!xdr_long (xdrs, &objp->st_chg_time))
 				 return FALSE;
 			 if (!xdr_int (xdrs, &objp->ret))
 				 return FALSE;
@@ -149,9 +149,9 @@ xdr_getattr_ret (XDR *xdrs, getattr_ret *objp)
 			objp->st_size = IXDR_GET_U_LONG(buf);
 			objp->st_blksize = IXDR_GET_U_LONG(buf);
 			objp->st_blocks = IXDR_GET_U_LONG(buf);
-			objp->st_atimensec = IXDR_GET_LONG(buf);
-			objp->st_mtimensec = IXDR_GET_LONG(buf);
-			objp->st_ctimensec = IXDR_GET_LONG(buf);
+			objp->st_acc_time = IXDR_GET_LONG(buf);
+			objp->st_mod_time = IXDR_GET_LONG(buf);
+			objp->st_chg_time = IXDR_GET_LONG(buf);
 			objp->ret = IXDR_GET_LONG(buf);
 		}
 	 return TRUE;
@@ -177,11 +177,11 @@ xdr_getattr_ret (XDR *xdrs, getattr_ret *objp)
 		 return FALSE;
 	 if (!xdr_u_long (xdrs, &objp->st_blocks))
 		 return FALSE;
-	 if (!xdr_long (xdrs, &objp->st_atimensec))
+	 if (!xdr_long (xdrs, &objp->st_acc_time))
 		 return FALSE;
-	 if (!xdr_long (xdrs, &objp->st_mtimensec))
+	 if (!xdr_long (xdrs, &objp->st_mod_time))
 		 return FALSE;
-	 if (!xdr_long (xdrs, &objp->st_ctimensec))
+	 if (!xdr_long (xdrs, &objp->st_chg_time))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->ret))
 		 return FALSE;

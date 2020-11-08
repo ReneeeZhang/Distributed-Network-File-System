@@ -63,9 +63,9 @@ struct getattr_ret {
     unsigned long st_size; /* total size, in bytes */
     unsigned long st_blksize; /* blocksize for file system I/O */
     unsigned long st_blocks; /* number of 512B blocks allocated */
-    long st_atimensec; /* time of last access */
-    long st_mtimensec; /* time of last modification */
-    long st_ctimensec; /* time of last status change */
+    long st_acc_time; /* time of last access */
+    long st_mod_time; /* time of last modification */
+    long st_chg_time; /* time of last status change */
     int ret; /* status of RPC */
 };
 
