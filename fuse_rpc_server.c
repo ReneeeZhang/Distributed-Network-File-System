@@ -170,6 +170,19 @@ static void translate_abspath(char *buf, char *path) {
 	strncat(buf, path, strlen(path));
 }
 
+// Check whether operation valid on rootdir, which requires full ACL(rwx).
+static int is_rootdir_op_valid(char *fpath, char *ip, int flag_to_check, char *op_name) {
+	struct stat statbuf;
+	if (lstat(fpath, &statbuf) == -1) {
+		fprintf(stderr, "Error when checking %s stat\n", fpath);
+		return -1;
+	}
+	int id = atoi(ip);
+	int uid = statbuf.st_uid;
+	int mode = statbuf.st_mode;
+	return id == uid && (mode & S_IRUSR) && (mode & S_IWUSR) && (mode & S_IXUSR);
+}
+
 // Check parent directory validility, op includes unlink, mkdir, rmdir, etc. 
 // Parent directory should have the wx bit set.
 static int is_parent_dir_valid(char *fpath, char *ip, char *op_name) {
@@ -177,7 +190,18 @@ static int is_parent_dir_valid(char *fpath, char *ip, char *op_name) {
 	char dir[MAX_PATH_LEN];
 	get_dir(dir, fpath);
 	fprintf(stderr, "Get directory %s from full path %s\n", dir, fpath);
+
+	// Several operations depends on directory ACL. Corner case: checked directory
+	// is the root directory /DFS, which is pre-set to have full ACL, should check
+	// file owner and corresponding ACL.
 	int flag_to_check = R_REQ | W_REQ | X_REQ;
+	if (strcmp(dir, "/DFS") == 0) {
+		if (!is_rootdir_op_valid(fpath, ip, flag_to_check, op_name)) {
+			fprintf(stderr, "Authentication for %s %s on rootdir error\n", op_name, fpath);
+			return 0;
+		}
+	}
+
 	if (is_op_valid(dir, ip, flag_to_check) != 1) {
 		fprintf(stderr, "Authentication for %s on full path %s error\n", op_name, fpath);
 		return 0;
