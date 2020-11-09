@@ -46,7 +46,7 @@ rpc:
 #	rpcgen -a -C fuse_rpc.x
 	make -f Makefile.fuse_rpc
 
-server:
+run_server:
 	sudo ./fuse_rpc_server
 #	sudo ./fuse_rpc_server 2>/dev/null
 
