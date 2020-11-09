@@ -1,15 +1,27 @@
 /*
  * All operations are executed in the order of:
  * (1) transmit request to primary server, if possible
- * (2) check rwx validility, if possible
- * (3) execute the operation
+ * (2) check rwx validility, if needed
+ * (3) lock the file or directory, if needed
+ * (4) execute the operation
+ * (5) unlock the locked resource
+ * Note: note to release resource when an error occurs
+ * 
+ * Debug message is printed along the execution, it will warn whenever an error
+ * is occurred. The message is outputted to stderr by default, Makefile has 
+ * provided 'make server' command to redirect to /dev/null.
  * 
  * About access authentication:
  * (1) file open is checked by read and write bit
  * (2) directory open is checked by execute bit
  * (3) file creation, rename and deletion need the rwx bits of parent directory
- * include operation: unlink, mkdir, rmdir, mknod, rename
+ * include operation: unlink, mkdir, rmdir, mknod, rename, symlink, link
  * (4) chown needs root, chmod needs owner, utime needs owner
+ * 
+ * Locking mechanism:
+ * (1) add shared lock for file read and directory read
+ * (2) add exclusive lock for file write
+ * (3) add exclusive lock for directory mutation, eg: rename, unlink, etc
  */
 
 #include <assert.h>
@@ -70,11 +82,41 @@
 		}                                                                                  \
 	} while (0)
 
+#define GET_PARENT_PATH(parent_path, fpath)                                            \
+	do {                                                                                 \
+		get_parent_path(parent_path, fpath);                                               \
+		fprintf(stderr, "Get directory %s from full path %s\n", parent_path, fpath);       \
+	} while (0)
+
+#define LOCK_DIRECTORY(fd, parent_path)                                                    \
+	do {                                                                                 \
+		fd = dlock(parent_path);                                                           \
+		if (fd < 0) {                                                                      \
+			result->ret = -1;                                                                \
+			return TRUE;                                                                     \
+		}                                                                                  \
+	} while (0)
+
+#define UNLOCK_DIRECTORY(fd)                                                           \
+	do {                                                                                 \
+		if (dunlock(fd) < 0) {                                                             \
+			result->ret = -1;                                                                \
+		}                                                                                  \
+	} while (0)
+
+#define CHECK_PARENT_DIRECTORY_VALID(parent_path, fpath, ip, op_name)                  \
+	do {                                                                                 \
+		if (!is_parent_dir_valid(parent_path, fpath, ip, op_name)) {                       \
+			result->ret = -EACCES;                                                           \
+			return TRUE;                                                                     \
+		}                                                                                  \
+	} while (0)
+
 // Using alias for RPC return type.
 typedef enum clnt_stat rpc_ret_t;
 
 // Connect to secondary server, use TCP by default.
-// TODO: Hard code secondary server IP.
+// FIXME: Hard code secondary server IP.
 // Note: Need to update /etc/hosts.
 static CLIENT *connect_server() {
 	static char *host = "10.148.54.200";
@@ -97,7 +139,7 @@ static int get_last_slash(char *fpath) {
 
 // File creation, rename and deletion needs directory rwx. This util extracts
 // directory from full path.
-static void get_dir(char *buf, char *fpath) {
+static void get_parent_path(char *buf, char *fpath) {
 	memset(buf, '\0', MAX_PATH_LEN);
 	int last_slash_idx = get_last_slash(fpath);
 	strncpy(buf, fpath, last_slash_idx);
@@ -118,8 +160,8 @@ static int set_owner(char *fpath, char *ip) {
 static int is_owner(char *fpath, char *ip) {
 	struct stat statbuf;
 	if (lstat(fpath, &statbuf) == -1) {
-		fprintf(stderr, "Error when checking %s stat\n", fpath);
-		return -1;
+		fprintf(stderr, "Error when checking %s stat in is_owner()\n", fpath);
+		return 0;
 	}
 	int id = atoi(ip);
 	int uid = statbuf.st_uid;
@@ -150,6 +192,37 @@ static int is_op_valid(char *fpath, char *ip, int flags) {
 		is_valid = exec_valid ? is_valid : 0;
 	}
 	return is_valid;
+}
+
+// Lock and unlock directory for file path operation, eg: creation, deletion, 
+// etc. Here, path represents parent directory.
+static int dlock(char *path) {
+	fprintf(stderr, "Lock directory for path %s\n", path);
+	DIR *dir = opendir(path);
+	if (dir == NULL) {
+		goto bad;
+	}
+	int fd = dirfd(dir);
+	if (fd == -1) {
+		goto bad;
+	}
+	if (flock(fd, LOCK_EX) != 0) {
+		goto bad;
+	}
+	return fd;
+
+bad:
+	fprintf(stderr, "Lock directory %s error\n", path);
+	return -1;
+}
+
+static int dunlock(int fd) {
+	fprintf(stderr, "Unlock directory for fd %d\n", fd);
+	if (flock(fd, LOCK_UN) != 0) {
+		fprintf(stderr, "Unlock directory with fd %d error\n", fd);
+		return -1;
+	}
+	return 0;
 }
 
 // Translate the absolute path from client side to /DFS/path on server side.
@@ -185,17 +258,14 @@ static int is_rootdir_op_valid(char *fpath, char *ip, int flag_to_check, char *o
 
 // Check parent directory validility, op includes unlink, mkdir, rmdir, etc. 
 // Parent directory should have the wx bit set.
-static int is_parent_dir_valid(char *fpath, char *ip, char *op_name) {
+static int is_parent_dir_valid(char *parent_path, char *fpath, char *ip, char *op_name) {
 	fprintf(stderr, "Checking parent directory validility\n");
-	char dir[MAX_PATH_LEN];
-	get_dir(dir, fpath);
-	fprintf(stderr, "Get directory %s from full path %s\n", dir, fpath);
 
 	// Several operations depends on directory ACL. Corner case: checked directory
 	// is the root directory /DFS, which is pre-set to have full ACL, should check
 	// file owner and corresponding ACL.
 	int flag_to_check = R_REQ | W_REQ | X_REQ;
-	if (strcmp(dir, "/DFS") == 0) {
+	if (strcmp(parent_path, "/DFS") == 0) {
 		if (!is_rootdir_op_valid(fpath, ip, flag_to_check, op_name)) {
 			fprintf(stderr, "Authentication for %s %s on rootdir error\n", op_name, fpath);
 			return 0;
@@ -203,7 +273,7 @@ static int is_parent_dir_valid(char *fpath, char *ip, char *op_name) {
 		return 1;
 	}
 
-	if (is_op_valid(dir, ip, flag_to_check) != 1) {
+	if (is_op_valid(parent_path, ip, flag_to_check) != 1) {
 		fprintf(stderr, "Authentication for %s on full path %s error\n", op_name, fpath);
 		return 0;
 	}
@@ -282,7 +352,7 @@ bb_access_6_svc(access_arg *argp, access_ret *result, struct svc_req *rqstp)
 	char fpath[MAX_PATH_LEN];
 	translate_abspath(fpath, path);
 	fprintf(stderr, "Access for path = %s, with mask = %d\n", fpath, mask);
-    
+
 	result->ret = access(fpath, mask);
 	return TRUE;
 }
@@ -298,22 +368,16 @@ bb_mkdir_6_svc(mkdir_arg *argp, mkdir_ret *result, struct svc_req *rqstp)
 	translate_abspath(fpath, path);
 	fprintf(stderr, "Make directory for %s with mode %d\n", fpath, mode);
 
-	if (!is_parent_dir_valid(fpath, ip, "mkdir")) {
-		result->ret = -EACCES;
-		return TRUE;
-	}
-
-	int syscall_ret = mkdir(fpath, mode);
-	if (syscall_ret < 0) {
+	char parent_path[MAX_PATH_LEN];
+	GET_PARENT_PATH(parent_path, fpath);
+	CHECK_PARENT_DIRECTORY_VALID(parent_path, fpath, ip, "mkdir");
+	int fd = -1;
+	LOCK_DIRECTORY(fd, parent_path);
+	result->ret = mkdir(fpath, mode);
+	if (result->ret < 0) {
 		fprintf(stderr, "make directory for %s with mode %d error\n", fpath, mode);
-		result->ret = -1;
-		return TRUE;
 	}
-
-	result->ret = 0;
-	if (set_owner(fpath, ip) != 0) {
-		result->ret = -1;
-	}
+	UNLOCK_DIRECTORY(fd);
 	return TRUE;
 }
 
@@ -327,12 +391,16 @@ bb_rmdir_6_svc(rmdir_arg *argp, rmdir_ret *result, struct svc_req *rqstp)
 	translate_abspath(fpath, path);
 	fprintf(stderr, "Remove directory for %s\n", fpath);
 
-	if (!is_parent_dir_valid(fpath, ip, "rmdir")) {
-		result->ret = -EACCES;
-		return TRUE;
-	}
-
+	char parent_path[MAX_PATH_LEN];
+	GET_PARENT_PATH(parent_path, fpath);
+	CHECK_PARENT_DIRECTORY_VALID(parent_path, fpath, ip, "rmdir");
+	int fd = -1;
+	LOCK_DIRECTORY(fd, parent_path);
 	result->ret = rmdir(fpath);
+	if (result->ret < 0) {
+		fprintf(stderr, "remove directory for %s error\n", fpath);
+	}
+	UNLOCK_DIRECTORY(fd);
 	return TRUE;
 }
 
@@ -374,6 +442,7 @@ bb_readdir_6_svc(readdir_arg *argp, readdir_ret *result, struct svc_req *rqstp)
 	flock(fd, LOCK_SH);
 	DIR *dp = fdopendir(fd);
 	if (dp == NULL) {
+		flock(fd, LOCK_UN);
 		fprintf(stderr, "opendir of fd %d error\n", fd);
 		result->ret = -errno;
 		return TRUE;
@@ -433,16 +502,28 @@ bb_rename_6_svc(rename_arg *argp, rename_ret *result, struct svc_req *rqstp)
 	char fnewpath[MAX_PATH_LEN];
 	translate_abspath(fnewpath, newpath);
 
-	if (!is_parent_dir_valid(fpath, ip, "rename") || !is_parent_dir_valid(fnewpath, ip, "rename")) {
-		result->ret = -EACCES;
-		return TRUE;
-	}
+	char parent_path[MAX_PATH_LEN];
+	GET_PARENT_PATH(parent_path, fpath);
+	CHECK_PARENT_DIRECTORY_VALID(parent_path, fpath, ip, "rename");
+	char new_parent_path[MAX_PATH_LEN];
+	GET_PARENT_PATH(new_parent_path, fnewpath);
+	CHECK_PARENT_DIRECTORY_VALID(new_parent_path, fnewpath, ip, "rename");
+	int parent_fd = -1;
+	LOCK_DIRECTORY(parent_fd, parent_path);
+	int new_parent_fd = -1;
+	LOCK_DIRECTORY(new_parent_fd, new_parent_path);
 
 	fprintf(stderr, "Rename file from %s to %s\n", fpath, fnewpath);
 	result->ret = rename(fpath, fnewpath);
+	if (result->ret < 0) {
+		fprintf(stderr, "Rename file from %s to %s error\n", fpath, fnewpath);
+	}
+	UNLOCK_DIRECTORY(parent_fd);
+	UNLOCK_DIRECTORY(new_parent_fd);
 	return TRUE;
 }
 
+// TODO: symlink requires flock
 bool_t
 bb_symlink_6_svc(symlink_arg *argp, symlink_ret *result, struct svc_req *rqstp)
 {
@@ -454,21 +535,18 @@ bb_symlink_6_svc(symlink_arg *argp, symlink_ret *result, struct svc_req *rqstp)
 	translate_abspath(flink, link);
 	fprintf(stderr, "Create symlink target = %s, original path = %s\n", flink, path);
 	
-	if (!is_parent_dir_valid(flink, ip, "symlink")) {
-		result->ret = -EACCES;
-		return TRUE;
-	}
+	char link_parent_path[MAX_PATH_LEN];
+	GET_PARENT_PATH(link_parent_path, flink);
+	CHECK_PARENT_DIRECTORY_VALID(link_parent_path, flink, ip, "symlink");
 
-	int syscall_ret = symlink(path, flink);
-	if (syscall_ret == -1) {
+	result->ret = symlink(path, flink);
+	if (result->ret == -1) {
 		fprintf(stderr, "symlink error for creating link %s to file %s\n", flink, path);
-		result->ret = -errno;
-		return TRUE;
 	}
-	result->ret = 0;
 	return TRUE;
 }
 
+// TODO: link requires flock
 bool_t
 bb_link_6_svc(link_arg *argp, link_ret *result, struct svc_req *rqstp)
 {
@@ -482,18 +560,17 @@ bb_link_6_svc(link_arg *argp, link_ret *result, struct svc_req *rqstp)
 	translate_abspath(fnewpath, newpath);
 	fprintf(stderr, "Create hard link source = %s, new path = %s\n", fpath, fnewpath);
 	
-	if (!is_parent_dir_valid(fpath, ip, "link")) {
-		result->ret = -EACCES;
-		return TRUE;
-	}
+	char parent_path[MAX_PATH_LEN];
+	GET_PARENT_PATH(parent_path, fpath);
+	CHECK_PARENT_DIRECTORY_VALID(parent_path, fpath, ip, "link");
+	char new_parent_path[MAX_PATH_LEN];
+	GET_PARENT_PATH(new_parent_path, fnewpath);
+	CHECK_PARENT_DIRECTORY_VALID(new_parent_path, fnewpath, ip, "link");
 
-	int syscall_ret = link(fpath, fnewpath);
-	if (syscall_ret == -1) {
+	result->ret = link(fpath, fnewpath);
+	if (result->ret == -1) {
 		fprintf(stderr, "hard link creation error for creating link %s to file %s\n", fnewpath, fpath);
-		result->ret = -errno;
-		return TRUE;
 	}
-	result->ret = 0;
 	return TRUE;
 }
 
@@ -535,10 +612,11 @@ bb_mknod_6_svc(mknod_arg *argp, mknod_ret *result, struct svc_req *rqstp)
 	int dev = argp->dev;
 	fprintf(stderr, "Mknod for file %s with mode %d and dev %d\n", fpath, mode, dev);
 
-	if (!is_parent_dir_valid(fpath, ip, "mknod")) {
-		result->ret = -EACCES;
-		return TRUE;
-	}
+	char parent_path[MAX_PATH_LEN];
+	GET_PARENT_PATH(parent_path, fpath);
+	CHECK_PARENT_DIRECTORY_VALID(parent_path, fpath, ip, "mknod");
+	int fd = -1;
+	LOCK_DIRECTORY(fd, parent_path);
 	
 	int func_ret = -1;
 
@@ -546,6 +624,7 @@ bb_mknod_6_svc(mknod_arg *argp, mknod_ret *result, struct svc_req *rqstp)
 	if (S_ISREG(mode)) {
 		func_ret = open(fpath, O_CREAT | O_EXCL | O_WRONLY, mode);
 		if (func_ret < 0) {
+			UNLOCK_DIRECTORY(fd);
 			fprintf(stderr, "mknod for regular file %s with mode %d with errno %d\n", fpath, mode, -errno);
 			result->ret = -1;
 			return TRUE;
@@ -558,6 +637,7 @@ bb_mknod_6_svc(mknod_arg *argp, mknod_ret *result, struct svc_req *rqstp)
 	else if (S_ISFIFO(mode)) {
 		func_ret = mkfifo(fpath, mode);
 		if (func_ret < 0) {
+			UNLOCK_DIRECTORY(fd);
 			fprintf(stderr, "mknod for fifo file %s with mode %d with errno %d\n", fpath, mode, -errno);
 			result->ret = -1;
 			return TRUE;
@@ -568,16 +648,17 @@ bb_mknod_6_svc(mknod_arg *argp, mknod_ret *result, struct svc_req *rqstp)
 	else {
 		func_ret = mknod(fpath, mode, dev);
 		if (func_ret < 0) {
+			UNLOCK_DIRECTORY(fd);
 			fprintf(stderr, "mknod for device file %s with mode %d device id %d with errno %d\n", fpath, mode, dev, -errno);
 			result->ret = -1;
 			return TRUE;
 		}
 	}
-
 	result->ret = 0;
 	if (set_owner(fpath, ip) < 0) {
 		result->ret = -1;
 	}
+	UNLOCK_DIRECTORY(fd);
 	return TRUE;
 }
 
@@ -613,12 +694,13 @@ bb_unlink_6_svc(unlink_arg *argp, unlink_ret *result, struct svc_req *rqstp)
 	translate_abspath(fpath, path);
 	fprintf(stderr, "Unlink file for %s\n", fpath);
 
-	if (!is_parent_dir_valid(fpath, ip, "unlink")) {
-		result->ret = -EACCES;
-		return TRUE;
-	}
-
+	char parent_path[MAX_PATH_LEN];
+	GET_PARENT_PATH(parent_path, fpath);
+	CHECK_PARENT_DIRECTORY_VALID(parent_path, fpath, ip, "unlink");
+	int fd = -1;
+	LOCK_DIRECTORY(fd, parent_path);
 	result->ret = unlink(fpath);
+	UNLOCK_DIRECTORY(fd);
 	return TRUE;
 }
 
@@ -643,14 +725,10 @@ bb_utime_6_svc(utime_arg *argp, utime_ret *result, struct svc_req *rqstp)
 	struct utimbuf ubuf;
 	ubuf.actime = actime;
 	ubuf.modtime = modtime;
-	int syscall_ret = utime(fpath, &ubuf);
-	if (syscall_ret < 0) {
+	result->ret = utime(fpath, &ubuf);
+	if (result->ret < 0) {
 		fprintf(stderr, "utime %s with access time %ld and modification time %ld error with errno %d\n", fpath, actime, modtime, errno);
-		result->ret = -errno;
-		return TRUE;
 	}
-	
-	result->ret = 0;
 	return TRUE;
 }
 
@@ -671,14 +749,10 @@ bb_chmod_6_svc(chmod_arg *argp, chmod_ret *result, struct svc_req *rqstp)
 		return TRUE;
 	}
 
-	int syscall_ret = chmod(fpath, mode);
-	if (syscall_ret < 0) {
+	result->ret = chmod(fpath, mode);
+	if (result->ret < 0) {
 		fprintf(stderr, "change file to %s mode %d error with errno %d\n", fpath, mode, errno);
-		result->ret = -errno;
-		return TRUE;
 	}
-
-	result->ret = 0;
 	return TRUE;
 }
 
@@ -686,6 +760,7 @@ bb_chmod_6_svc(chmod_arg *argp, chmod_ret *result, struct svc_req *rqstp)
 bool_t
 bb_chown_6_svc(chown_arg *argp, chown_ret *result, struct svc_req *rqstp)
 {
+	TRANSMIT_TO_SECONDATY(chown_arg, chown_ret, bb_chown_6);
 	char *ip = argp->ip;
 	char *path = argp->path;
 	char fpath[MAX_PATH_LEN];
@@ -693,8 +768,7 @@ bb_chown_6_svc(chown_arg *argp, chown_ret *result, struct svc_req *rqstp)
 	unsigned int uid = argp->uid;
 	unsigned int gid = argp->gid;
 	fprintf(stderr, "Change file %s to uid %u, gid %u\n", fpath, uid, gid);
-	TRANSMIT_TO_SECONDATY(chown_arg, chown_ret, bb_chown_6);
-
+	
 	int syscall_ret = chown(fpath, uid, gid);
 	if (syscall_ret < 0) {
 		fprintf(stderr, "change file to %s to uid %u, gid %u with errno %d\n", fpath, uid, gid, errno);
@@ -717,16 +791,15 @@ bb_open_6_svc(open_arg *argp, open_ret *result, struct svc_req *rqstp)
 	fprintf(stderr, "Open file for %s with flag %d\n", fpath, flags);
 
 	/*
-	 * O_RDONLY = 0
-	 * O_WRONLY = 1
-	 * O_RDWR = 2
+	 * O_RDONLY  = 0
+	 * O_WRONLY  = 1
+	 * O_RDWR    = 2
 	 * O_ACCMODE = 3
 	 * Access mode should be check via numerical comparison, rather than bit checking.
 	 */
 	int flag_to_check = 0;
 	int acc_mode = flags & O_ACCMODE;
 	if (acc_mode == O_RDONLY || acc_mode == O_RDWR) {
-		fprintf(stderr, "read bit set\n");
 		flag_to_check |= R_REQ;
 	}
 	if (acc_mode == O_WRONLY || acc_mode == O_RDWR) {
@@ -782,9 +855,9 @@ bb_read_6_svc(read_arg *argp, read_ret *result, struct svc_req *rqstp)
 	flock(fd, LOCK_UN);
 
 	if (read_len == -1) {
-			fprintf(stderr, "read file with fd = %d, with size = %u, offset = %u error with errno %d\n", fd, size, offset, errno);
-			result->ret = -errno;
-			return TRUE;
+		fprintf(stderr, "read file with fd = %d, with size = %u, offset = %u error with errno %d\n", fd, size, offset, errno);
+		result->ret = -errno;
+		return TRUE;
 	}
 
 	// read_len could be 0, which means server has reached EOF.
@@ -794,15 +867,18 @@ bb_read_6_svc(read_arg *argp, read_ret *result, struct svc_req *rqstp)
 	return TRUE;
 }
 
+// Primary server used fd directly, which gets from open previously. Secondary
+// server has to open the file and get fd.
+// secondary server: !is_master && !is_degraded
 bool_t
 bb_write_6_svc(write_arg *argp, write_ret *result, struct svc_req *rqstp)
 {
+	TRANSMIT_TO_SECONDATY(write_arg, write_ret, bb_write_6);
 	int fd = argp->fd;
 	unsigned int size = argp->size;
 	unsigned int offset = argp->offset;
 	char *buf = argp->buffer;
 	fprintf(stderr, "Write file with fd = %d, with size = %u, offset = %u\n", fd, size, offset);
-	TRANSMIT_TO_SECONDATY(write_arg, write_ret, bb_write_6);
 
 	// For secondary server, open file to get its fd.
 	int is_master = argp->server_info.is_master; 
