@@ -88,7 +88,7 @@
 		fprintf(stderr, "Get directory %s from full path %s\n", parent_path, fpath);       \
 	} while (0)
 
-#define LOCK_DIRECTORY(fd, parent_path)                                                    \
+#define LOCK_DIRECTORY(fd, parent_path)                                                \
 	do {                                                                                 \
 		fd = dlock(parent_path);                                                           \
 		if (fd < 0) {                                                                      \
@@ -378,6 +378,11 @@ bb_mkdir_6_svc(mkdir_arg *argp, mkdir_ret *result, struct svc_req *rqstp)
 		fprintf(stderr, "make directory for %s with mode %d error\n", fpath, mode);
 	}
 	UNLOCK_DIRECTORY(fd);
+	if (result->ret >= 0) {
+		if (set_owner(path, ip) < 0) {
+			result->ret = -1;
+		}
+	}
 	return TRUE;
 }
 
@@ -543,6 +548,11 @@ bb_symlink_6_svc(symlink_arg *argp, symlink_ret *result, struct svc_req *rqstp)
 	if (result->ret == -1) {
 		fprintf(stderr, "symlink error for creating link %s to file %s\n", flink, path);
 	}
+	if (result->ret >= 0) {
+		if (set_owner(flink, ip) < 0) {
+			result->ret = -1;
+		}
+	}
 	return TRUE;
 }
 
@@ -570,6 +580,11 @@ bb_link_6_svc(link_arg *argp, link_ret *result, struct svc_req *rqstp)
 	result->ret = link(fpath, fnewpath);
 	if (result->ret == -1) {
 		fprintf(stderr, "hard link creation error for creating link %s to file %s\n", fnewpath, fpath);
+	}
+	if (result->ret >= 0) {
+		if (set_owner(fnewpath, ip) < 0) {
+			result->ret = -1;
+		}
 	}
 	return TRUE;
 }
