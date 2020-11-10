@@ -244,7 +244,7 @@ static void translate_abspath(char *buf, char *path) {
 }
 
 // Check whether operation valid on rootdir, which requires full ACL(rwx).
-static int is_rootdir_op_valid(char *fpath, char *ip, int flag_to_check, char *op_name) {
+static int is_rootdir_op_valid_to_delete(char *fpath, char *ip) {
 	struct stat statbuf;
 	if (lstat(fpath, &statbuf) == -1) {
 		fprintf(stderr, "Error when checking %s stat\n", fpath);
@@ -253,10 +253,10 @@ static int is_rootdir_op_valid(char *fpath, char *ip, int flag_to_check, char *o
 	int id = atoi(ip);
 	int uid = statbuf.st_uid;
 	int mode = statbuf.st_mode;
-	return id == uid && (mode & S_IRUSR) && (mode & S_IWUSR) && (mode & S_IXUSR);
+	return id == uid;
 }
 
-// Check parent directory validility, op includes unlink, mkdir, rmdir, etc. 
+// Check parent directory validility, op includes unlink, mknod, mkdir, rmdir, etc. 
 // Parent directory should have the wx bit set.
 static int is_parent_dir_valid(char *parent_path, char *fpath, char *ip, char *op_name) {
 	fprintf(stderr, "Checking parent directory validility\n");
@@ -264,15 +264,20 @@ static int is_parent_dir_valid(char *parent_path, char *fpath, char *ip, char *o
 	// Several operations depends on directory ACL. Corner case: checked directory
 	// is the root directory /DFS, which is pre-set to have full ACL, should check
 	// file owner and corresponding ACL.
+	// For deletion operation(rmdir, unlink), check whether file owner is IP.
+	// For creation operation(mkdir, mknod, symlink, link), no need to check.
 	int flag_to_check = R_REQ | W_REQ | X_REQ;
 	if (strcmp(parent_path, "/DFS") == 0) {
-		if (!is_rootdir_op_valid(fpath, ip, flag_to_check, op_name)) {
-			fprintf(stderr, "Authentication for %s %s on rootdir error\n", op_name, fpath);
-			return 0;
+		if (strcmp(op_name, "rmdir") == 0 || strcmp(op_name, "unlink") == 0) {
+			if (!is_rootdir_op_valid_to_delete(fpath, ip)) {
+				fprintf(stderr, "Authentication for %s %s on rootdir error\n", op_name, fpath);
+				return 0;
+			}
 		}
 		return 1;
 	}
 
+	// Parent path is not rootdir /DFS, simply check parent directory.
 	if (is_op_valid(parent_path, ip, flag_to_check) != 1) {
 		fprintf(stderr, "Authentication for %s on full path %s error\n", op_name, fpath);
 		return 0;
@@ -379,7 +384,7 @@ bb_mkdir_6_svc(mkdir_arg *argp, mkdir_ret *result, struct svc_req *rqstp)
 	}
 	UNLOCK_DIRECTORY(fd);
 	if (result->ret >= 0) {
-		if (set_owner(path, ip) < 0) {
+		if (set_owner(fpath, ip) < 0) {
 			result->ret = -1;
 		}
 	}
