@@ -156,6 +156,16 @@ static int set_owner(char *fpath, char *ip) {
 	return 0;
 }
 
+static int set_softlink_owner(char *flink, char *ip) {
+	fprintf(stderr, "Set owner for %s with owner %s\n", flink, ip);
+	int id = atoi(ip);
+	if (lchown(flink, id, id) != 0) {
+		fprintf(stderr, "Chown for %s for user %d error\n", flink, id);
+		return -1;
+	}
+	return 0;
+}
+
 // Whether current user is the owner.
 static int is_owner(char *fpath, char *ip) {
 	struct stat statbuf;
@@ -554,7 +564,7 @@ bb_symlink_6_svc(symlink_arg *argp, symlink_ret *result, struct svc_req *rqstp)
 		fprintf(stderr, "symlink error for creating link %s to file %s\n", flink, path);
 	}
 	if (result->ret >= 0) {
-		if (set_owner(flink, ip) < 0) {
+		if (set_softlink_owner(flink, ip) < 0) {
 			result->ret = -1;
 		}
 	}
