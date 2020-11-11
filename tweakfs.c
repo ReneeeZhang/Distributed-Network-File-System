@@ -54,6 +54,28 @@
 // Using alias for RPC return type.
 typedef enum clnt_stat rpc_ret_t;
 
+// Connect server, every time try primary first, then secondary if fails. Use
+// UDP as default.
+#define CONNECT_SERVER(clnt)                                                   \
+    do {                                                                       \
+        clnt = clnt_create (host1, COMPUTE, COMPUTE_VERS, "udp");              \
+        if (clnt == NULL) {                                                    \
+            log_msg("Create RPC connection with primary server error\n");      \
+            clnt_pcreateerror(host1);                                          \
+        } else {                                                               \
+            is_degraded = IS_NOT_DEGRADED;                                     \
+        }                                                                      \
+        log_msg("Primary server down, trying to connect secondary server.\n"); \
+        clnt = clnt_create(host2, COMPUTE, COMPUTE_VERS, "tcp");               \
+        if (clnt == NULL) {                                                    \
+            log_msg("Create RPC connection with secondary server error\n");    \
+            clnt_pcreateerror (host2);                                         \
+            exit(1);                                                           \
+        } else {                                                               \
+            is_degraded = IS_DEGRADED;                                         \
+        }                                                                      \
+    } while (0)
+
 // Store the length of root directory, in order to transform to fullpath.
 size_t rootdir_len = 0;
 
@@ -120,33 +142,6 @@ static identity get_identity(int is_degraded) {
     return id;
 }
 
-// Connect to host, use UDP by default.
-static int connect_server(CLIENT **clnt) {
-    // If the master server is considered alive, connect.
-    // Note: client-server use TCP, while server-server use UDP.
-    *clnt = clnt_create (host1, COMPUTE, COMPUTE_VERS, "tcp");
-    if (*clnt == NULL) {
-        log_msg("Create RPC connection with primary server error\n");
-        clnt_pcreateerror(host1);
-    } else {
-        return IS_NOT_DEGRADED;
-    }
-
-    // Otherwise, connect to secondary server.
-    log_msg("Primary server down, trying to connect secondary server.\n");
-    *clnt = clnt_create(host2, COMPUTE, COMPUTE_VERS, "tcp");
-    if (*clnt == NULL) {
-        log_msg("Create RPC connection with secondary server error\n");
-        clnt_pcreateerror (host2);
-        exit(1);
-    } else {
-        return IS_DEGRADED;
-    }
-
-    assert(0);
-    return -1;
-}
-
 //  All the paths I see are relative to the root of the mounted
 //  filesystem.  In order to get to the underlying filesystem, I need to
 //  have the mountpoint.  I'll save it away early on in main(), and then
@@ -177,7 +172,8 @@ static void init_rootdir() {
     log_msg("init_rootdir called\n");
 
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     init_ret ret;
     init_arg arg;
     arg.server_info = get_identity(is_degraded);
@@ -226,7 +222,8 @@ int bb_getattr(const char *path, struct stat *statbuf)
 
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     getattr_ret ret;
     getattr_arg arg;
     char fpath[PATH_MAX];
@@ -283,7 +280,8 @@ int bb_readlink(const char *path, char *buf, size_t size)
 
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     readlink_ret ret;
     readlink_arg arg;
     char fpath[PATH_MAX];
@@ -321,7 +319,8 @@ int bb_mknod(const char *path, mode_t mode, dev_t dev)
 
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     mknod_ret ret;
     mknod_arg arg;
     char fpath[PATH_MAX];
@@ -352,7 +351,8 @@ int bb_mkdir(const char *path, mode_t mode)
 
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     mkdir_ret ret;
     mkdir_arg arg;
     char fpath[PATH_MAX];
@@ -382,7 +382,8 @@ int bb_unlink(const char *path)
 
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     unlink_ret ret;
     unlink_arg arg;
     char fpath[PATH_MAX];
@@ -411,7 +412,8 @@ int bb_rmdir(const char *path)
     
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     rmdir_ret ret;
     rmdir_arg arg;
     char fpath[PATH_MAX];
@@ -446,7 +448,8 @@ int bb_symlink(const char *path, const char *link)
     // Get attribute via RPC.
     // Note here: file path shouldn't use absolute path, while link path should.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     symlink_ret ret;
     symlink_arg arg;
     char fpath[PATH_MAX];
@@ -479,7 +482,8 @@ int bb_rename(const char *path, const char *newpath)
 
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     rename_ret ret;
     rename_arg arg;
     char fpath[PATH_MAX];
@@ -511,7 +515,8 @@ int bb_link(const char *path, const char *newpath)
 
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     link_ret ret;
     link_arg arg;
     char fpath[PATH_MAX];
@@ -544,7 +549,8 @@ int bb_chmod(const char *path, mode_t mode)
 
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     chmod_ret ret;
     chmod_arg arg;
     char fpath[PATH_MAX];
@@ -572,10 +578,15 @@ int bb_chown(const char *path, uid_t uid, gid_t gid)
 {   
     log_msg("\nbb_chown(path=\"%s\", uid=%d, gid=%d)\n",
 	    path, uid, gid);
-    
+    log_msg("chown is not allow on distributed file system\n");
+
+    errno = -EACCES;
+    return -1;
+/*
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     chown_ret ret;
     chown_arg arg;
     char fpath[PATH_MAX];
@@ -597,6 +608,7 @@ int bb_chown(const char *path, uid_t uid, gid_t gid)
         log_msg("Chown for file %s to uid %ld gid %ld error\n", path, uid, gid);
     }
     return ret.ret;
+*/
 }
 
 /** Change the size of a file */
@@ -607,7 +619,8 @@ int bb_truncate(const char *path, off_t newsize)
     
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     truncate_ret ret;
     truncate_arg arg;
     char fpath[PATH_MAX];
@@ -638,7 +651,8 @@ int bb_utime(const char *path, struct utimbuf *ubuf)
 
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     utime_ret ret;
     utime_arg arg;
     char fpath[PATH_MAX];
@@ -679,7 +693,8 @@ int bb_open(const char *path, struct fuse_file_info *fi)
 
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     open_ret ret;
     open_arg arg;
     char fpath[PATH_MAX];
@@ -727,7 +742,8 @@ int bb_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     read_ret ret;
     read_arg arg;
     arg.ip = ip;
@@ -786,7 +802,8 @@ int bb_write(const char *path, const char *buf, size_t size, off_t offset,
     
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     write_ret ret;
     write_arg arg;
     arg.ip = ip;
@@ -911,7 +928,8 @@ int bb_release(const char *path, struct fuse_file_info *fi)
     
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     release_ret ret;
     release_arg arg;
     arg.ip = ip;
@@ -968,7 +986,8 @@ int bb_opendir(const char *path, struct fuse_file_info *fi)
 
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     opendir_ret ret;
     opendir_arg arg;
     char fpath[PATH_MAX];
@@ -1023,7 +1042,8 @@ int bb_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset
 
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     readdir_ret ret;
     readdir_arg arg;
     arg.fd = fi->fh;
@@ -1065,7 +1085,8 @@ int bb_releasedir(const char *path, struct fuse_file_info *fi)
     
     // Get attribute via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     releasedir_ret ret;
     releasedir_arg arg;
     arg.fd = fi->fh;
@@ -1159,7 +1180,8 @@ int bb_access(const char *path, int mask)
 {
     // Check permission via RPC.
     CLIENT *clnt = NULL;
-    int is_degraded = connect_server(&clnt);
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER(clnt);
     access_ret ret;
     access_arg arg;
     char fpath[PATH_MAX];
@@ -1258,7 +1280,7 @@ struct fuse_operations bb_oper = {
   .read = bb_read,
   .write = bb_write,
   /** Just a placeholder, don't set */ // huh???
-  .statfs = bb_statfs,
+  .statfs = NULL,
   .flush = bb_flush,
   .release = bb_release,
   .fsync = NULL,
