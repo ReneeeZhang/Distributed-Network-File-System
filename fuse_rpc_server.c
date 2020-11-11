@@ -535,7 +535,7 @@ bb_rename_6_svc(rename_arg *argp, rename_ret *result, struct svc_req *rqstp)
 	// If both file are of the same parent directory, lock only one to avoid 
 	// deadlock.
 	int new_parent_fd = -1;
-	if (strcmp(parent_path, new_parent_path) == 0) {
+	if (strcmp(parent_path, new_parent_path) != 0) {
 		LOCK_DIRECTORY(new_parent_fd, new_parent_path);
 	}
 	
@@ -545,7 +545,7 @@ bb_rename_6_svc(rename_arg *argp, rename_ret *result, struct svc_req *rqstp)
 		fprintf(stderr, "Rename file from %s to %s error\n", fpath, fnewpath);
 	}
 	UNLOCK_DIRECTORY(parent_fd);
-	if (strcmp(parent_path, new_parent_path) == 0) {
+	if (strcmp(parent_path, new_parent_path) != 0) {
 		UNLOCK_DIRECTORY(new_parent_fd);
 	}
 	return TRUE;
