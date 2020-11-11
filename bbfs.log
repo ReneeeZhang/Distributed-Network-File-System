@@ -20,312 +20,626 @@ bb_init()
     rootdir = /home/hj110/ece-566-distributed-network-file-system/rootdir
     umask = 00000
 init_rootdir called
+Primary server down, trying to connect secondary server.
 ip = 9962309
 rootdir = /home/hj110/ece-566-distributed-network-file-system/rootdir
 
 bb_getattr(path="/")
-
-bb_getattr(path="/.git")
-Get attribute error with errno 2
+Primary server down, trying to connect secondary server.
 
 bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+Primary server down, trying to connect secondary server.
 
-bb_getattr(path="/.git")
-Get attribute error with errno 2
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
 
-bb_opendir(path="/", fi=0xfefffb50)
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
 
-bb_readdir(path="/", buf=0x059014f0, filler=0x04e45d00, offset=0, fi=0xfefffb50)
-Ready to fill in dirent .
+bb_readdir(path="/", buf=0x05915450, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
 Ready to fill in dirent ..
-Ready to fill in dirent haha.txt
+Ready to fill in dirent .
 
-bb_getattr(path="/haha.txt")
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
 
 bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x059473a0, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ..
+Ready to fill in dirent .
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/yesy")
+Primary server down, trying to connect secondary server.
+Get attribute error with errno 2
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/ytest")
+Primary server down, trying to connect secondary server.
+Get attribute error with errno 2
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_mkdir(path="/ytest", mode=0775)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/ytest")
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x059debd0, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x059ea980, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+
+bb_readdir(path="/", buf=0x059f7a00, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+
+bb_getattr(path="/ppp")
+Primary server down, trying to connect secondary server.
+Get attribute error with errno 2
+
+bb_mkdir(path="/ppp", mode=0775)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/ppp")
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x05a5abf0, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x05ad1940, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x05af7b90, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/ytest")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/ppp")
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/ppp")
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x05b2bc40, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_getattr(path="/ytest")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/ppp")
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x05b82560, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/ytest")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x05c0ad20, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x05c24d70, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x05c33180, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x05c8dd10, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/ppp")
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x062e8b90, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x06318980, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x0636baf0, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x0639b4a0, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x063cae50, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x063fa800, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x0642a270, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x0644de60, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_readdir(path="/", buf=0x0647d3d0, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x064acd80, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_readdir(path="/", buf=0x064f49b0, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x06518220, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x06548010, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/.git")
+Primary server down, trying to connect secondary server.
+Get attribute error with errno 2
+
+bb_getattr(path="/.git")
+Primary server down, trying to connect secondary server.
+Get attribute error with errno 2
+
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/", buf=0x065c13e0, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
+Ready to fill in dirent ..
+Ready to fill in dirent .
+Ready to fill in dirent ppp
+
+bb_getattr(path="/ytest")
+Primary server down, trying to connect secondary server.
 
 bb_getattr(path="/.gitignore")
+Primary server down, trying to connect secondary server.
 Get attribute error with errno 2
 
-bb_releasedir(path="/", fi=0xfefffb60)
-
-bb_getattr(path="/")
-
-bb_getattr(path="/.git")
+bb_getattr(path="/ytest/.git")
+Primary server down, trying to connect secondary server.
 Get attribute error with errno 2
 
-bb_getattr(path="/")
+bb_getattr(path="/ytest")
+Primary server down, trying to connect secondary server.
 
-bb_getattr(path="/.git")
+bb_getattr(path="/ytest/.git")
+Primary server down, trying to connect secondary server.
 Get attribute error with errno 2
 
-bb_opendir(path="/", fi=0xfefffb50)
+bb_opendir(path="/ytest", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
 
-bb_readdir(path="/", buf=0x05943520, filler=0x04e45d00, offset=0, fi=0xfefffb50)
-Ready to fill in dirent .
+bb_getattr(path="/ytest")
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/ytest", buf=0x06624c10, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
 Ready to fill in dirent ..
-Ready to fill in dirent haha.txt
+Ready to fill in dirent .
 
-bb_getattr(path="/haha.txt")
+bb_releasedir(path="/ytest", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
 
-bb_getattr(path="/")
+bb_getattr(path="/ppp")
+Primary server down, trying to connect secondary server.
 
-bb_getattr(path="/.gitignore")
+bb_getattr(path="/ppp/.git")
+Primary server down, trying to connect secondary server.
 Get attribute error with errno 2
 
-bb_releasedir(path="/", fi=0xfefffb60)
+bb_getattr(path="/ppp")
+Primary server down, trying to connect secondary server.
 
-bb_getattr(path="/")
+bb_getattr(path="/ppp/.git")
+Primary server down, trying to connect secondary server.
+Get attribute error with errno 2
+
+bb_opendir(path="/ppp", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
+bb_getattr(path="/ppp")
+Primary server down, trying to connect secondary server.
+
+bb_readdir(path="/ppp", buf=0x0668bd70, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ..
+Ready to fill in dirent .
+
+bb_releasedir(path="/ppp", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
+
+bb_releasedir(path="/", fi=0xfefffb50)
+Primary server down, trying to connect secondary server.
 
 bb_getattr(path="/.git")
-Get attribute error with errno 2
-
-bb_getattr(path="/")
-
-bb_getattr(path="/.git")
-Get attribute error with errno 2
-
-bb_opendir(path="/", fi=0xfefffb50)
-
-bb_readdir(path="/", buf=0x0597f5d0, filler=0x04e45d00, offset=0, fi=0xfefffb50)
-Ready to fill in dirent .
-Ready to fill in dirent ..
-Ready to fill in dirent haha.txt
-
-bb_getattr(path="/haha.txt")
-
-bb_getattr(path="/")
-
-bb_getattr(path="/.gitignore")
-Get attribute error with errno 2
-
-bb_releasedir(path="/", fi=0xfefffb60)
-
-bb_getattr(path="/")
-
-bb_getattr(path="/hello.txt")
-Get attribute error with errno 2
-
-bb_mknod(path="/hello.txt", mode=0100664, dev=0)
-
-bb_getattr(path="/hello.txt")
-
-bb_open(path"/hello.txt", fi=0xfefffc10)
-
-bb_getattr(path="/")
-
-bb_flush(path="/hello.txt", fi=0xfefffc10)
-    fi:
-    flags = 0x00000000
-    fh_old = 0x00000005
-    writepage = 0
-    direct_io = 0
-    keep_cache = 0
-    fh = 0x0000000000000005
-    lock_owner = 0xa5ee88e58ec8b419
-
-bb_write(path="/hello.txt", buf=0x058c0140, size=12, offset=0, fi=0xfefffc80)
-Write for fd 5 has finished
-
-bb_flush(path="/hello.txt", fi=0xfefffc10)
-    fi:
-    flags = 0x00000000
-    fh_old = 0x00000005
-    writepage = 0
-    direct_io = 0
-    keep_cache = 0
-    fh = 0x0000000000000005
-    lock_owner = 0xa5ee88e58ec8b419
-
-bb_release(path="/hello.txt", fi=0xfefffc10)
-
-bb_getattr(path="/")
-
-bb_getattr(path="/")
-
-bb_opendir(path="/", fi=0xfefffb50)
-
-bb_readdir(path="/", buf=0x059df980, filler=0x04e45d00, offset=0, fi=0xfefffb50)
-Ready to fill in dirent .
-Ready to fill in dirent ..
-Ready to fill in dirent haha.txt
-Ready to fill in dirent hello.txt
-
-bb_getattr(path="/haha.txt")
-
-bb_getattr(path="/")
-
-bb_getattr(path="/hello.txt")
-
-bb_releasedir(path="/", fi=0xfefffb60)
-
-bb_getattr(path="/")
-
-bb_opendir(path="/", fi=0xfefffb50)
-
-bb_getattr(path="/")
-
-bb_getattr(path="/")
-
-bb_readdir(path="/", buf=0x05a09bb0, filler=0x04e45d00, offset=0, fi=0xfefffb50)
-Ready to fill in dirent .
-Ready to fill in dirent ..
-Ready to fill in dirent haha.txt
-Ready to fill in dirent hello.txt
-
-bb_getattr(path="/haha.txt")
-
-bb_getattr(path="/hello.txt")
-
-bb_getattr(path="/")
-
-bb_releasedir(path="/", fi=0xfefffb60)
-
-bb_getattr(path="/")
-
-bb_getattr(path="/.git")
-Get attribute error with errno 2
-
-bb_getattr(path="/")
-
-bb_getattr(path="/.git")
-Get attribute error with errno 2
-
-bb_opendir(path="/", fi=0xfefffb50)
-
-bb_readdir(path="/", buf=0x05a51b60, filler=0x04e45d00, offset=0, fi=0xfefffb50)
-Ready to fill in dirent .
-Ready to fill in dirent ..
-Ready to fill in dirent haha.txt
-Ready to fill in dirent hello.txt
-
-bb_getattr(path="/haha.txt")
-
-bb_getattr(path="/")
-
-bb_getattr(path="/.gitignore")
-Get attribute error with errno 2
-
-bb_getattr(path="/hello.txt")
-
-bb_releasedir(path="/", fi=0xfefffb60)
-
-bb_getattr(path="/")
-
-bb_opendir(path="/", fi=0xfefffb50)
-
-bb_getattr(path="/")
-
-bb_getattr(path="/")
-
-bb_readdir(path="/", buf=0x05a81d10, filler=0x04e45d00, offset=0, fi=0xfefffb50)
-Ready to fill in dirent .
-Ready to fill in dirent ..
-Ready to fill in dirent haha.txt
-Ready to fill in dirent hello.txt
-
-bb_getattr(path="/haha.txt")
-
-bb_getattr(path="/")
-
-bb_getattr(path="/hello.txt")
-
-bb_releasedir(path="/", fi=0xfefffb60)
-
-bb_getattr(path="/")
-
-bb_getattr(path="/")
-
-bb_opendir(path="/", fi=0xfefffb50)
-
-bb_readdir(path="/", buf=0x05abddc0, filler=0x04e45d00, offset=0, fi=0xfefffb50)
-Ready to fill in dirent .
-Ready to fill in dirent ..
-Ready to fill in dirent haha.txt
-Ready to fill in dirent hello.txt
-
-bb_releasedir(path="/", fi=0xfefffb60)
-
-bb_getattr(path="/haha.txt")
-
-bb_getattr(path="/hello.txt")
-
-bb_getattr(path="/")
-
-bb_getattr(path="/.git")
-Get attribute error with errno 2
-
-bb_getattr(path="/")
-
-bb_getattr(path="/.git")
-Get attribute error with errno 2
-
-bb_opendir(path="/", fi=0xfefffb50)
-
-bb_readdir(path="/", buf=0x05af3ef0, filler=0x04e45d00, offset=0, fi=0xfefffb50)
-Ready to fill in dirent .
-Ready to fill in dirent ..
-Ready to fill in dirent haha.txt
-Ready to fill in dirent hello.txt
-
-bb_getattr(path="/haha.txt")
-
-bb_getattr(path="/")
-
-bb_getattr(path="/.gitignore")
-Get attribute error with errno 2
-
-bb_getattr(path="/hello.txt")
-
-bb_releasedir(path="/", fi=0xfefffb60)
-
-bb_getattr(path="/")
-
-bb_getattr(path="/.git")
+Primary server down, trying to connect secondary server.
 Get attribute error with errno 2
 
 bb_getattr(path="/.git")
+Primary server down, trying to connect secondary server.
 Get attribute error with errno 2
 
+bb_opendir(path="/", fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+
 bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
 
-bb_opendir(path="/", fi=0xfefffb50)
+bb_getattr(path="/")
+Primary server down, trying to connect secondary server.
 
-bb_readdir(path="/", buf=0x05b35f20, filler=0x04e45d00, offset=0, fi=0xfefffb50)
-Ready to fill in dirent .
+bb_readdir(path="/", buf=0x066e4d50, filler=0x04e45d00, offset=0, fi=0xfefffb40)
+Primary server down, trying to connect secondary server.
+Ready to fill in dirent ytest
 Ready to fill in dirent ..
-Ready to fill in dirent haha.txt
-Ready to fill in dirent hello.txt
-
-bb_getattr(path="/haha.txt")
-
-bb_getattr(path="/.gitignore")
-Get attribute error with errno 2
-
-bb_getattr(path="/")
-
-bb_getattr(path="/hello.txt")
-
-bb_releasedir(path="/", fi=0xfefffb60)
-
-bb_getattr(path="/")
-
-bb_getattr(path="/")
-
-bb_opendir(path="/", fi=0xfefffb50)
-
-bb_readdir(path="/", buf=0x05b6c050, filler=0x04e45d00, offset=0, fi=0xfefffb50)
 Ready to fill in dirent .
-Ready to fill in dirent ..
-Ready to fill in dirent haha.txt
-Ready to fill in dirent hello.txt
-
-bb_releasedir(path="/", fi=0xfefffb60)
-
-bb_getattr(path="/")
-
-bb_getattr(path="/haha.txt")
-
-bb_getattr(path="/hello.txt")
+Ready to fill in dirent ppp
 
 bb_destroy(userdata=0x058959d0)

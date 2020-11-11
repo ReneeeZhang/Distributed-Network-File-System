@@ -56,24 +56,26 @@ typedef enum clnt_stat rpc_ret_t;
 
 // Connect server, every time try primary first, then secondary if fails. Use
 // UDP as default.
-#define CONNECT_SERVER(clnt)                                                   \
-    do {                                                                       \
-        clnt = clnt_create (host1, COMPUTE, COMPUTE_VERS, "udp");              \
-        if (clnt == NULL) {                                                    \
-            log_msg("Create RPC connection with primary server error\n");      \
-            clnt_pcreateerror(host1);                                          \
-        } else {                                                               \
-            is_degraded = IS_NOT_DEGRADED;                                     \
-        }                                                                      \
-        log_msg("Primary server down, trying to connect secondary server.\n"); \
-        clnt = clnt_create(host2, COMPUTE, COMPUTE_VERS, "udp");               \
-        if (clnt == NULL) {                                                    \
-            log_msg("Create RPC connection with secondary server error\n");    \
-            clnt_pcreateerror (host2);                                         \
-            exit(1);                                                           \
-        } else {                                                               \
-            is_degraded = IS_DEGRADED;                                         \
-        }                                                                      \
+#define CONNECT_SERVER(clnt)                                                       \
+    do {                                                                           \
+        clnt = clnt_create (host1, COMPUTE, COMPUTE_VERS, "udp");                  \
+        if (clnt == NULL) {                                                        \
+            log_msg("Create RPC connection with primary server error\n");          \
+            clnt_pcreateerror(host1);                                              \
+        } else {                                                                   \
+            is_degraded = IS_NOT_DEGRADED;                                         \
+        }                                                                          \
+        if (clnt == NULL) {                                                        \
+            log_msg("Primary server down, trying to connect secondary server.\n"); \
+            clnt = clnt_create(host2, COMPUTE, COMPUTE_VERS, "udp");               \
+            if (clnt == NULL) {                                                    \
+                log_msg("Create RPC connection with secondary server error\n");    \
+                clnt_pcreateerror (host2);                                         \
+                exit(1);                                                           \
+            } else {                                                               \
+                is_degraded = IS_DEGRADED;                                         \
+            }                                                                      \
+        }                                                                          \
     } while (0)
 
 // Store the length of root directory, in order to transform to fullpath.
