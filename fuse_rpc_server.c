@@ -22,6 +22,7 @@
  * (1) add shared lock for file read and directory read
  * (2) add exclusive lock for file write
  * (3) add exclusive lock for directory mutation, eg: rename, unlink, etc
+ * (4) avoid deadlock on the same directory(eg: mv /parent/file1 /parent/file2)
  */
 
 #include <assert.h>
@@ -530,16 +531,23 @@ bb_rename_6_svc(rename_arg *argp, rename_ret *result, struct svc_req *rqstp)
 	CHECK_PARENT_DIRECTORY_VALID(new_parent_path, fnewpath, ip, "rename");
 	int parent_fd = -1;
 	LOCK_DIRECTORY(parent_fd, parent_path);
+	
+	// If both file are of the same parent directory, lock only one to avoid 
+	// deadlock.
 	int new_parent_fd = -1;
-	LOCK_DIRECTORY(new_parent_fd, new_parent_path);
-
+	if (strcmp(parent_path, new_parent_path) == 0) {
+		LOCK_DIRECTORY(new_parent_fd, new_parent_path);
+	}
+	
 	fprintf(stderr, "Rename file from %s to %s\n", fpath, fnewpath);
 	result->ret = rename(fpath, fnewpath);
 	if (result->ret < 0) {
 		fprintf(stderr, "Rename file from %s to %s error\n", fpath, fnewpath);
 	}
 	UNLOCK_DIRECTORY(parent_fd);
-	UNLOCK_DIRECTORY(new_parent_fd);
+	if (strcmp(parent_path, new_parent_path) == 0) {
+		UNLOCK_DIRECTORY(new_parent_fd);
+	}
 	return TRUE;
 }
 
