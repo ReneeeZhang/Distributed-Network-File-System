@@ -43,23 +43,33 @@ Naming pattern:
 For primary server, several updating operation needs to be completed on secondary server for replication and availability, say, `write`, `mkdir`, `rmdir`, etc. It first transmit these requests to secondary server, and handle the request whatever the second one succeeds or fails. Other read-only requests will only be handled on primary server.
 4. Primary server goes through the "handle flow" of `opendir` - `readdir` - `releasedir`, `open` - `read` - `release`, so it could use the fd acquired from previous operations, while the secondary server have to rely on full path.
 5. All operations are executed in the order of:
+
 (1) transmit request to primary server, if possible
+
 (2) check rwx validility, if needed
+
 (3) lock the file or directory, if needed
+
 (4) execute the operation
+
 (5) unlock the locked resource
 6. Server stores all files under the root directory `/DFS`, and create it at the very beginning it doesn't exist. All files are considered visible by all user mounted, but other operations, like updating, removing, reading needs further authentication.
 7. About access authentication:
 (1) file open is checked by read and write bit
+
 (2) directory listing is checked by read bit, open is checked by execute bit
+
 (3) file creation, rename and deletion need the rwx bits of parent directory, related operations include operation: unlink, mkdir, rmdir, mknod, rename, symlink, link
+
 (4) chown needs root, chmod needs owner, utime needs owner
 8. Locking mechanism:
 (1) add shared lock for file read and directory read
+
 (2) add exclusive lock for file write
+
 (3) add exclusive lock for directory mutation, eg: rename, unlink, etc
 9. About server recovery, we have provided a python script which does cold restoration. Eg, you could simply `sudo python rsync.py localadmin@esa08.egr.duke.edu:/9962309 /`
 
 #### Known bugs
 1. We have handled the cases where primary server or secondary one cannot be reached. But if the client goes down, fd won't be released, thus system resource is leaked.
-2. Some operations need root identity, say, `chown	`. We haven't dealt with that case.
+2. Some operations need root identity, say, `chown`. We haven't dealt with that case.
