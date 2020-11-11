@@ -6,3 +6,4 @@ tweakfs
 *.tmp
 *.xls
 *.out
+*.log
