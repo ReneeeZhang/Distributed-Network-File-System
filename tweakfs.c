@@ -66,7 +66,7 @@ typedef enum clnt_stat rpc_ret_t;
             is_degraded = IS_NOT_DEGRADED;                                     \
         }                                                                      \
         log_msg("Primary server down, trying to connect secondary server.\n"); \
-        clnt = clnt_create(host2, COMPUTE, COMPUTE_VERS, "tcp");               \
+        clnt = clnt_create(host2, COMPUTE, COMPUTE_VERS, "udp");               \
         if (clnt == NULL) {                                                    \
             log_msg("Create RPC connection with secondary server error\n");    \
             clnt_pcreateerror (host2);                                         \
