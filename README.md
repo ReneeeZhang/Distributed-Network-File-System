@@ -53,7 +53,9 @@ For primary server, several updating operation needs to be completed on secondar
 (4) execute the operation
 
 (5) unlock the locked resource
+
 6. Server stores all files under the root directory `/DFS`, and create it at the very beginning it doesn't exist. All files are considered visible by all user mounted, but other operations, like updating, removing, reading needs further authentication.
+
 7. About access authentication:
 (1) file open is checked by read and write bit
 
@@ -62,12 +64,14 @@ For primary server, several updating operation needs to be completed on secondar
 (3) file creation, rename and deletion need the rwx bits of parent directory, related operations include operation: unlink, mkdir, rmdir, mknod, rename, symlink, link
 
 (4) chown needs root, chmod needs owner, utime needs owner
+
 8. Locking mechanism:
 (1) add shared lock for file read and directory read
 
 (2) add exclusive lock for file write
 
 (3) add exclusive lock for directory mutation, eg: rename, unlink, etc
+
 9. About server recovery, we have provided a python script which does cold restoration. Eg, you could simply `sudo python rsync.py localadmin@esa08.egr.duke.edu:/9962309 /`
 
 #### Known bugs
