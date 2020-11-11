@@ -123,7 +123,8 @@ static identity get_identity(int is_degraded) {
 // Connect to host, use UDP by default.
 static int connect_server(CLIENT **clnt) {
     // If the master server is considered alive, connect.
-    *clnt = clnt_create (host1, COMPUTE, COMPUTE_VERS, "udp");
+    // Note: client-server use TCP, while server-server use UDP.
+    *clnt = clnt_create (host1, COMPUTE, COMPUTE_VERS, "tcp");
     if (*clnt == NULL) {
         log_msg("Create RPC connection with primary server error\n");
         clnt_pcreateerror(host1);
@@ -132,7 +133,8 @@ static int connect_server(CLIENT **clnt) {
     }
 
     // Otherwise, connect to secondary server.
-    *clnt = clnt_create(host2, COMPUTE, COMPUTE_VERS, "udp");
+    log_msg("Primary server down, trying to connect secondary server.\n");
+    *clnt = clnt_create(host2, COMPUTE, COMPUTE_VERS, "tcp");
     if (*clnt == NULL) {
         log_msg("Create RPC connection with secondary server error\n");
         clnt_pcreateerror (host2);
@@ -338,7 +340,7 @@ int bb_mknod(const char *path, mode_t mode, dev_t dev)
     clnt_destroy (clnt);
 
     if (ret.ret < 0) {
-        log_msg("mknod for %s with mode %s and dev id %d error\n", fpath, mode, dev);
+        log_msg("mknod for %s with mode %d and dev id %d error\n", fpath, mode, dev);
     }
     return ret.ret;
 }

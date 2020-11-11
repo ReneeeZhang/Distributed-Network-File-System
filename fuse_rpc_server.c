@@ -115,7 +115,7 @@
 // Using alias for RPC return type.
 typedef enum clnt_stat rpc_ret_t;
 
-// Connect to secondary server, use TCP by default.
+// Connect to secondary server, use UDP by default.
 // FIXME: Hard code secondary server IP.
 // Note: Need to update /etc/hosts.
 static CLIENT *connect_server() {
