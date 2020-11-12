@@ -56,7 +56,9 @@
 typedef enum clnt_stat rpc_ret_t;
 
 // Connect server, every time try primary first, then secondary if fails. Use
-// UDP as default.
+// TCP as default. 
+// Note: for connection based on UDP, even primary server shutdown, it doesn't
+// promise to get a NULL client connection.
 #define CONNECT_SERVER()                                                           \
     do {                                                                           \
         clnt = clnt_create (host1, COMPUTE, COMPUTE_VERS, "tcp");                  \
