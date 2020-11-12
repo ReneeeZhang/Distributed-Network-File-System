@@ -434,7 +434,7 @@ bb_opendir_6_svc(opendir_arg *argp, opendir_ret *result, struct svc_req *rqstp)
 	translate_abspath(fpath, path);
 	fprintf(stderr, "Open directory for %s\n", fpath);
 
-	int flag_to_check = X_REQ;
+	int flag_to_check = R_REQ | X_REQ;
 	if (is_op_valid(fpath, ip, flag_to_check) != 1) {
 		fprintf(stderr, "Authentication when open directory %s error\n", fpath);
 		result->ret = -EACCES;
@@ -818,6 +818,7 @@ bb_chown_6_svc(chown_arg *argp, chown_ret *result, struct svc_req *rqstp)
 	return TRUE;
 }
 
+// TODO: execution bit is not checked, since flags for open syscall doesn't provide.
 bool_t
 bb_open_6_svc(open_arg *argp, open_ret *result, struct svc_req *rqstp)
 {
