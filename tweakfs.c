@@ -25,6 +25,7 @@
 
 #include <arpa/inet.h> 
 #include <assert.h>
+#include <stdint.h>
 #include <ctype.h>
 #include <dirent.h>
 #include <errno.h>
@@ -82,9 +83,9 @@ typedef enum clnt_stat rpc_ret_t;
 size_t rootdir_len = 0;
 
 // Convert IP address to int.
-static int ip_to_int(char *ip) {
-    int cur_val = 0;
-    int res_val = 0;
+static uint32_t ip_to_int(char *ip) {
+    uint32_t cur_val = 0;
+    uint32_t res_val = 0;
     for (char *ptr = ip; *ptr != '\0'; ++ptr) {
         if (*ptr == '.') {
             res_val = res_val * 256 + cur_val;
@@ -127,9 +128,9 @@ bad:
 // Convert IP address into integer, and store it as string.
 static void get_ip_addr() {
     get_ip();
-    int val = ip_to_int(ip);
+    uint32_t val = ip_to_int(ip);
     memset(ip, '\0', 20);
-    sprintf(ip, "%d", val); 
+    sprintf(ip, "%u", val); 
 }
 
 // RPC-related variables.
