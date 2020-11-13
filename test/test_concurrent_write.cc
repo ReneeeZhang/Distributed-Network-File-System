@@ -13,7 +13,7 @@
 #define ROUND_CNT 10
 #define THREAD_CNT 32
 #define CONSECUTIVE_CNT 1000
-#define TARGET "write.txt"
+#define TARGET "../mountdir/write.txt"
 using namespace std;
 
 // Ensure the target file exists and empty.
