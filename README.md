@@ -54,6 +54,8 @@ For primary server, several updating operation needs to be completed on secondar
 
 (5) unlock the locked resource
 
+(6) set return value, and send back response back to client via RPC
+
 6. Server stores all files under the root directory `/DFS`, and create it at the very beginning it doesn't exist. All files are considered visible by all user mounted, but other operations, like updating, removing, reading needs further authentication.
 
 7. About access authentication:
@@ -76,6 +78,12 @@ For primary server, several updating operation needs to be completed on secondar
 
 9. About server recovery, we have provided a python script which does cold restoration. Eg, you could simply `sudo python rsync.py localadmin@esa08.egr.duke.edu:/9962309 /`
 
+#### Special handling
+1. `chown` needs root identity, users calling it will get a "permission deny" error message.
+2. `/DFS` is a special root directory in Ddistributed File System. Anyone can create file or directory inside of it, but only owner of the file can delete or rename. 
+
 #### Known bugs
 1. We have handled the cases where primary server or secondary one cannot be reached. But if the client goes down, fd won't be released, thus system resource is leaked.
-2. Some operations need root identity, say, `chown`. We haven't dealt with that case.
+2. `symlink` and `link` operations are not yet thread-safe.
+3. `fd .` should show the file system attribute, but my program cannot.
+4. server failover test doesn't pass; currently it can only handle the case when server program is killed, and machine is still alive; it doesn't go well when secondary server is rebooted.
