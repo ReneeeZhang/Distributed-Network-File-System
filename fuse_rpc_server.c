@@ -37,6 +37,7 @@
 #include <string.h>
 #include <sys/file.h>
 #include <sys/stat.h>
+#include <sys/statvfs.h>
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
@@ -953,6 +954,36 @@ bb_write_6_svc(write_arg *argp, write_ret *result, struct svc_req *rqstp)
 	result->ret = 0;
 	return TRUE;
 }
+
+bool_t
+bb_statfs_6_svc(statfs_arg *argp, statfs_ret *result, struct svc_req *rqstp) {
+	char *path = argp->path;
+	char fpath[MAX_PATH_LEN];
+	translate_abspath(fpath, path);
+	fprintf(stderr, "Stat file system with path %s\n", fpath);
+
+	struct statvfs statv;
+	result->ret = statvfs(fpath, &statv);
+	if (result->ret < 0) {
+		fprintf(stderr, "statvfs %s error\n", fpath);
+		result->ret = -errno;
+		return TRUE;
+	}
+
+	result->f_bavail = statv.f_bavail;
+	result->f_bfree = statv.f_bfree;
+	result->f_blocks = statv.f_blocks;
+	result->f_bsize = statv.f_bsize;
+	result->f_favail = statv.f_favail;
+	result->f_ffree = statv.f_ffree;
+	result->f_files = statv.f_files;
+	result->f_flag = statv.f_flag;
+	result->f_frsize = statv.f_frsize;
+	result->f_fsid = statv.f_fsid;
+	result->f_namemax = statv.f_namemax;
+	return TRUE;
+}
+
 
 int
 compute_6_freeresult (SVCXPRT *transp, xdrproc_t xdr_result, caddr_t result)

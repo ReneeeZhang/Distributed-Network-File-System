@@ -864,19 +864,42 @@ int bb_write(const char *path, const char *buf, size_t size, off_t offset,
  */
 int bb_statfs(const char *path, struct statvfs *statv)
 {
-    int retstat = 0;
-    char fpath[PATH_MAX];
+    log_msg("\nbb_statfs(path=\"%s\", statv=0x%08x)\n", path, statv);
 
-    log_msg("\nbb_statfs(path=\"%s\", statv=0x%08x)\n",
-	    path, statv);
+    // Get attribute via RPC.
+    CLIENT *clnt = NULL;
+    int is_degraded = IS_NOT_DEGRADED;
+    CONNECT_SERVER();
+    statfs_ret ret;
+    statfs_arg arg;
+    char fpath[PATH_MAX];
     bb_fullpath(fpath, path);
-    
-    // get stats for underlying filesystem
-    retstat = log_syscall("statvfs", statvfs(fpath, statv), 0);
-    
-    log_statvfs(statv);
-    
-    return retstat;
+    arg.path = fpath;
+
+    rpc_ret_t retval = bb_statfs_6(&arg, &ret, clnt);
+    if (retval != RPC_SUCCESS) {
+        log_msg("RPC return value error\n");
+        clnt_perror (clnt, "call failed");
+    }
+    if (ret.ret < 0) {
+        log_msg("Read called error with errno %d\n", -ret.ret);
+        clnt_destroy (clnt);
+        return -1;
+    }
+
+    statv->f_bsize = ret.f_bsize;
+    statv->f_frsize = ret.f_frsize;
+    statv->f_blocks = ret.f_blocks;
+    statv->f_bfree = ret.f_bfree;
+    statv->f_bavail = ret.f_bavail;
+    statv->f_files = ret.f_files;
+    statv->f_ffree = ret.f_ffree;
+    statv->f_favail = ret.f_favail;
+    statv->f_fsid = ret.f_fsid;
+    statv->f_flag = ret.f_flag;
+    statv->f_namemax = ret.f_namemax;
+    clnt_destroy (clnt);
+    return 0;
 }
 
 /** Possibly flush cached data
@@ -1285,7 +1308,7 @@ struct fuse_operations bb_oper = {
   .read = bb_read,
   .write = bb_write,
   /** Just a placeholder, don't set */ // huh???
-  .statfs = NULL,
+  .statfs = bb_statfs,
   .flush = bb_flush,
   .release = bb_release,
   .fsync = NULL,
