@@ -3,3 +3,8 @@
 tweakfs
 *_client
 *_server
+*.tmp
+*.xls
+*.out
+*.log
+*.vscode

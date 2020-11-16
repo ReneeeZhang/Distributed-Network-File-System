@@ -206,3 +206,12 @@ bb_write_6(write_arg *argp, write_ret *clnt_res, CLIENT *clnt)
 		(xdrproc_t) xdr_write_ret, (caddr_t) clnt_res,
 		TIMEOUT));
 }
+
+enum clnt_stat 
+bb_statfs_6(statfs_arg *argp, statfs_ret *clnt_res, CLIENT *clnt)
+{
+	return (clnt_call(clnt, BB_STATFS,
+		(xdrproc_t) xdr_statfs_arg, (caddr_t) argp,
+		(xdrproc_t) xdr_statfs_ret, (caddr_t) clnt_res,
+		TIMEOUT));
+}

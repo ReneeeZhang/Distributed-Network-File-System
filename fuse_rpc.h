@@ -51,9 +51,9 @@ struct getattr_ret {
 	u_long st_size;
 	u_long st_blksize;
 	u_long st_blocks;
-	long st_atimensec;
-	long st_mtimensec;
-	long st_ctimensec;
+	long st_acc_time;
+	long st_mod_time;
+	long st_chg_time;
 	int ret;
 };
 typedef struct getattr_ret getattr_ret;
@@ -318,6 +318,27 @@ struct write_ret {
 };
 typedef struct write_ret write_ret;
 
+struct statfs_arg {
+	char *path;
+};
+typedef struct statfs_arg statfs_arg;
+
+struct statfs_ret {
+	u_long f_bsize;
+	u_long f_frsize;
+	u_long f_blocks;
+	u_long f_bfree;
+	u_long f_bavail;
+	u_long f_files;
+	u_long f_ffree;
+	u_long f_favail;
+	u_long f_fsid;
+	u_long f_flag;
+	u_long f_namemax;
+	int ret;
+};
+typedef struct statfs_ret statfs_ret;
+
 #define COMPUTE 456123789
 #define COMPUTE_VERS 6
 
@@ -388,6 +409,9 @@ extern  bool_t bb_read_6_svc(read_arg *, read_ret *, struct svc_req *);
 #define BB_WRITE 21
 extern  enum clnt_stat bb_write_6(write_arg *, write_ret *, CLIENT *);
 extern  bool_t bb_write_6_svc(write_arg *, write_ret *, struct svc_req *);
+#define BB_STATFS 22
+extern  enum clnt_stat bb_statfs_6(statfs_arg *, statfs_ret *, CLIENT *);
+extern  bool_t bb_statfs_6_svc(statfs_arg *, statfs_ret *, struct svc_req *);
 extern int compute_6_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
 #else /* K&R C */
@@ -457,6 +481,9 @@ extern  bool_t bb_read_6_svc();
 #define BB_WRITE 21
 extern  enum clnt_stat bb_write_6();
 extern  bool_t bb_write_6_svc();
+#define BB_STATFS 22
+extern  enum clnt_stat bb_statfs_6();
+extern  bool_t bb_statfs_6_svc();
 extern int compute_6_freeresult ();
 #endif /* K&R C */
 
@@ -508,6 +535,8 @@ extern  bool_t xdr_read_arg (XDR *, read_arg*);
 extern  bool_t xdr_read_ret (XDR *, read_ret*);
 extern  bool_t xdr_write_arg (XDR *, write_arg*);
 extern  bool_t xdr_write_ret (XDR *, write_ret*);
+extern  bool_t xdr_statfs_arg (XDR *, statfs_arg*);
+extern  bool_t xdr_statfs_ret (XDR *, statfs_ret*);
 
 #else /* K&R C */
 extern bool_t xdr_identity ();
@@ -555,6 +584,8 @@ extern bool_t xdr_read_arg ();
 extern bool_t xdr_read_ret ();
 extern bool_t xdr_write_arg ();
 extern bool_t xdr_write_ret ();
+extern bool_t xdr_statfs_arg ();
+extern bool_t xdr_statfs_ret ();
 
 #endif /* K&R C */
 

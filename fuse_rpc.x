@@ -53,20 +53,20 @@ struct getattr_arg {
 };
 
 struct getattr_ret {
-    int st_dev; /* ID of device containing file */
-    int st_ino; /* inode number */
-    int st_mode; /* protection */
-    int st_nlink; /* number osf hard links */
-    int st_uid; /* user ID of owner */
-    int st_gid; /* group ID of owner */
-    int st_rdev; /* device ID (if special file) */
-    unsigned long st_size; /* total size, in bytes */
+    int st_dev;               /* ID of device containing file */
+    int st_ino;               /* inode number */
+    int st_mode;              /* protection */
+    int st_nlink;             /* number osf hard links */
+    int st_uid;               /* user ID of owner */
+    int st_gid;               /* group ID of owner */
+    int st_rdev;              /* device ID (if special file) */
+    unsigned long st_size;    /* total size, in bytes */
     unsigned long st_blksize; /* blocksize for file system I/O */
-    unsigned long st_blocks; /* number of 512B blocks allocated */
-    long st_atimensec; /* time of last access */
-    long st_mtimensec; /* time of last modification */
-    long st_ctimensec; /* time of last status change */
-    int ret; /* status of RPC */
+    unsigned long st_blocks;  /* number of 512B blocks allocated */
+    long st_acc_time;         /* time of last access */
+    long st_mod_time;         /* time of last modification */
+    long st_chg_time;         /* time of last status change */
+    int ret;                  /* status of RPC */
 };
 
 struct access_arg {
@@ -289,6 +289,25 @@ struct write_ret {
     int ret; /* status of RPC */
 };
 
+struct statfs_arg {
+    string path<>;
+};
+
+struct statfs_ret {
+    unsigned long f_bsize;   /* Filesystem block size */
+    unsigned long f_frsize;  /* Fragment size */
+    unsigned long f_blocks;  /* Size of fs in f_frsize units */
+    unsigned long f_bfree;   /* Number of free blocks */
+    unsigned long f_bavail;  /* Number of free blocks for unprivileged users */
+    unsigned long f_files;   /* Number of inodes */
+    unsigned long f_ffree;   /* Number of free inodes */
+    unsigned long f_favail;  /* Number of free inodes for unprivileged users */
+    unsigned long f_fsid;    /* Filesystem ID */
+    unsigned long f_flag;    /* Mount flags */
+    unsigned long f_namemax; /* Maximum filename length */
+    int ret;                 /* status of syscall and RPC */
+};
+               
 program COMPUTE{
     version COMPUTE_VERS {
         init_ret INIT_ROOTDIR(init_arg) = 0;
@@ -313,5 +332,6 @@ program COMPUTE{
         release_ret BB_RELEASE(release_arg) = 19;
         read_ret BB_READ(read_arg) = 20;
         write_ret BB_WRITE(write_arg) = 21;
+        statfs_ret BB_STATFS(statfs_arg) = 22;
     } = 6;
 } = 456123789;

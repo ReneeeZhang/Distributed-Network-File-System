@@ -42,6 +42,7 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		release_arg bb_release_6_arg;
 		read_arg bb_read_6_arg;
 		write_arg bb_write_6_arg;
+		statfs_arg bb_statfs_6_arg;
 	} argument;
 	union {
 		init_ret init_rootdir_6_res;
@@ -66,6 +67,7 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		release_ret bb_release_6_res;
 		read_ret bb_read_6_res;
 		write_ret bb_write_6_res;
+		statfs_ret bb_statfs_6_res;
 	} result;
 	bool_t retval;
 	xdrproc_t _xdr_argument, _xdr_result;
@@ -202,6 +204,12 @@ compute_6(struct svc_req *rqstp, register SVCXPRT *transp)
 		_xdr_argument = (xdrproc_t) xdr_write_arg;
 		_xdr_result = (xdrproc_t) xdr_write_ret;
 		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_write_6_svc;
+		break;
+
+	case BB_STATFS:
+		_xdr_argument = (xdrproc_t) xdr_statfs_arg;
+		_xdr_result = (xdrproc_t) xdr_statfs_ret;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))bb_statfs_6_svc;
 		break;
 
 	default:
